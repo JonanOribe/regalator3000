@@ -11,8 +11,14 @@ public class DatabaseHandler {
 	 *  private variables guardando cosas como la conexion con la base de datos (hasta que acabe el programa, se cambie etc)
 	 *  Supongo que la conexion se mantendra hasta que el usuario se haya logueado y entonces se cerrara,
 	 *  volviendose a abrir si hay que modificar sus datos en la BdD o buscar regalos etc.
-	 Probablemente Guarda el ID_User del usuario cuando se logea y usalo en metodos internos hasta que se desloguea
+	 Probablemente Guarda el ID_User del usuario cuando se logea en una instancia de esta clase
+	 y usalo en metodos internos hasta que se desloguea
 	 */
+	
+	  /*EN CONSTRUCCION, ANTES DE USAR -> MIRATE EL MAIN (cambia el nombre/pwd admin, de la base de datos
+	  y que las tables de usuario y fechas tengan datas y el nombre que uso en el main,
+	  A HACER: distinguir entre sqlexceptions si hay error, si no esta conectado a db? lo de que devuelvan null no todas;
+	  Añadir ms metodos*/
 	
 	
 	/*Crea una conexion a una base de datos, PUEDE DEVOLVER NULL*/
