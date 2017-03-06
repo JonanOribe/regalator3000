@@ -2,8 +2,8 @@ package regalator3000;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 public class DatabaseHandler {
 	
@@ -11,12 +11,9 @@ public class DatabaseHandler {
 	 *  private variables guardando cosas como la conexion con la base de datos (hasta que acabe el programa, se cambie etc)
 	 *  Supongo que la conexion se mantendra hasta que el usuario se haya logueado y entonces se cerrara,
 	 *  volviendose a abrir si hay que modificar sus datos en la BdD o buscar regalos etc.
+	 Probablemente Guarda el ID_User del usuario cuando se logea y usalo en metodos internos hasta que se desloguea
 	 */
 	
-  /*EN CONSTRUCCION, ANTES DE USAR -> MIRATE EL MAIN (cambia el nombre/pwd admin, de la base de datos
-  y que las tables de usuario y fechas tengan datas y el nombre que uso en el main,
-  A HACER: distinguir entre sqlexceptions si hay error, si no esta conectado a db? lo de que devuelvan null no todas;
-  Añadir metodos para fechas*/
 	
 	/*Crea una conexion a una base de datos, PUEDE DEVOLVER NULL*/
 	private static Connection connectToDb(String dbName,String user,String pwd) {
@@ -32,17 +29,21 @@ public class DatabaseHandler {
 		return unaConexion;
 	}
 	
-	/*Devuelve cierto si el usuario esta en la BdD*/
-	public static boolean authUser(Connection dbConn, String name, String pwd){
-		ResultSet resultadosConsulta = null;
+	/*Devuelve la id del usuario si el usuario esta en la BdD*/
+	public static int authUser(Connection dbConn, String name, String pwd){
+		//ResultSet resultadosConsulta = null;
 		try{
 			Statement instruccionSQL = dbConn.createStatement();
-	        resultadosConsulta = instruccionSQL.executeQuery("SELECT * FROM usuario WHERE nombre='"+name+"' AND password='"+pwd+"';");
-		    return resultadosConsulta.first();
+	        ResultSet resultadosConsulta = instruccionSQL.executeQuery("SELECT id FROM usuario WHERE nombre='"+name+"' AND password='"+pwd+"';");
+	        int resultado = -1;
+	        if(resultadosConsulta.next()){
+	        	resultado = resultadosConsulta.getInt("id");
+	        }
+		    return resultado;
 		}
 		catch(Exception e){
 			System.out.println(e.toString());
-			return false;
+			return -1;
 		}
 	}
 	
@@ -51,7 +52,7 @@ public class DatabaseHandler {
 	public static boolean insertUser(Connection dbConn, String name, String pwd){
 		try{
 			Statement instruccionSQL = dbConn.createStatement();
-	        instruccionSQL.execute("INSERT INTO usuario VALUES(5,'"+name+"','"+pwd+"');");
+	        instruccionSQL.execute("INSERT INTO usuario VALUES(null,'"+name+"','"+pwd+"');");
 	        instruccionSQL.close();
 	        return true;
 		}
@@ -76,14 +77,43 @@ public class DatabaseHandler {
 			return false;
 		}
 	}
-		
+	
+	
+	/*Añade una data a la base de datos, en el presupuesto que el usuario este autenticado*/
+	public static boolean addDate(Connection dbConn, int id_usuario, String date){
+        try {
+            Statement stmt = dbConn.createStatement();
+            String codigoSQL = "INSERT INTO fechas VALUES('"+id_usuario+"','"+date+"');";
+            stmt.execute(codigoSQL);
+            stmt.close();
+            return true;	      
+	      }
+	      catch(Exception e){
+	    	  System.out.println("a" + e.toString());
+	    	  return false;
+	      }
+	}
+	
+	public static boolean removeDate(Connection dbConn, int id_usuario, String date){
+		try{
+			Statement instruccionSQL = dbConn.createStatement();
+	        instruccionSQL.execute("DELETE FROM fechas WHERE id_usuario='"+id_usuario+"' AND fecha='"+date+"';");
+	        instruccionSQL.close();
+	        return true;
+		}
+		catch(Exception e){
+			System.out.println(e.toString());
+			return false;
+		}
+	}
+	
 	/*Solo usable una vez autenticado en teoria, devuelve las fechas señaladas del usuario con 
 	 * nombre determinado puede devolver null
 	 */
-    public static ArrayList<String> getDates(Connection dbConn, String nombre) {
+    public static ArrayList<String> getDates(Connection dbConn, int userID) {
         try {
             Statement stmt = dbConn.createStatement();
-            String codigoSQL = "SELECT fecha FROM fechas,usuario WHERE usuario.nombre='"+nombre+"' AND usuario.id=fechas.id_usuario;";
+            String codigoSQL = "SELECT fecha FROM fechas,usuario WHERE usuario.id='"+userID+"' AND usuario.id=fechas.id_usuario;";
             ResultSet rs = stmt.executeQuery(codigoSQL);
             ArrayList<String> stringList = new ArrayList<String>();
             while(rs.next()){
@@ -101,15 +131,30 @@ public class DatabaseHandler {
 	
 
 	public static void main(String[] args) { 
-		Connection dbConn = connectToDb("regalator","root","Rootpwd");
-		String user="juan",pwd="lol";
-		boolean isUserIn = authUser(dbConn, user, pwd);
-		System.out.println(isUserIn);
+		Connection dbConn = connectToDb("regalator","root","PASSWORD DE LA BASE DE DATOS");
+		String user="juan",pwd="lol"; //CAMBIA EL USER PARA TESTEAR, UN USER QUE EXISTA
+		int userID = authUser(dbConn, user, pwd);
+		System.out.println("ID USUARIO ENCONTRADA: " + userID);
 		boolean addedUser = insertUser(dbConn, "hola","bola");
-		System.out.println(addedUser);
+		System.out.println("USER AÑADIDO: " + addedUser);
 		boolean removeUser = removeUser(dbConn,"hola","bola");
-		System.out.println(removeUser);
-		ArrayList<String> testList = getDates(dbConn,"juan");
+		System.out.println("USER ELIMINADO: " + removeUser);
+		ArrayList<String> testList = getDates(dbConn,userID);
+		System.out.println("Fechas iniciales del user: ");
+		for(int i=0; i < testList.size(); i++) {
+			System.out.println("Fecha de Juan " + i + ": " + testList.get(i));
+		}
+		System.out.println("Añadiendo fecha actual y remirando fechas del user: ");
+		System.out.println(addDate(dbConn,userID,LocalDate.now().toString()));
+		testList = null;
+		testList = getDates(dbConn,userID);
+		for(int i=0; i < testList.size(); i++) {
+			System.out.println("Fecha Juan " + i + ": " + testList.get(i));
+		}
+		System.out.println("Eliminando fecha actual y remirando fechas del user:  ");
+		System.out.println(removeDate(dbConn,userID,LocalDate.now().toString()));
+		testList = null;
+		testList = getDates(dbConn,userID);
 		for(int i=0; i < testList.size(); i++) {
 			System.out.println("Fecha Juan " + i + ": " + testList.get(i));
 		}
