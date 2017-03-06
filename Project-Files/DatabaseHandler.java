@@ -76,9 +76,7 @@ public class DatabaseHandler {
 			return false;
 		}
 	}
-	
-	public static boolean addDates(Connection dbConn, String nombre)
-	
+		
 	/*Solo usable una vez autenticado en teoria, devuelve las fechas señaladas del usuario con 
 	 * nombre determinado puede devolver null
 	 */
