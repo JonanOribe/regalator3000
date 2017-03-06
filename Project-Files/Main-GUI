@@ -1,0 +1,110 @@
+package regalator3000;
+
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+
+/*Clase Principal del programa, llamarla para generar la GUI y comenzar 
+ * el proceso de controlar el dia actual y cuando pasa cada dia*/
+public class MainGUI extends JPanel implements ActionListener{
+	
+	private JButton Button1,Button2,Button3; //usarl array de JButtons?
+	private JFrame window; //La frame inicial y principal
+	private JLabel LabelMes,LabelAnyo,LabelDia; //Contiene y enseña el dia/mes/año actual (no usar JLabel, currarse algo del palo dibujar un numero bonito o usar mas de una Label con fonts wapas para k kede bonito
+	
+	//Main constructor(add parameters?)
+	public MainGUI(){
+		window = new JFrame("Regalator 3000");
+		JPanel content = setupMainPanel(this);
+		window.setContentPane(this);
+		JMenuBar topMenu = createMenuBar(this); 
+		window.setJMenuBar(topMenu);
+		this.add(content);
+		//window.setResizable(false);
+		window.setContentPane(this);
+		window.setSize(400,200);
+		window.setLocation(100,100);
+		window.pack();
+		//window.setSize(1100,750);
+		//window.setLocation(100,0);  //Pillarho per resolucio
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setVisible(true); 
+	}
+
+	public JPanel setupMainPanel(ActionListener listener) { 
+		JPanel container = new JPanel();
+		container.setLayout(new BorderLayout(10,10));		
+		JPanel southPanel = new JPanel();
+		southPanel.setLayout(new GridLayout(1,3,5,5));
+		Button1 = new JButton("test1");
+		Button2 = new JButton("test2");
+		Button3 = new JButton("test3");
+		Button1.addActionListener(listener);
+		Button2.addActionListener(listener);
+		Button3.addActionListener(listener);
+		southPanel.add(Button1);
+		southPanel.add(Button2);
+		southPanel.add(Button3);
+		JPanel centralPanel = new JPanel();
+		centralPanel.setLayout(new BorderLayout(10,10));
+		LabelMes = new JLabel("MES ACTUAL");
+		LabelDia = new JLabel("DIA ACTUAL \n (PONERLO EN BONITO Y MÁS GRANDE)");
+		LabelAnyo = new JLabel("AÑO ACTUAL");
+		centralPanel.add(LabelMes, BorderLayout.NORTH);
+		centralPanel.add(LabelDia,BorderLayout.CENTER);
+		centralPanel.add(LabelAnyo,BorderLayout.SOUTH);
+		container.add(centralPanel, BorderLayout.CENTER);
+		container.add(southPanel,BorderLayout.SOUTH);
+		return container;
+	}
+
+		
+		
+		
+	private static JMenuBar createMenuBar(ActionListener listener){ //creates the top menu
+			
+		JMenuBar Menu = new JMenuBar();
+				
+		//Pestaña opciones 
+		JMenu AboutMenu = new JMenu("Opciones"); //Nombre pestaña
+		JMenuItem CreditsButton = new JMenuItem("Opcion1"); //Opcion 1, Implementar
+		JMenuItem ExitButton2 = new JMenuItem("Exit"); //Para salir
+			
+		CreditsButton.addActionListener(listener);     //Pone el listener para que la clase que llama puede implementar interface actionPerformed i saber cuando clicka el user
+		ExitButton2.addActionListener(listener);
+		AboutMenu.add(CreditsButton);
+		AboutMenu.addSeparator();
+		AboutMenu.add(ExitButton2);
+			
+		//Pestaña preferencias
+		JMenu PrefMenu = new JMenu("Preferencias");  
+		JMenuItem RegalosButton = new JMenuItem("Configuracion regalos");
+		JMenuItem Pref2Button = new JMenuItem("Implementar");//Implementar
+			
+		RegalosButton.addActionListener(listener);
+		Pref2Button.addActionListener(listener);
+		PrefMenu.add(RegalosButton);
+		PrefMenu.addSeparator();
+		PrefMenu.add(Pref2Button);
+			
+		//Pestaña login
+		JMenu LoginMenu = new JMenu("Login");
+		JMenuItem LogOnButton = new JMenuItem("Login");
+		JMenuItem LogOutButton = new JMenuItem("Logout");
+		JMenuItem LoginInstructionsButton = new JMenuItem("Login instructions");//Solo poner que hay que poner su user/pwd en las casillas o futuro recuperar pwd?
+
+		LogOnButton.addActionListener(listener);			
+		LogOutButton.addActionListener(listener);
+		LoginInstructionsButton.addActionListener(listener);
+		LoginMenu.add(LogOnButton);
+		LoginMenu.addSeparator();
+		LoginMenu.add(LogOutButton);
