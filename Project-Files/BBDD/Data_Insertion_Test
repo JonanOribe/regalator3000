@@ -10,12 +10,12 @@ DELETE FROM marca;
 
 
 -- DATOS USUARIO --
-INSERT INTO usuario values(1,"Juan","A2445D");
-INSERT INTO usuario values(2,"Felipe","VV3RGF"); 
-INSERT INTO usuario values(3,"Luis","HH31223HHT");
-INSERT INTO usuario values(4,"Ramon","P12-dF"); 
-INSERT INTO usuario values(5,"Josu","55/985HT");
-INSERT INTO usuario values(6,"Oscar","L`12-22"); 
+INSERT INTO usuario values(null,"Juan","A2445D");
+INSERT INTO usuario values(null,"Felipe","VV3RGF"); 
+INSERT INTO usuario values(null,"Luis","HH31223HHT");
+INSERT INTO usuario values(null,"Ramon","P12-dF"); 
+INSERT INTO usuario values(null,"Josu","55/985HT");
+INSERT INTO usuario values(null,"Oscar","L`12-22"); 
 -- ----------------------------
 
 -- DATOS CATEGORIA --
@@ -23,16 +23,22 @@ INSERT INTO categoria values(1,"Vales de regalo");
 INSERT INTO categoria values(2,"Libreria");
 INSERT INTO categoria values(3,"Electrodomesticos");
 INSERT INTO categoria values(4,"Viajes");
+INSERT INTO categoria values(5,"Joyeria");
+INSERT INTO categoria values(6,"Moda");
 -- ----------------------------
 
 -- DATOS MARCA --
 INSERT INTO marca values(1,"El Corte Inglés");
 INSERT INTO marca values(2,"La Casa del Libro");
+INSERT INTO marca values(3,"Zara");
+INSERT INTO marca values(4,"Swarovski");
 -- ----------------------------
 
 -- DATOS REGALOS --
 INSERT INTO regalos values(1,"Vale Spa",35,1,1);
 INSERT INTO regalos values(2,"Libro de misterio",12,2,1);
 INSERT INTO regalos values(3,"Viaje a Londres",345,4,1);
-INSERT INTO regalos values(4,"Libro de cocina",12,2,1);
+INSERT INTO regalos values(4,"Libro de cocina",13,2,1);
+INSERT INTO regalos values(5,"Collar de brillantes",102,5,4);
+INSERT INTO regalos values(6,"Jersey",23,6,3);
 -- ----------------------------
