@@ -1,5 +1,6 @@
 -- Basic BBDD Schema runs on mySQL
 
+ 
 DROP SCHEMA IF EXISTS `regalator`;
  
 CREATE SCHEMA IF NOT EXISTS `regalator` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
@@ -7,7 +8,7 @@ USE `regalator` ;
 
 DROP TABLE IF EXISTS `regalator`.`usuario`;
 CREATE TABLE IF NOT EXISTS `regalator`.`usuario`(
-	`id`INT NOT NULL,
+	`id`INT NOT NULL AUTO_INCREMENT,
     `nombre`VARCHAR(45),
     `password`VARCHAR(30),
     PRIMARY KEY(`id`)
@@ -39,3 +40,16 @@ CREATE TABLE IF NOT EXISTS `regalator`.`regalos`(
     CONSTRAINT `FK_Categoria` FOREIGN KEY(`id_categoria`) REFERENCES `regalator`.`categoria`(`id`),
     CONSTRAINT `FK_Marca` FOREIGN KEY(`id_marca`) REFERENCES `regalator`.`marca`(`id`)
     )ENGINE = InnoDB;
+    
+    CREATE INDEX `fk_regalos_categoria_idx` ON `regalator`.`regalos` (`id_categoria` ASC);
+	CREATE INDEX `fk_regalos_marca_idx` ON `regalator`.`regalos` (`id_marca` ASC);
+    
+    DROP TABLE IF EXISTS `regalator`.`fechas`;
+	CREATE TABLE IF NOT EXISTS `regalator`.`fechas`(
+        `id_usuario` INT NOT NULL,
+        `fecha` DATE,
+        CONSTRAINT `FK_Usuario` FOREIGN KEY(`id_usuario`) REFERENCES `regalator`.`usuario`(`id`)
+	)ENGINE=InnoDB;
+    
+	CREATE INDEX `fk_fechas_users_idx` ON `regalator`.`fechas` (`id_usuario` ASC);
+    
