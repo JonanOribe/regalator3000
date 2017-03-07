@@ -1,4 +1,4 @@
-// Basic data for testing
+-- Basic data for testing
 
 Use regalator;
 SET AUTOCOMMIT=1;
@@ -7,6 +7,7 @@ DELETE FROM usuario;
 DELETE FROM regalos;
 DELETE FROM categoria;
 DELETE FROM marca;
+DELETE FROM fechas;
 
 
 -- DATOS USUARIO --
@@ -48,3 +49,16 @@ INSERT INTO regalos values(7,"Cafetera",52.40,3,1);
 INSERT INTO regalos values(8,"Cena para dos",62.35,7,5);
 INSERT INTO regalos values(9,"Kit de pintura",36.7,8,1);
 -- ----------------------------
+
+-- DATOS FECHAS --
+INSERT INTO fechas values(1,"2016-12-11","BODA PEPA");
+INSERT INTO fechas values(1,"2017-02-01","FIESTA LOCA");
+INSERT INTO fechas values(2,"2018-05-23","se me va la olla nen");
+INSERT INTO fechas values(2,"2017-03-08","no macuerdo paque pongo esto");
+INSERT INTO fechas values(2,"2017-10-25","joer tio");
+INSERT INTO fechas values(3,"2018-12-15","Casamiento de Jesus");
+INSERT INTO fechas values(5,"2017-12-29","bautizo hija de Ana");
+INSERT INTO fechas values(6,"2017-06-02","Dia de pillar la farla");
+INSERT INTO fechas values(6,"2016-08-14","Josechu te debe dinero");
+-- ----------------------------
+
