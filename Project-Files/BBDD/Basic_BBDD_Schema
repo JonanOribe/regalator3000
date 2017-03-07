@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `regalator`.`marca`(
 DROP TABLE IF EXISTS `regalator`.`regalos`;
 CREATE TABLE IF NOT EXISTS `regalator`.`regalos`(
 	`id`INT NOT NULL,
-    `nombre` VARCHAR(60),
+    `nombre` VARCHAR(45),
     `precio`float,
     `id_categoria` int,
     `id_marca` int,
@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS `regalator`.`regalos`(
 	CREATE TABLE IF NOT EXISTS `regalator`.`fechas`(
         `id_usuario` INT NOT NULL,
         `fecha` DATE,
+        `descripcion` VARCHAR(45),
         CONSTRAINT `FK_Usuario` FOREIGN KEY(`id_usuario`) REFERENCES `regalator`.`usuario`(`id`)
 	)ENGINE=InnoDB;
     
-	CREATE INDEX `fk_fechas_users_idx` ON `regalator`.`fechas` (`id_usuario` ASC);
-    
+CREATE INDEX `fk_fechas_users_idx` ON `regalator`.`fechas` (`id_usuario` ASC);
