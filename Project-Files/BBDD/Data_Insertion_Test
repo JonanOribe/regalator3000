@@ -25,6 +25,8 @@ INSERT INTO categoria values(3,"Electrodomesticos");
 INSERT INTO categoria values(4,"Viajes");
 INSERT INTO categoria values(5,"Joyeria");
 INSERT INTO categoria values(6,"Moda");
+INSERT INTO categoria values(7,"Restaurantes");
+INSERT INTO categoria values(8,"Otros");
 -- ----------------------------
 
 -- DATOS MARCA --
@@ -32,6 +34,7 @@ INSERT INTO marca values(1,"El Corte Inglés");
 INSERT INTO marca values(2,"La Casa del Libro");
 INSERT INTO marca values(3,"Zara");
 INSERT INTO marca values(4,"Swarovski");
+INSERT INTO marca values(5,"Tagliattella");
 -- ----------------------------
 
 -- DATOS REGALOS --
@@ -41,4 +44,7 @@ INSERT INTO regalos values(3,"Viaje a Londres",345,4,1);
 INSERT INTO regalos values(4,"Libro de cocina",13,2,1);
 INSERT INTO regalos values(5,"Collar de brillantes",102,5,4);
 INSERT INTO regalos values(6,"Jersey",23,6,3);
+INSERT INTO regalos values(7,"Cafetera",52.40,3,1);
+INSERT INTO regalos values(8,"Cena para dos",62.35,7,5);
+INSERT INTO regalos values(9,"Kit de pintura",36.7,8,1);
 -- ----------------------------
