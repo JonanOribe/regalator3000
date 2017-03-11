@@ -1,3 +1,11 @@
+package regalator3000;
+
+import java.util.Arrays;
+
+/*Clase interna para gestionar los datos, una instancia para cada evento
+ * La hago una clase separada porque el codigo se ha expandido lo suyo
+ * de la configreader y tal
+ */
 public class EventData {
 		public String userID;
 		public String eventID;
@@ -43,7 +51,7 @@ public class EventData {
 
 		}
 			
-		//Usado en el metodo toConsole para ver los elementos de las arrays seguidos
+		//Antes usaba ArrayLists, la dejo por si acaso en el futuro
 		/*public String listMyArray(ArrayList<String> array){
 			String totalList = "";
 			if (array == null) return "";
