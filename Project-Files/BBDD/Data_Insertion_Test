@@ -3,39 +3,41 @@
 Use regalator;
 SET AUTOCOMMIT=1;
 
-DELETE FROM usuario;
+DELETE FROM usuarios;
 DELETE FROM regalos;
-DELETE FROM categoria;
-DELETE FROM marca;
-DELETE FROM fechas;
+DELETE FROM categorias;
+DELETE FROM marcas;
+DELETE FROM eventos;
 
 
--- DATOS USUARIO --
-INSERT INTO usuario values(null,"Juan","A2445D");
-INSERT INTO usuario values(null,"Felipe","VV3RGF"); 
-INSERT INTO usuario values(null,"Luis","HH31223HHT");
-INSERT INTO usuario values(null,"Ramon","P12-dF"); 
-INSERT INTO usuario values(null,"Josu","55/985HT");
-INSERT INTO usuario values(null,"Oscar","L`12-22"); 
+-- DATOS USUARIOS --
+INSERT INTO usuarios values(1,"Juan","A2445D");
+INSERT INTO usuarios values(2,"Felipe","VV3RGF"); 
+INSERT INTO usuarios values(3,"Luis","HH31223HHT");
+INSERT INTO usuarios values(4,"Ramon","P12-dF"); 
+INSERT INTO usuarios values(5,"Josu","55/985HT");
+INSERT INTO usuarios values(6,"Oscar","L`12-22"); 
 -- ----------------------------
 
--- DATOS CATEGORIA --
-INSERT INTO categoria values(1,"Vales de regalo");
-INSERT INTO categoria values(2,"Libreria");
-INSERT INTO categoria values(3,"Electrodomesticos");
-INSERT INTO categoria values(4,"Viajes");
-INSERT INTO categoria values(5,"Joyeria");
-INSERT INTO categoria values(6,"Moda");
-INSERT INTO categoria values(7,"Restaurantes");
-INSERT INTO categoria values(8,"Otros");
+-- DATOS CATEGORIAS --
+INSERT INTO categorias values(1,"Vales de regalo");
+INSERT INTO categorias values(2,"Libreria");
+INSERT INTO categorias values(3,"Electrodomesticos");
+INSERT INTO categorias values(4,"Viajes");
+INSERT INTO categorias values(5,"Joyeria");
+INSERT INTO categorias values(6,"Moda");
+INSERT INTO categorias values(7,"Restaurantes");
+INSERT INTO categorias values(8,"Otros");
 -- ----------------------------
 
--- DATOS MARCA --
-INSERT INTO marca values(1,"El Corte Inglés");
-INSERT INTO marca values(2,"La Casa del Libro");
-INSERT INTO marca values(3,"Zara");
-INSERT INTO marca values(4,"Swarovski");
-INSERT INTO marca values(5,"Tagliattella");
+-- DATOS MARCAS --
+INSERT INTO marcas values(1,"El Corte Inglés");
+INSERT INTO marcas values(2,"La Casa del Libro");
+INSERT INTO marcas values(3,"Zara");
+INSERT INTO marcas values(4,"Swarovski");
+INSERT INTO marcas values(5,"Tagliattella");
+INSERT INTO marcas values(6,"Adidas");
+INSERT INTO marcas values(7,"World Peace");
 -- ----------------------------
 
 -- DATOS REGALOS --
@@ -50,15 +52,32 @@ INSERT INTO regalos values(8,"Cena para dos",62.35,7,5);
 INSERT INTO regalos values(9,"Kit de pintura",36.7,8,1);
 -- ----------------------------
 
--- DATOS FECHAS --
-INSERT INTO fechas values(1,"2016-12-11","BODA PEPA");
-INSERT INTO fechas values(1,"2017-02-01","FIESTA LOCA");
-INSERT INTO fechas values(2,"2018-05-23","se me va la olla nen");
-INSERT INTO fechas values(2,"2017-03-08","no macuerdo paque pongo esto");
-INSERT INTO fechas values(2,"2017-10-25","joer tio");
-INSERT INTO fechas values(3,"2018-12-15","Casamiento de Jesus");
-INSERT INTO fechas values(5,"2017-12-29","bautizo hija de Ana");
-INSERT INTO fechas values(6,"2017-06-02","Dia de pillar la farla");
-INSERT INTO fechas values(6,"2016-08-14","Josechu te debe dinero");
+-- DATOS eventos --
+INSERT INTO eventos values(1,1,"2016-12-11","BODA PEPA",1,NULL);
+INSERT INTO eventos values(2,1,"2017-02-01","FIESTA LOCA",1,NULL);
+INSERT INTO eventos values(3,2,"2018-05-23","se me va la olla nen",5,NULL);
+INSERT INTO eventos values(4,2,"2018-05-23","prueba testing testing",7,NULL);
+INSERT INTO eventos values(5,2,"2017-03-08","no macuerdo paque pongo esto",1,NULL);
+INSERT INTO eventos values(6,2,"2017-10-25","joer tio",1,NULL);
+INSERT INTO eventos values(7,3,"2018-12-15","Casamiento de Jesus",1,NULL);
+INSERT INTO eventos values(8,5,"2017-12-29","bautizo hija de Ana",1,NULL);
+INSERT INTO eventos values(9,6,"2017-06-02","Dia de pillar la farla",0,NULL);
+INSERT INTO eventos values(10,6,"2016-08-14","Josechu te debe dinero",2,NULL);
 -- ----------------------------
 
+-- DATOS eventos_marcas -- sin datos en eventos 1-2 que son sobre los que testeo
+INSERT INTO eventos_marcas values(3,6);
+INSERT INTO eventos_marcas values(4,1);
+INSERT INTO eventos_marcas values(5,3);
+INSERT INTO eventos_marcas values(6,1);
+INSERT INTO eventos_marcas values(6,3);
+INSERT INTO eventos_marcas values(6,6);
+
+
+-- DATOS eventos_categorias --
+INSERT INTO eventos_categorias values(5,2);
+INSERT INTO eventos_categorias values(5,1);
+INSERT INTO eventos_categorias values(7,1);
+INSERT INTO eventos_categorias values(8,4);
+INSERT INTO eventos_categorias values(9,5);
+INSERT INTO eventos_categorias values(9,8);
