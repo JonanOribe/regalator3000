@@ -26,12 +26,13 @@ public class DatabaseHandler {
 	public DatabaseHandler(){ 
 	}
 
-	//Hay que llamar a abrir una nueva conexion cada vez
+	//Metodo por si has de crear una conexion con parametros diferentes
 	public Connection openNewConnection(String nombreBdD, String superUser, String pwd){
-		this.actualConnection = connectToDb(standardDbName, noPrivilegesUser,userPassword);
+		this.actualConnection = connectToDb(nombreBdD, superUser, pwd);
 		return this.actualConnection;
 	}
-	
+	/*Funcion estandard para obtener la conexion con el usuario/pwd construidos previamente con el 
+	acceso y funciones hechas a su medida para el programa*/
 	public Connection openNewConnection(){
 		this.actualConnection = connectToDb(standardDbName,noPrivilegesUser,userPassword);
 		return this.actualConnection;
@@ -47,6 +48,7 @@ public class DatabaseHandler {
 	}
 	
 	public void closeConnection(){
+		if(this.actualConnection == null) {System.out.println("Attempting to close unexistant connection"); return;} // no tendria que pasar
 		try{
 			this.actualConnection.close();
 		}
@@ -64,7 +66,7 @@ public class DatabaseHandler {
 			unaConexion  = DriverManager.getConnection("jdbc:mysql://localhost/" + dbName+"?autoReconnect=true&useSSL=true",user, pwd);
 		}
 		catch (Exception e){
-			System.out.println(e.toString());
+			System.out.println("Unable to stablish a connection " + e.toString());
 		}
 		return unaConexion;
 	}
