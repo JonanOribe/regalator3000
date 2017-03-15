@@ -280,7 +280,7 @@ public class EventoControl {
 				System.out.println("");
 			}
 			//Test eliminacion
-			System.out.println("Eliminando evento creado y remirando eventos del user:  ");
+			System.out.println("Eliminando evento creado y remirando eventos(modificados) del user:  ");
 			System.out.println(removeEvent(DbConnector,newEventID));
 			testList = null;
 			testList = getEvents(DbConnector); //recordatorio que getEvents no te enseña eventos_marcas o eventos_categorias (diseñado asi)
