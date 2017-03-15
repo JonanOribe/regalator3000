@@ -73,25 +73,25 @@ DELIMITER ;
 -- INSERT/DELETE EN eventos_marcas y eventos_categorias
 -- EN EL FUTURO HACER MAS FUNCIONES PROBABLEMENTE PARA EVITAR COSAS RARAS
 -- COMO SQL INJECTIONS O NOSE
-DROP USER IF EXISTS 'usuarioMedio'@'localhost';
-CREATE USER 'usuarioMedio'@'localhost' IDENTIFIED BY 'sinprivilegios1' PASSWORD EXPIRE NEVER;
-GRANT SELECT ON regalator.eventos TO 'usuarioMedio'@'localhost';
-GRANT SELECT ON regalator.categorias TO 'usuarioMedio'@'localhost';
-GRANT SELECT ON regalator.marcas TO 'usuarioMedio'@'localhost';
-GRANT SELECT ON regalator.regalos TO 'usuarioMedio'@'localhost';
-GRANT SELECT ON regalator.eventos_categorias TO 'usuarioMedio'@'localhost';
-GRANT SELECT ON regalator.eventos_marcas TO 'usuarioMedio'@'localhost';
-GRANT UPDATE ON regalator.eventos TO 'usuarioMedio'@'localhost';
-GRANT INSERT ON regalator.eventos TO 'usuarioMedio'@'localhost'; 
-GRANT DELETE ON regalator.eventos TO 'usuarioMedio'@'localhost';
-GRANT INSERT ON regalator.eventos_categorias TO 'usuarioMedio'@'localhost'; 
-GRANT DELETE ON regalator.eventos_categorias TO 'usuarioMedio'@'localhost';
-GRANT INSERT ON regalator.eventos_marcas TO 'usuarioMedio'@'localhost'; 
-GRANT DELETE ON regalator.eventos_marcas TO 'usuarioMedio'@'localhost';
-GRANT EXECUTE ON FUNCTION regalator.getuserID TO 'usuarioMedio'@'localhost';
-GRANT EXECUTE ON FUNCTION regalator.addUser TO 'usuarioMedio'@'localhost';
-GRANT EXECUTE ON PROCEDURE regalator.removeUser TO 'usuarioMedio'@'localhost';
-GRANT EXECUTE ON PROCEDURE regalator.getEventos TO 'usuarioMedio'@'localhost';
+DROP USER IF EXISTS 'usuarioMedio';
+CREATE USER 'usuarioMedio' IDENTIFIED BY 'sinprivilegios1' PASSWORD EXPIRE NEVER;
+GRANT SELECT ON regalator.eventos TO 'usuarioMedio';
+GRANT SELECT ON regalator.categorias TO 'usuarioMedio';
+GRANT SELECT ON regalator.marcas TO 'usuarioMedio';
+GRANT SELECT ON regalator.regalos TO 'usuarioMedio';
+GRANT SELECT ON regalator.eventos_categorias TO 'usuarioMedio';
+GRANT SELECT ON regalator.eventos_marcas TO 'usuarioMedio';
+GRANT UPDATE ON regalator.eventos TO 'usuarioMedio';
+GRANT INSERT ON regalator.eventos TO 'usuarioMedio'; 
+GRANT DELETE ON regalator.eventos TO 'usuarioMedio';
+GRANT INSERT ON regalator.eventos_categorias TO 'usuarioMedio'; 
+GRANT DELETE ON regalator.eventos_categorias TO 'usuarioMedio';
+GRANT INSERT ON regalator.eventos_marcas TO 'usuarioMedio'; 
+GRANT DELETE ON regalator.eventos_marcas TO 'usuarioMedio';
+GRANT EXECUTE ON FUNCTION regalator.getuserID TO 'usuarioMedio';
+GRANT EXECUTE ON FUNCTION regalator.addUser TO 'usuarioMedio';
+GRANT EXECUTE ON PROCEDURE regalator.removeUser TO 'usuarioMedio';
+GRANT EXECUTE ON PROCEDURE regalator.getEventos TO 'usuarioMedio';
 
 
 
