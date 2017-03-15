@@ -88,9 +88,9 @@ public class Proposal_GUI extends javax.swing.JFrame {
 
         jCheckBox8.setText(strings[7]);
 
-        jCheckBox9.setText(strings[8]);
+        jCheckBox9.setText("No hay suficientes");
 
-        jCheckBox10.setText(strings[9]);
+        jCheckBox10.setText("categorias en la BBDD");
 
         jLabel3.setText("Avisame");
 
