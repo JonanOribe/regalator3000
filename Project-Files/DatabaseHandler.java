@@ -14,23 +14,29 @@ import java.sql.Connection;
  */
 public class DatabaseHandler {
 	
+	/*Static names that the default db constructor scripts set up, change if you tool with them*/
+	private static String standardDbName = "regalator";
+	private static String noPrivilegesUser = "usuarioMedio";
+	private static String userPassword = "sinprivilegios1";
+	
 	private Connection actualConnection;
 	private int actualUserID = -1;
 
-	public DatabaseHandler(String nombreBdD, String superUser, String pwd) {
-		setConnection(nombreBdD,superUser,pwd);
+	/*Constructor vacio, a lo mejor cambiar a metodos estaticos cuando tengas la logica del programa principal*/
+	public DatabaseHandler(){ 
 	}
-	
-	public Connection getConnection(){
+
+	//Hay que llamar a abrir una nueva conexion cada vez
+	public Connection openNewConnection(String nombreBdD, String superUser, String pwd){
+		this.actualConnection = connectToDb(standardDbName, noPrivilegesUser,userPassword);
 		return this.actualConnection;
 	}
 	
-	public void setConnection(String nombreBdD, String superUser, String pwd) {
-		this.actualConnection = connectToDb(nombreBdD,superUser,pwd);
-		//if (this.actualConnection == null){
-			//throw new SQLTimeoutException(); //No puede encontrar BdD, buscar otro tipo de excepciones o crear una?
-		//}
+	public Connection openNewConnection(){
+		this.actualConnection = connectToDb(standardDbName,noPrivilegesUser,userPassword);
+		return this.actualConnection;
 	}
+	
 	
 	public int getUserID(){
 		return actualUserID;
@@ -41,7 +47,12 @@ public class DatabaseHandler {
 	}
 	
 	public void closeConnection(){
-		this.actualConnection = null;
+		try{
+			this.actualConnection.close();
+		}
+		catch (Exception e) {
+			System.out.println("Unable to close connection " + e.toString());
+		}
 	}
 
 	/*Crea una conexion a una base de datos, PUEDE DEVOLVER NULL*/

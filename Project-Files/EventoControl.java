@@ -62,11 +62,11 @@ public class EventoControl {
 	/*Añade un evento a la base de datos, necesitas que haya un usuario logeado (autenticado en la base de datos, 
 	 * vamos que la instancia de DatabaseHandler tenga un numero de usuario != -1 habiendo usado UserControl.logInUser)
 	 * Devuelve el eventID del nuevo evento agregado o -1 si no se ha podido agregar*/
-	public static int addEvent(DatabaseHandler dbConnector, EventData evento){
+	public static int addEvent(DatabaseHandler DbConnector, EventData evento){
         try {
-        	int id_usuario = dbConnector.getUserID(); 
+        	int id_usuario = DbConnector.getUserID(); 
         	if(id_usuario == -1) return -1; //No hay usuario logeado
-            Statement stmt = dbConnector.getConnection().createStatement(); //Creo que hay que usar un statement por query y no se reciclan pero no estoy seguro
+            Statement stmt = DbConnector.openNewConnection().createStatement(); //Creo que hay que usar un statement por query y no se reciclan pero no estoy seguro
             String codigoSQL = "INSERT INTO eventos VALUES(null,'"+id_usuario+"','"+evento.fecha+"','"+evento.descripcion+"','"+evento.diasAviso+"',null);";
             stmt.execute(codigoSQL); //podemos reciclar stmts despues de usarlos?  pos se ve k si
             codigoSQL = "SELECT max(id) as id FROM eventos"; //para saber la id del evento agregado, problemas si hay mucha actividad en la BdD????
@@ -89,14 +89,17 @@ public class EventoControl {
 	    	  System.out.println("a" + e.toString());
 	    	  return -1;
 	      }
+		finally{
+			DbConnector.closeConnection();
+		}
 	}
 	
 	/*Elimina un evento de la base de datos, deberia haber un usuario logeado*/
-	public static boolean removeEvent(DatabaseHandler dbConnector, int eventID){
+	public static boolean removeEvent(DatabaseHandler DbConnector, int eventID){
 		try{
-        	int id_usuario = dbConnector.getUserID();
+        	int id_usuario = DbConnector.getUserID();
         	if(id_usuario == -1) return false; //No hay usuario logeado
-			Statement instruccionSQL = dbConnector.getConnection().createStatement();
+			Statement instruccionSQL = DbConnector.openNewConnection().createStatement();
 	        instruccionSQL.execute("DELETE FROM eventos WHERE id_usuario='"+id_usuario+"' AND id='"+eventID+"';"); //en teoria on delete cascade se encarga del resto(comprobar mas casos...)
 	        instruccionSQL.close();
 	        return true;
@@ -105,17 +108,20 @@ public class EventoControl {
 			System.out.println(e.toString());
 			return false;
 		}
+		finally{
+			DbConnector.closeConnection();
+		}
 	}
 	
 	/*Modifica un evento con los nuevos datos contenidos en eventoNuevo, no modifica userID o eventID */
-	public static boolean modifyEvent(DatabaseHandler dbConnector, EventData eventoNuevo) {
+	public static boolean modifyEvent(DatabaseHandler DbConnector, EventData eventoNuevo) {
     	
-		int id_usuario = dbConnector.getUserID(); 
+		int id_usuario = DbConnector.getUserID(); 
     	if (id_usuario == -1) { return false; } //usuario no logeado
     	try{
     		//Me gustaria borrar y crear un nuevo evento pero eventID es auto_increment por lo que no se puede (a lo mejor cambiar?).
     		//Hay que modificar datos de 3 tablas: tabla eventos, tabla eventos_marcas y eventos_categorias
-	    	Statement stmt = dbConnector.getConnection().createStatement();
+	    	Statement stmt = DbConnector.openNewConnection().createStatement();
 	    	String codigoSQL = "UPDATE eventos SET fecha='"+eventoNuevo.fecha+"' , descripcion='"+eventoNuevo.descripcion+"',"
 	    			+ "diasAviso='"+eventoNuevo.diasAviso+"',regaloConcreto='"+eventoNuevo.regaloConcreto+"'  WHERE id='"+eventoNuevo.eventID+"';";
 	    	stmt.execute(codigoSQL);
@@ -134,17 +140,20 @@ public class EventoControl {
 			System.out.println(e.toString());
 			return false;
     	}
+		finally{
+			DbConnector.closeConnection();
+		}
 	}
 	
 	/*Solo usable una vez autenticado, devuelve los datos de TODOS LOS EVENTOS DEL USUARIO logeado con
   el id existente, te devuelve un arraylist de EventData PERO SOLO CON eventoID, fecha y descripcion (aparte del usuarioID)*/
-    public static ArrayList<EventData> getEvents(DatabaseHandler dbConnector) {
+    public static ArrayList<EventData> getEvents(DatabaseHandler DbConnector) {
         try {
-        	int id_usuario = dbConnector.getUserID();
+        	int id_usuario = DbConnector.getUserID();
         	if(id_usuario == -1) return null; //No hay usuario logeado
-            Statement stmt = dbConnector.getConnection().createStatement();
+            Statement stmt = DbConnector.openNewConnection().createStatement();
             //System.out.println("USER ID FOR SELECTION: " + id_usuario); //
-            String codigoSQL = "SELECT eventos.id,fecha,descripcion FROM eventos,usuarios WHERE usuarios.id='"+id_usuario+"' AND usuarios.id=eventos.id_usuario";
+            String codigoSQL = "call getEventos('"+id_usuario+"');";
             ResultSet rs = stmt.executeQuery(codigoSQL);
             ArrayList<EventData> eventos = new ArrayList<EventData>();
             while(rs.next()){
@@ -159,14 +168,17 @@ public class EventoControl {
 	    	  System.out.println("a" + e.toString());
 	    	  return null;
 	      }
+		finally{
+			DbConnector.closeConnection();
+		}
 	}
     
     /*Devuelve TODOS los datos de un evento con EventID concreto del usuario logeado*/
-    public static EventData getEventData(DatabaseHandler dbConnector, int eventID){
+    public static EventData getEventData(DatabaseHandler DbConnector, int eventID){
     	try{
-	    	int id_usuario = dbConnector.getUserID();
+	    	int id_usuario = DbConnector.getUserID();
 	    	if(id_usuario == -1) return null; //No hay usuario logeado
-	        Statement stmt = dbConnector.getConnection().createStatement(); //puedes reciclar statements si no los cierras por lo visto
+	        Statement stmt = DbConnector.openNewConnection().createStatement(); //puedes reciclar statements si no los cierras por lo visto
 	        String codigoSQL = "SELECT fecha,descripcion,diasAviso,regaloConcreto FROM eventos WHERE eventos.id_usuario='"+id_usuario+"' AND eventos.id='"+eventID+"';";
 	        ResultSet rs = stmt.executeQuery(codigoSQL);
 	        EventData evento = new EventData(Integer.toString(id_usuario));
@@ -207,6 +219,9 @@ public class EventoControl {
     		System.out.println("a" + e.toString());
 	    	  return null;
     	}
+		finally{
+			DbConnector.closeConnection();
+		}
     }
     
 	/*Te crea un evento con id 1-2, fecha de hoy, nombre evento test, datos aleatorios en sus marcas/cats elegidas/diasAviso*/
@@ -227,7 +242,7 @@ public class EventoControl {
 
 
 	public static void main(String[] args) {
-		/*DatabaseHandler DbConnector = new DatabaseHandler("regalator","root","Putoroot1");
+		/*DatabaseHandler DbConnector = new DatabaseHandler();
 		EventoControl removeSoon = new EventoControl();
 		String user="Juan",pwd="A2445D"; //CAMBIA EL USER PARA TESTEAR, UN USER QUE EXISTA
 		if(UserControl.logInUser(DbConnector,user, pwd)){

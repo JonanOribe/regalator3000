@@ -12,34 +12,52 @@ import java.sql.Statement;
 public class UserControl {
 
 	/*Inserta un usuario en la base de datos con nombre y password determinado,
-	el id es null ya que será auto_incremented sino habria que buscar max(id)+1*/
-	public static boolean insertUser(DatabaseHandler dbConnector, String name, String pwd){
+	Devuelve su id por si quieres logearlo o ver si se ha insertado en la BBDD1
+	DEVUELVE -1 ERROR, DEVUELVE -2 SI USUARIO EXISTE YA CON ESE NOMBRE*/
+	public static int insertUser(DatabaseHandler DbConnector, String name, String pwd){
+		int newUserID = -1;
 		try{
-			Statement instruccionSQL = dbConnector.getConnection().createStatement();
-	        instruccionSQL.execute("INSERT INTO usuario VALUES(null,'"+name+"','"+pwd+"');");
+			Statement instruccionSQL = DbConnector.openNewConnection().createStatement();
+	        ResultSet rs = instruccionSQL.executeQuery("SELECT addUser('"+name+"','"+pwd+"') as newUserID;");
+	        while(rs.next()) {
+	        	newUserID = rs.getInt("newUserID");
+	        }
 	        instruccionSQL.close();
-	        return true;
+	        
+	        return newUserID;
 		}
 		catch(Exception e){
 			System.out.println(e.toString());
-			return false;
+			return newUserID;
+		}
+		finally{
+			DbConnector.closeConnection();
 		}
 	}
 	
-	/*Logea a un usuario, poniendo en la instancia de la clase DBHandler el valor de su id.*/
-	public static void logInUser(DatabaseHandler DbConnector, String name, String pwd){
+	/*Logea a un usuario, poniendo en la instancia de la clase DBHandler el valor de su id.
+	 * Añadido booleano para saber si se ha podido logear o no, habra que añadir algo para
+	 * diferenciar excepciones de mal user/pwd
+	 * USA UNA FUNCION QUE SE DEBE CREAR PREVIAMENTE EN LA BASE DE DATOS CON EL SCRIPT QUE HAY EN GITHUB*/
+	public static boolean logInUser(DatabaseHandler DbConnector, String name, String pwd){
 		//ResultSet resultadosConsulta = null;
 		try{
-			Statement instruccionSQL = DbConnector.getConnection().createStatement();
-	        ResultSet resultadosConsulta = instruccionSQL.executeQuery("SELECT id FROM usuario WHERE nombre='"+name+"' AND password='"+pwd+"';");
+			Statement instruccionSQL = DbConnector.openNewConnection().createStatement();
+	        ResultSet resultadosConsulta = instruccionSQL.executeQuery("SELECT getuserID('"+name+"','"+pwd+"') as id;");
 	        int resultado = -1;
 	        if(resultadosConsulta.next()){
 	        	resultado = resultadosConsulta.getInt("id");
 	        	DbConnector.setUserID(resultado);
+	        	return true;
 	        }
+	        return false;
 	    }
 		catch(Exception e){
 			System.out.println(e.toString());
+			return false;
+		}
+		finally{
+			DbConnector.closeConnection();
 		}
 	}
 	
@@ -58,10 +76,10 @@ public class UserControl {
 	
 	/*Elimina un usuario SOLO si se conocen su nombre i password,
 	 * LA BASE DE DATOS NO PUEDE ESTAR EN SAFE MODE!(sino añadir LIMIT 1 creo?	 */
-	public static boolean removeUser(DatabaseHandler dbConnector, String name, String pwd){
+	public static boolean removeUser(DatabaseHandler DbConnector, String name, String pwd){
 		try{
-			Statement instruccionSQL = dbConnector.getConnection().createStatement();
-	        instruccionSQL.execute("DELETE FROM usuario WHERE nombre='"+name+"' AND password='"+pwd+"';");
+			Statement instruccionSQL = DbConnector.openNewConnection().createStatement();
+	        instruccionSQL.execute("call removeUser('"+name+"','"+pwd+"');");
 	        instruccionSQL.close();
 	        return true;
 		}
@@ -69,13 +87,18 @@ public class UserControl {
 			System.out.println(e.toString());
 			return false;
 		}
+		finally{
+			DbConnector.closeConnection();
+		}
 	}
 	
 	public static void main(String[] args) {
-		/*DatabaseHandler DbConnector = new DatabaseHandler("regalator","root","PASSWORD DE LA BASE DE DATOS");
-		String user="juan",pwd="lol"; //CAMBIA EL USER PARA TESTEAR, UN USER QUE EXISTA
+		DatabaseHandler DbConnector = new DatabaseHandler();
+		String user="juan",pwd="a2445d"; //CAMBIA EL USER PARA TESTEAR, UN USER QUE EXISTA. NO ES CASE SENSITIVE(CAMBIAR? COMO?)
 		logInUser(DbConnector,user, pwd);
-		System.out.println(DbConnector.getUserID());*/
+		System.out.println(DbConnector.getUserID());
+		System.out.println(insertUser(DbConnector,"lol","test"));
+		System.out.println(removeUser(DbConnector,"lol","test"));
 
 	}
 
