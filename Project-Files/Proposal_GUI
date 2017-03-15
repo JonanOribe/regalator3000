@@ -54,6 +54,12 @@ public class Proposal_GUI extends javax.swing.JFrame {
 
         jLabel2.setText("Descripción:");
 
+        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField2ActionPerformed(evt);
+            }
+        });
+
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
@@ -246,12 +252,30 @@ public class Proposal_GUI extends javax.swing.JFrame {
     }                                                    
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        // Limpia el formulario al pulsar
+        // Limpia el formulario al pulsar.Faltan campos por indicar que limpie; de momento limpia Descripcion y las Checkbox
+        
+        jTextField2.setText("");
+        jCheckBox1.setSelected(false);
+        jCheckBox2.setSelected(false);
+        jCheckBox3.setSelected(false);
+        jCheckBox4.setSelected(false);
+        jCheckBox5.setSelected(false);
+        jCheckBox6.setSelected(false);
+        jCheckBox7.setSelected(false);
+        jCheckBox8.setSelected(false);
+        jCheckBox9.setSelected(false);
+        jCheckBox10.setSelected(false);
+        
+        
     }                                        
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         // Guarda la información del formulario y la envia a la BBDD
     }                                        
+
+    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        // TODO add your handling code here:
+    }                                           
 
     /**
      * @param args the command line arguments
