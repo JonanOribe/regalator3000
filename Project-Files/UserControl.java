@@ -45,12 +45,13 @@ public class UserControl {
 			Statement instruccionSQL = DbConnector.openNewConnection().createStatement();
 	        ResultSet resultadosConsulta = instruccionSQL.executeQuery("SELECT getuserID('"+name+"','"+pwd+"') as id;");
 	        int resultado = -1;
-	        if(resultadosConsulta.next()){
-	        	resultado = resultadosConsulta.getInt("id");
-	        	DbConnector.setUserID(resultado);
-	        	return true;
+	        resultadosConsulta.next();
+	        resultado = resultadosConsulta.getInt("id");
+	        DbConnector.setUserID(resultado);
+	        if(resultado == -1) { //La funcion devolvera un valor siempre, aunque sea -1
+	        	return false;
 	        }
-	        return false;
+	        return true;
 	    }
 		catch(Exception e){
 			System.out.println(e.toString());
@@ -93,12 +94,12 @@ public class UserControl {
 	}
 	
 	public static void main(String[] args) {
-		DatabaseHandler DbConnector = new DatabaseHandler();
+		/*DatabaseHandler DbConnector = new DatabaseHandler();
 		String user="juan",pwd="a2445d"; //CAMBIA EL USER PARA TESTEAR, UN USER QUE EXISTA. NO ES CASE SENSITIVE(CAMBIAR? COMO?)
 		logInUser(DbConnector,user, pwd);
 		System.out.println(DbConnector.getUserID());
 		System.out.println(insertUser(DbConnector,"lol","test"));
-		System.out.println(removeUser(DbConnector,"lol","test"));
+		System.out.println(removeUser(DbConnector,"lol","test"));*/
 
 	}
 

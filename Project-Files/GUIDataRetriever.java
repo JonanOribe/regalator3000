@@ -7,7 +7,9 @@ import java.util.Arrays;
 
 public class GUIDataRetriever {
 	
-	/*Puede devolver null, combinaciones aceptadas -> nombre + marcas/regalos; tipo + categorias*/
+	/*Puede devolver null, combinaciones aceptadas -> nombre + marcas/regalos; tipo + categorias
+	 * Basicamente te hace un SELECT columna FROM tabla; y te guarda todos los elementos que te
+	 * da eso en una arry de Strings*/
 	public static String[] getAllElements(DatabaseHandler DbConnector, String columna, String tabla){
 		 try {
 			 if (columna.equals("nombre")) {	
