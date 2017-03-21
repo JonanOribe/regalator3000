@@ -62,7 +62,7 @@ public class RegalosControl {
 	/*Devuelve una id aleatoria de la lista de regalosID*/
 	public static String eligeRegaloAleatorio(ArrayList<String> regalos){
 		Random randomGen = new Random();
-		if (regalos.size() > 0){
+		if (regalos != null){
 			int seleccion = randomGen.nextInt(regalos.size());
 			return regalos.get(seleccion);
 		}
