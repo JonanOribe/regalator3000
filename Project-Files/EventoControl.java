@@ -38,6 +38,7 @@ public class EventoControl {
 	
 	private Random randomGen = new Random();
 	
+	
 	/*Funcion auxiliar para obtener la query total, 0 es para categorias, 1 es para marcas, 
 	 * devuelve la query para llenar la tabla categorias o marcas con los valores de un evento*/
 	private static String compoundSQLText(int type, String id_evento,int[] valores){
@@ -131,7 +132,7 @@ public class EventoControl {
 	    	stmt.execute(codigoSQL);	
             codigoSQL = compoundSQLText(0,eventoNuevo.eventID,eventoNuevo.marcas);
             stmt.execute(codigoSQL);
-            codigoSQL = compoundSQLText(1,eventoNuevo.eventID,eventoNuevo.categorias);
+            codigoSQL = compoundSQLText(1,eventoNuevo.eventID,eventoNuevo.categorias);	    	
             stmt.execute(codigoSQL);
 	        stmt.close(); 
 	        return true;
@@ -157,7 +158,7 @@ public class EventoControl {
             ResultSet rs = stmt.executeQuery(codigoSQL);
             ArrayList<EventData> eventos = new ArrayList<EventData>();
             while(rs.next()){
-            	eventos.add(new EventData(Integer.toString(id_usuario),rs.getString("id"), rs.getString("fecha"), rs.getString("descripcion")));
+            	eventos.add(new EventData(Integer.toString(id_usuario),rs.getString("id"), rs.getString("fecha"), rs.getString("descripcion"), rs.getInt("diasAviso")));
             }
             //for (int i = 0; i < eventos.size(); i++) {
             	//eventos.get(i).toConsole();
