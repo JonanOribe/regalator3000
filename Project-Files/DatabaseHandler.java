@@ -27,7 +27,7 @@ public class DatabaseHandler {
 			Class.forName("com.mysql.jdbc.Driver");
 		}
 		catch(Exception e){
-			System.out.println("El driver para conectarse con la BBDD no existe,\n debes incluir las dependencias (mysql-connector-java) en tu classpath" + e.toString());
+			System.out.println("El driver para conectarse con la BBDD no existe,\n debes incluir las dependencias (mysql-connector-java) en tu classpath " + e.toString());
 		}
 	}
 
