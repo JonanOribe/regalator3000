@@ -2,8 +2,11 @@ package regalator3000;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Random;
+
+import javax.swing.JOptionPane;
 
 /*Clase con metodos estaticos para gestionar criterios de obtencion de IDs de los regalos basados en los criterios del usuario, de aleatoriedad y de marcas/categorias elegidas
  * 
@@ -29,7 +32,8 @@ public class RegalosControl {
 		ArrayList<String> eventosElegidos = new ArrayList<String>(); //Al final usare ArrayList para tener lista de tamaño dinamico al no poder saber cantidad elementos
 		if(id_usuario == -1) { return new ArrayList<String>(); } //Not a valid user logged in, return empty array
 		if(evento.regaloConcreto != 0) {  //Devolver el regalo concreto elegido si el usuario ha elegido esa opcion
-			eventosElegidos.add(Integer.toString(evento.regaloConcreto)); 
+			String[] nombresRegalos = GUIDataRetriever.getAllElements(DbConnector, "nombre", "regalos",false);
+			eventosElegidos.add(nombresRegalos[evento.regaloConcreto-1]);  //-1 porque la array de seleccion va de 1-maxLength-1 i aqui de 0-maxLenght...
 			return eventosElegidos;
 		}
 		String codigoSQL = getCriteriaSQLCode(evento,false,false);
@@ -38,7 +42,7 @@ public class RegalosControl {
 			Statement stmt = DbConnector.openNewConnection().createStatement(); 
 			ResultSet rs = stmt.executeQuery(codigoSQL);
 			while(rs.next()){
-				eventosElegidos.add(rs.getString("id"));
+				eventosElegidos.add(rs.getString("nombre"));
 			}
 			rs.close();
 			if (eventosElegidos.size() > 0) {
@@ -65,11 +69,47 @@ public class RegalosControl {
 		return "Ninguno"; //Lista vacia
 	}
 	
+	//Mira la lista de eventos del usuario por si hay alguno del que toque avisar hoy, mejorar graficos, opciones, etc.*/
+	public static void checkForPresents(DatabaseHandler DbConnector, ArrayList<EventData> eventos){
+		//Should show a JDialogMessage warning you for every present in your date interval
+		EventData evento;
+		String valoresData = LocalDate.now().toString();
+		String[] valores = valoresData.split("-"); 
+		long tiempoEnHorasHoy = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * 12 * 24) + (Long.parseLong(valores[2]) * 24); //anyos + meses + dias en segundos
+		long tiempoEnHorasEvento = 0;
+		long diasAntesEnHoras = 0;
+		long diferencia = 0;
+		for (int i = 0; i < eventos.size(); i++){
+			evento = eventos.get(i);
+			try {
+				valoresData = evento.fecha;
+				valores = valoresData.split("-"); 
+				tiempoEnHorasEvento = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * 12 * 24) + (Long.parseLong(valores[2]) * 24); 
+				diasAntesEnHoras = evento.diasAviso * 24;
+				diferencia = tiempoEnHorasEvento - tiempoEnHorasHoy;
+				//System.out.println("Horas hoy: " + tiempoEnHorasHoy + " , horas dia regalo: " + tiempoEnHorasEvento + " , dias en horas: " + diasAntesEnHoras + " , diferencia " + diferencia);
+				if (diferencia < 0) {
+					//el dia del evento esta en el pasado ya, borrar o avisar??? Pensar en ello...
+					continue;
+				}
+				if (diferencia <= diasAntesEnHoras){
+					//AVISO AQUI: (CUTRE POR AHORA, hacer un JPanel especial con decoracion y tal para el aviso)
+					evento = EventoControl.getEventData(DbConnector, Integer.parseInt(evento.eventID));
+					String regalo = RegalosControl.eligeRegaloAleatorio(RegalosControl.getRegalosElegidos(DbConnector, evento));
+					JOptionPane.showConfirmDialog (null,evento.fecha + ": " + evento.descripcion + "\nTe recomendamos comprar: " + regalo,"REGALOOOOO",JOptionPane.YES_NO_OPTION);
+				}
+			}
+			catch(Exception e){
+				System.out.println("Datos de evento mal formateados " + e.toString());
+			}
+		}
+	}
+	
 	/*Funcion para retornar el codigo SQL combinado con la seleccion de marcas/categorias incluidas/excluidas
 	 * Los booleanos te dejan hacer inclusion IN(numeros) o exclusion NOT IN(numeros) porque en realidad no se
 	 * si queriamos hacer que eligieran marcas/cats que quieren o que no quieren */
 	private static String getCriteriaSQLCode(EventData evento,boolean exclusionMarcas, boolean exclusionCategorias){
-		String finalString = "SELECT id FROM regalos";
+		String finalString = "SELECT nombre FROM regalos";
 		int i = 0;
 		if(evento.marcas.length > 0 || evento.categorias.length > 0) {
 			finalString+=" WHERE";
