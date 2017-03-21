@@ -62,7 +62,7 @@ DELIMITER $$
 USE `regalator`$$
 CREATE PROCEDURE getEventos (idUser VARCHAR(20))
 BEGIN
-	SELECT eventos.id,fecha,descripcion FROM eventos,usuarios WHERE usuarios.id = idUser AND usuarios.id = eventos.id_usuario;
+	SELECT eventos.id,fecha,descripcion,diasAviso FROM eventos,usuarios WHERE usuarios.id = idUser AND usuarios.id = eventos.id_usuario;
 END$$
 
 DELIMITER ;
