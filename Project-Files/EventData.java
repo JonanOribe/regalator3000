@@ -23,11 +23,12 @@ public class EventData {
 		}
 			
 		//Para hacer un evento con los datos fecha i descripcion usado para saber cual quieres modificar, con el eventID añadido para poder buscarlo facil si se necesita
-		public EventData(String userID, String eventID, String fecha, String descripcion){
+		public EventData(String userID, String eventID, String fecha, String descripcion, int diasAviso){
 			this.userID = userID; 
 			this.eventID = eventID;
 			this.fecha = fecha;
 			this.descripcion = descripcion;
+			this.diasAviso = diasAviso;
 		}
 		
 		public EventData(String userID, String eventID, String fecha, String descripcion, int[] categorias, int[] marcas, int diasAviso, int regaloConcreto ){
