@@ -1,5 +1,13 @@
 package regalator3000;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.JComboBox;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 
 public class Proposal_GUI extends javax.swing.JFrame {
 
@@ -25,28 +33,18 @@ public class Proposal_GUI extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox2 = new javax.swing.JCheckBox();
-        jCheckBox3 = new javax.swing.JCheckBox();
-        jCheckBox4 = new javax.swing.JCheckBox();
-        jCheckBox5 = new javax.swing.JCheckBox();
-        jCheckBox6 = new javax.swing.JCheckBox();
-        jCheckBox7 = new javax.swing.JCheckBox();
-        jCheckBox8 = new javax.swing.JCheckBox();
-        jCheckBox9 = new javax.swing.JCheckBox();
-        jCheckBox10 = new javax.swing.JCheckBox();
+        jList1 = new javax.swing.JList<String>();
+        jComboBoxList = new JComboBox[10];
         jLabel3 = new javax.swing.JLabel();
         jTextField3 = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        jRadioButton1 = new JRadioButton();
+        jRadioButton2 = new JRadioButton();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jFormattedTextField1 = new javax.swing.JFormattedTextField();
+        jFormattedTextField1 = new javax.swing.JFormattedTextField((new SimpleDateFormat("yyyy-MM-dd")));
+        jFormattedTextField1.setText("2017-01-01");
         jSeparator1 = new javax.swing.JSeparator();
-        jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -54,71 +52,71 @@ public class Proposal_GUI extends javax.swing.JFrame {
         jLabel1.setText("Fecha:");
 
         jLabel2.setText("Descripción:");
-
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+        
+        String[] regalos = GUIDataRetriever.getAllElements(DbConnector,"nombre","regalos",true);
+        regalos[0] = "Ninguno";
+        jComboRegalos = new JComboBox(regalos);
+        jComboRegalos.setEnabled(false);
+        String[] marcas = GUIDataRetriever.getAllElements(DbConnector,"nombre","marcas",false);	
+        jList1.setListData(marcas);
+        jList1.setSelectionModel(new DefaultListSelectionModel() {
+            @Override
+            public void setSelectionInterval(int index0, int index1) {
+                if(super.isSelectedIndex(index0)) {
+                    super.removeSelectionInterval(index0, index1);
+                }
+                else {
+                    super.addSelectionInterval(index0, index1);
+                }
             }
         });
-
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = GUIDataRetriever.getAllElements(DbConnector,"nombre","marcas");	
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(jList1);
+        scrollPane = new JScrollPane();
+        scrollPane.setViewportView(jList1);
         
-        String[] strings = GUIDataRetriever.getAllElements(DbConnector,"tipo","categorias");
+        String[] categoriasTotal = GUIDataRetriever.getAllElements(DbConnector,"tipo","categorias",true); 
+        String[] categoriasUsadas = new String[categoriasTotal.length];
+        for(int i = 0; i < categoriasTotal.length; i++){
+        	categoriasUsadas[i] = categoriasTotal[i]; //Copia de categoriasTotal que va reduciendo sus elementos a medida que se eligen
+        }
+        for(int i = 0; i < jComboBoxList.length; i++){
+        	jComboBoxList[i] = new javax.swing.JComboBox<String>(categoriasUsadas);
+        }
       
         //Esto hay que automatizarlo, crear una array de jCheckBoxes? Aparte con el insert normal no hay suficientes elementos en categorias
         //Para llenar 10 posiciones, hay 8 creo. Hay que poner las 2-3 ultimas a mano si no se cambia esto.
-        jCheckBox1.setText(strings[0]);
 
-        jCheckBox2.setText(strings[1]);
-
-        jCheckBox3.setText(strings[2]);
-
-        jCheckBox4.setText(strings[3]);
-
-        jCheckBox5.setText(strings[4]);
-
-        jCheckBox6.setText(strings[5]);
-
-        jCheckBox7.setText(strings[6]);
-
-        jCheckBox8.setText(strings[7]);
-
-        jCheckBox9.setText("No hay suficientes");
-
-        jCheckBox10.setText("Datos en la BBDD");
 
         jLabel3.setText("Avisame");
 
         jLabel4.setText("días antes del evento");
 
         jRadioButton1.setText("Regalo concreto");
+        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+               JRadioButton src = (JRadioButton)evt.getSource();
+               if (src.isSelected()){
+            	   jComboRegalos.setEnabled(true);
+               }
+            }
+        });
+
 
         jRadioButton2.setText("Regalo aleatorio");
+        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+               JRadioButton src = (JRadioButton)evt.getSource();
+               if (src.isSelected()){
+            	   jComboRegalos.setEnabled(false);
+            	   jComboRegalos.setSelectedIndex(0);
+               }
+            }
+        });
 
         jLabel5.setText("Marca:");
 
         jLabel6.setText("Categoría:");
 
-        jFormattedTextField1.setText(" ____ /____ / ____");
-        jFormattedTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jFormattedTextField1ActionPerformed(evt);
-            }
-        });
-
         jSeparator1.setForeground(new java.awt.Color(0, 102, 102));
-
-        jButton1.setText("Guardar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
 
         jButton2.setText("Limpiar");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -139,16 +137,16 @@ public class Proposal_GUI extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jLabel4))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jRadioButton1)
                                     .addComponent(jRadioButton2))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, 35)
+                                .addComponent(jComboRegalos)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(24, 24, 24))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -157,29 +155,29 @@ public class Proposal_GUI extends javax.swing.JFrame {
                             .addComponent(jLabel1))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE,420, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(scrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel6)
                         .addGap(26, 26, 26)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBox1)
-                            .addComponent(jCheckBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jComboBoxList[0])
+                            .addComponent(jComboBoxList[1])
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jCheckBox3)
-                                .addComponent(jCheckBox4, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jCheckBox5, javax.swing.GroupLayout.Alignment.LEADING)))
+                                .addComponent(jComboBoxList[2])
+                                .addComponent(jComboBoxList[3], javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jComboBoxList[4], javax.swing.GroupLayout.Alignment.LEADING)))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBox10)
-                            .addComponent(jCheckBox6)
-                            .addComponent(jCheckBox7)
-                            .addComponent(jCheckBox8)
-                            .addComponent(jCheckBox9)))
+                            .addComponent(jComboBoxList[9])
+                            .addComponent(jComboBoxList[5])
+                            .addComponent(jComboBoxList[6])
+                            .addComponent(jComboBoxList[7])
+                            .addComponent(jComboBoxList[8])))
                     .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 457, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
@@ -195,31 +193,32 @@ public class Proposal_GUI extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
+                
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                	.addComponent(scrollPane)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jCheckBox1)
+                            .addComponent(jComboBoxList[0])
                             .addComponent(jLabel6))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox2)
+                        .addComponent(jComboBoxList[1])
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox3)
+                        .addComponent(jComboBoxList[2])
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox4)
+                        .addComponent(jComboBoxList[3])
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox5))
+                        .addComponent(jComboBoxList[4]))
                     .addComponent(jLabel5)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jCheckBox6)
+                        .addComponent(jComboBoxList[5])
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox7)
+                        .addComponent(jComboBoxList[6])
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox8)
+                        .addComponent(jComboBoxList[7])
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox9)
+                        .addComponent(jComboBoxList[8])
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox10)))
+                        .addComponent(jComboBoxList[9])))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -230,13 +229,16 @@ public class Proposal_GUI extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jRadioButton1)
-                    .addComponent(jButton1))
+                    .addComponent(jComboRegalos))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jRadioButton2)
                     .addComponent(jButton2))
                 .addGap(29, 29, 29))
         );
+		ButtonGroup eleccion = new ButtonGroup();
+		eleccion.add(jRadioButton1); //Para que sean exclusivos el uno con el otro
+		eleccion.add(jRadioButton2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -251,36 +253,92 @@ public class Proposal_GUI extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>                        
-
-    private void jFormattedTextField1ActionPerformed(java.awt.event.ActionEvent evt) {                                                     
-        // TODO add your handling code here:
-    }                                                    
+    
+    /*Llamar para que lea y ponga en pantalla los datos de un evento*/
+    public void displayEventData(EventData evento){
+    	if(evento == null){ return; }
+    	jFormattedTextField1.setText(evento.fecha);
+    	jTextField2.setText(evento.descripcion);
+    	if (evento.marcas != null){
+    		jList1.setSelectedIndices(evento.marcas);
+    	}
+    	if (evento.categorias != null){
+	        for(int i = 0; i < evento.categorias.length; i++){
+	        	jComboBoxList[i].setSelectedIndex(evento.categorias[i]);
+	        }
+    	}
+    	jTextField3.setText(Integer.toString(evento.diasAviso));
+    	if(evento.regaloConcreto == 0) {
+            jRadioButton2.setSelected(true); //regalo aleatorio
+    	}
+    	else {
+    		jRadioButton1.setSelected(true);
+    		jComboRegalos.setSelectedIndex(evento.regaloConcreto);
+    		jComboRegalos.setEnabled(true);
+    	}
+    }
+    
+    /*Devuelve un objeto eventData con los datos escritos por el usuario, NOTESE que eventID i userID se tienen que conocer de antemano
+     * o hacer que como input tenga el evento antiguo con esos datos*/
+    public EventData getNewEventData(){ 
+    	EventData newEvent = new EventData("0"); //user temporal
+    	newEvent.fecha = jFormattedTextField1.getText();
+    	newEvent.descripcion = jTextField2.getText();
+    	int[] marcas = jList1.getSelectedIndices();
+    	for (int i = 0; i < marcas.length; i++){
+    		marcas[i] += 1; //Esto es porque el indice inicial de las marcas es 0 y en la base de datos se corresponden de 1->...
+    	}
+    	newEvent.marcas = marcas;
+    	ArrayList<Integer> categorias = new ArrayList<Integer>();
+    	for (int i = 0; i < jComboBoxList.length; i++) {
+    		if (jComboBoxList[i].getSelectedIndex() != 0 && !categorias.contains(jComboBoxList[i].getSelectedIndex())){
+    			categorias.add(jComboBoxList[i].getSelectedIndex());
+    		}
+    	}
+    	int[] catArray = new int[categorias.size()];
+    	for (int i = 0; i < categorias.size(); i++) {
+    		catArray[i] = categorias.get(i);
+    	}
+    	newEvent.categorias = catArray;
+    	newEvent.diasAviso = Integer.parseInt(jTextField3.getText());
+    	if (jRadioButton2.isSelected() || jComboRegalos.getSelectedIndex() == 0) {
+    		newEvent.regaloConcreto = 0;
+    	}
+    	else {
+    		newEvent.regaloConcreto = jComboRegalos.getSelectedIndex();
+    	}
+    	return newEvent;
+    }
+    
+    /*Funcion para que no se puedan modificar los datos de un evento, solo se pueden mirar*/
+    public void freezeAllInput(){
+        jTextField2.setFocusable(false);
+        jTextField3.setFocusable(false);
+        jFormattedTextField1.setFocusable(false);
+        jList1.setEnabled(false);
+        for(int i = 0; i < jComboBoxList.length; i++) {
+        	jComboBoxList[i].setEnabled(false);
+        }
+        jRadioButton1.setEnabled(false);
+        jRadioButton2.setEnabled(false);
+        jComboRegalos.setEnabled(false);
+        jButton2.setEnabled(false);
+    }                                              
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         // Limpia el formulario al pulsar.Faltan campos por indicar que limpie; de momento limpia Descripcion y las Checkbox
-        
         jTextField2.setText("");
-        jCheckBox1.setSelected(false);
-        jCheckBox2.setSelected(false);
-        jCheckBox3.setSelected(false);
-        jCheckBox4.setSelected(false);
-        jCheckBox5.setSelected(false);
-        jCheckBox6.setSelected(false);
-        jCheckBox7.setSelected(false);
-        jCheckBox8.setSelected(false);
-        jCheckBox9.setSelected(false);
-        jCheckBox10.setSelected(false);
-        
+        jTextField3.setText("");
+        jFormattedTextField1.setText("2017-01-01");
+        jList1.setSelectedIndices(new int[0]);
+        for(int i = 0; i < jComboBoxList.length; i++) {
+        	jComboBoxList[i].setSelectedIndex(0);
+        }
+        jRadioButton1.setSelected(false);
+        jRadioButton2.setSelected(false);
+        jComboRegalos.setSelectedIndex(0);
         
     }                                        
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        // Guarda la información del formulario y la envia a la BBDD
-    }                                        
-
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {                                            
-        // TODO add your handling code here:
-    }                                           
 
     /**
      * @param args the command line arguments
@@ -318,18 +376,9 @@ public class Proposal_GUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify                     
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox10;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JCheckBox jCheckBox3;
-    private javax.swing.JCheckBox jCheckBox4;
-    private javax.swing.JCheckBox jCheckBox5;
-    private javax.swing.JCheckBox jCheckBox6;
-    private javax.swing.JCheckBox jCheckBox7;
-    private javax.swing.JCheckBox jCheckBox8;
-    private javax.swing.JCheckBox jCheckBox9;
+    private JComboBox<String>[] jComboBoxList;
+    private JComboBox<String> jComboRegalos;
     private javax.swing.JFormattedTextField jFormattedTextField1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -339,11 +388,13 @@ public class Proposal_GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JScrollPane jScrollPane1;
+    private JRadioButton jRadioButton1;
+    private JRadioButton jRadioButton2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
+    private JScrollPane scrollPane;
+
     // End of variables declaration                   
 }        
+

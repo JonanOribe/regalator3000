@@ -1,9 +1,8 @@
 package regalator3000;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLTimeoutException;
-
-import java.sql.Connection;
 
 /*Clase que guarda la conexion con la base de datos para que las demas clases puedan acceder a ella,
  * Hay que instanciarla y guarda en actuaUserID el id en la base de datos del usuario logeado para
@@ -24,6 +23,12 @@ public class DatabaseHandler {
 
 	/*Constructor vacio, a lo mejor cambiar a metodos estaticos cuando tengas la logica del programa principal*/
 	public DatabaseHandler(){ 
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+		}
+		catch(Exception e){
+			System.out.println("El driver para conectarse con la BBDD no existe,\n debes incluir las dependencias (mysql-connector-java) en tu classpath " + e.toString());
+		}
 	}
 
 	//Metodo por si has de crear una conexion con parametros diferentes

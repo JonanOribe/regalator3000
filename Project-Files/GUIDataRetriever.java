@@ -3,14 +3,13 @@ package regalator3000;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class GUIDataRetriever {
 	
 	/*Puede devolver null, combinaciones aceptadas -> nombre + marcas/regalos; tipo + categorias
 	 * Basicamente te hace un SELECT columna FROM tabla; y te guarda todos los elementos que te
 	 * da eso en una arry de Strings*/
-	public static String[] getAllElements(DatabaseHandler DbConnector, String columna, String tabla){
+	public static String[] getAllElements(DatabaseHandler DbConnector, String columna, String tabla, boolean ninguno){
 		 try {
 			 if (columna.equals("nombre")) {	
 				 if (!(tabla.equals("regalos") || tabla.equals("marcas"))) {  return null; 	 } //combinacion no permitida
@@ -26,6 +25,9 @@ public class GUIDataRetriever {
 	         String codigoSQL = "SELECT "+columna+" FROM "+tabla+";";
 	         ResultSet rs = stmt.executeQuery(codigoSQL); //podemos reciclar stmts despues de usarlos?  pos se ve k si
 	         ArrayList<String> allValues = new ArrayList<String>();
+	         if(ninguno){
+	        	 allValues.add("Ninguna"); //Para añadir este valor a la lista
+	         }
 	         while(rs.next()){
 	        	 allValues.add(rs.getString(columna));
 	         }
