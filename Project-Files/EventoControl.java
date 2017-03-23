@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
- /*MÃ©todos importantes:
+ /*Métodos importantes:
  *
- *addEvent(DbHandler, eventoData): Te aÃ±ade un evento a la base de datos. Los eventIDs son auto_increment por ahora, pero hay que introducirle todo lo demas, te llena la tabla
+ *addEvent(DbHandler, eventoData): Te añade un evento a la base de datos. Los eventIDs son auto_increment por ahora, pero hay que introducirle todo lo demas, te llena la tabla
  *de marcas y categorias con las id_evento id_marca/cat necesarios
  *
  *removeEvent(DbHandler, eventoID: Te elimina el evento con eventoID de la base de datos, en teoria las tablas eventos_marcas etc tienen puesto lo de on update/delete cascade asi que 
- *se deberian eliminar/updatear solas. Es lo que parece que pasaba pero testear mÃ¡s.
+ *se deberian eliminar/updatear solas. Es lo que parece que pasaba pero testear más.
  *
  *modifyEvent(DbHandler, eventoData): Te cambia los datos de un evento por los del nuevo que introduces (todos menos usuario_id y eventoID que se deberian mantener), tambien updatea las
  *tablas eventos_marcas/cats con las nuevas preferencias introducidas en el nuevo evento, cargandose las antiguas.
@@ -26,7 +26,7 @@ import java.util.Random;
  *
  *getEventData(DbHandler,eventID) : Te devuelve toda la informacion de un evento con eventID concreta como un objeto EventData, este contiene toda la informacion del evento.
  *	
- *El uso teorico de las 3 ultimas es que el usuario pide modificar sus eventos, se le enseÃ±a las fechas y descripciones de sus eventos y que elija el que quiera cambiar,
+ *El uso teorico de las 3 ultimas es que el usuario pide modificar sus eventos, se le enseña las fechas y descripciones de sus eventos y que elija el que quiera cambiar,
  *una vez elegido y con el eventID del evento elegido, se coge la getEventData dek evento, se le pone en pantalla y se le deja cambiar los datos. Se cogen los datos cambiados 
  *y se hace un modifyEvent, poniendo los nuevos datos en el sitio del antiguo evento.
 	*/
@@ -60,7 +60,7 @@ public class EventoControl {
         }
 		return codigoSQL;
 	}
-	/*AÃ±ade un evento a la base de datos, necesitas que haya un usuario logeado (autenticado en la base de datos, 
+	/*Añade un evento a la base de datos, necesitas que haya un usuario logeado (autenticado en la base de datos, 
 	 * vamos que la instancia de DatabaseHandler tenga un numero de usuario != -1 habiendo usado UserControl.logInUser)
 	 * Devuelve el eventID del nuevo evento agregado o -1 si no se ha podido agregar*/
 	public static int addEvent(DatabaseHandler DbConnector, EventData evento){
@@ -77,17 +77,19 @@ public class EventoControl {
             	nuevoEventoID = rs.getString("id");
             }
             rs.close();
-            codigoSQL = compoundSQLText(0,nuevoEventoID,evento.marcas); //0 para marcas
-            //System.out.println("enviando a eventos_marcas: " + codigoSQL);
-        	stmt.execute(codigoSQL);
-            codigoSQL = compoundSQLText(1,nuevoEventoID,evento.categorias);
-            stmt.execute(codigoSQL);
-            //System.out.println("enviando a eventos_categorias: " + codigoSQL);
+            if (evento.marcas.length > 0) {
+	            codigoSQL = compoundSQLText(0,nuevoEventoID,evento.marcas); //0 para marcas
+	        	stmt.execute(codigoSQL);
+            }
+            if (evento.categorias.length > 0) {
+	            codigoSQL = compoundSQLText(1,nuevoEventoID,evento.categorias);
+	            stmt.execute(codigoSQL);
+            }
         	stmt.close();
             return Integer.parseInt(nuevoEventoID);	      
 	      }
 	      catch(Exception e){ //separar entre por duplicate key, por...
-	    	  System.out.println("a" + e.toString());
+	    	  System.out.println("error al agregar el evento, " + e.toString());
 	    	  return -1;
 	      }
 		finally{
@@ -106,7 +108,7 @@ public class EventoControl {
 	        return true;
 		}
 		catch(Exception e){
-			System.out.println(e.toString());
+			System.out.println("error al eliminar el evento, " + e.toString());
 			return false;
 		}
 		finally{
@@ -130,15 +132,19 @@ public class EventoControl {
 	    	stmt.execute(codigoSQL);	
 	    	codigoSQL = "DELETE from eventos_categorias where id_evento='"+eventoNuevo.eventID+"';";
 	    	stmt.execute(codigoSQL);	
-            codigoSQL = compoundSQLText(0,eventoNuevo.eventID,eventoNuevo.marcas);
-            stmt.execute(codigoSQL);
-            codigoSQL = compoundSQLText(1,eventoNuevo.eventID,eventoNuevo.categorias);	    	
-            stmt.execute(codigoSQL);
+	    	if (eventoNuevo.marcas.length > 0) {
+	            codigoSQL = compoundSQLText(0,eventoNuevo.eventID,eventoNuevo.marcas);
+	            stmt.execute(codigoSQL);
+	    	}
+	    	if (eventoNuevo.categorias.length > 0) {
+	            codigoSQL = compoundSQLText(1,eventoNuevo.eventID,eventoNuevo.categorias);	  
+	            stmt.execute(codigoSQL);
+	    	}
 	        stmt.close(); 
 	        return true;
 	   	}
     	catch(Exception e){
-			System.out.println(e.toString());
+			System.out.println("error al modificar el evento, " + e.toString());
 			return false;
     	}
 		finally{
@@ -166,7 +172,7 @@ public class EventoControl {
             return eventos;
         }
 	      catch(Exception e){
-	    	  System.out.println("a" + e.toString());
+	    	  System.out.println("error al obtener los eventos, " + e.toString());
 	    	  return null;
 	      }
 		finally{
@@ -206,7 +212,7 @@ public class EventoControl {
 	        codigoSQL = "SELECT DISTINCT id_categoria FROM eventos_categorias WHERE eventos_categorias.id_evento='"+eventoID+"';"; 
 	        rs = stmt.executeQuery(codigoSQL);
 	        while(rs.next()){
-	        	arrayTemporal.add(rs.getString("id_categoria")); //reusamo
+	        	arrayTemporal.add(rs.getString("id_categoria")); //reusamos
 	        }
 	        arrayTempInt = new int[arrayTemporal.size()];
 	        for(int i = 0; i < arrayTemporal.size(); i++){
@@ -217,7 +223,7 @@ public class EventoControl {
 	        return evento;
     	}
     	catch(Exception e){
-    		System.out.println("a" + e.toString());
+    		System.out.println("Error al obtener los datos del evento, " + e.toString());
 	    	  return null;
     	}
 		finally{
@@ -250,13 +256,13 @@ public class EventoControl {
 			System.out.println("Usuario logeado, bienvenido " + user);
 			//Test adicion:
 			EventData randomEvent = removeSoon.generateRandomEvent(Integer.toString(DbConnector.getUserID()));
-			System.out.println("AÃ±adiendo evento aleatorio,datos: ");
+			System.out.println("Añadiendo evento aleatorio,datos: ");
 			randomEvent.toConsole();
 			int newEventID = addEvent(DbConnector,randomEvent);
 			System.out.println("Comprobando los datos escritos en la base de datos... ");
 			EventData test = getEventData(DbConnector,newEventID);
 			test.toConsole();
-			ArrayList<EventData> testList = getEvents(DbConnector); //recordatorio que getEvents no te enseÃ±a eventos_marcas o eventos_categorias (diseÃ±ado asi)
+			ArrayList<EventData> testList = getEvents(DbConnector); //recordatorio que getEvents no te enseña eventos_marcas o eventos_categorias (diseñado asi)
 			System.out.println("EVENTOS TOTALES DEL USUARIO SIN MARCAS/CATS: " + user);
 			for (int i = 0; i < testList.size(); i++) { 
 				testList.get(i).toConsole();
@@ -274,7 +280,7 @@ public class EventoControl {
 			randomEvent = getEventData(DbConnector,2);
 			randomEvent.toConsole();
 			testList = null;
-			testList = getEvents(DbConnector); //recordatorio que getEvents no te enseÃ±a eventos_marcas o eventos_categorias (diseÃ±ado asi)
+			testList = getEvents(DbConnector); //recordatorio que getEvents no te enseña eventos_marcas o eventos_categorias (diseñado asi)
 			System.out.println("EVENTOS TOTALES DEL USUARIO SIN MARCAS/CATS: " + user);
 			for (int i = 0; i < testList.size(); i++) {
 				testList.get(i).toConsole();
@@ -284,7 +290,7 @@ public class EventoControl {
 			System.out.println("Eliminando evento creado y remirando eventos(modificados) del user:  ");
 			System.out.println(removeEvent(DbConnector,newEventID));
 			testList = null;
-			testList = getEvents(DbConnector); //recordatorio que getEvents no te enseÃ±a eventos_marcas o eventos_categorias (diseÃ±ado asi)
+			testList = getEvents(DbConnector); //recordatorio que getEvents no te enseña eventos_marcas o eventos_categorias (diseñado asi)
 			System.out.println("EVENTOS TOTALES DEL USUARIO SIN MARCAS/CATS: " + user);
 			for (int i = 0; i < testList.size(); i++) {
 				testList.get(i).toConsole();

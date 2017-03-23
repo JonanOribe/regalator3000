@@ -1,5 +1,5 @@
 package regalator3000;
-
+			
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -26,10 +26,11 @@ import javax.swing.UIManager;
 
 /*Clase Principal del programa, llamarla para generar la GUI y comenzar 
  * el proceso de controlar el dia actual y cuando pasa cada dia*/
+@SuppressWarnings("serial")
 public class MainGUI extends JPanel implements ActionListener{
 	
 	private JButton Button1,Button2,Button3; //usarl array de JButtons?
-	private JLabel LabelMes,LabelAnyo,LabelDia,LabelDiaNombre,LabelLogged; //Contiene y enseÃ±a el dia/mes/aÃ±o actual (no usar JLabel, currarse algo del palo dibujar un numero bonito o usar mas de una Label con fonts wapas para k kede bonito
+	private JLabel LabelMes,LabelAnyo,LabelDia,LabelDiaNombre,LabelLogged; //Contiene y enseña el dia/mes/año actual (no usar JLabel, currarse algo del palo dibujar un numero bonito o usar mas de una Label con fonts wapas para k kede bonito
 	private DatabaseHandler DbConnector = new DatabaseHandler(); //instancia de DatabaseHandler que controlara las conexiones con la BBDD
 	
 	//Main constructor(add parameters?)
@@ -104,8 +105,8 @@ public class MainGUI extends JPanel implements ActionListener{
 			
 		JMenuBar Menu = new JMenuBar();
 				
-		//PestaÃ±a opciones 
-		JMenu AboutMenu = new JMenu("Opciones"); //Nombre pestaÃ±a
+		//Pestaña opciones 
+		JMenu AboutMenu = new JMenu("Opciones"); //Nombre pestaña
 		JMenuItem CreditsButton = new JMenuItem("Nuevo usuario"); //Opcion 1, Implementar
 		JMenuItem DeleteUserButton = new JMenuItem("Borrar usuario"); //Opcion 2, Implementar
 		JMenuItem ExitButton2 = new JMenuItem("Exit"); //Para salir
@@ -119,9 +120,9 @@ public class MainGUI extends JPanel implements ActionListener{
 		AboutMenu.addSeparator();
 		AboutMenu.add(ExitButton2);
 		
-                //PestaÃ±a "MÃ¡s"
-		JMenu LoginMenu = new JMenu("MÃ¡s");
-		JMenuItem LogOnButton = new JMenuItem("CrÃ©ditos");
+                //Pestaña "Más"
+		JMenu LoginMenu = new JMenu("Más");
+		JMenuItem LogOnButton = new JMenuItem("Créditos");
 		JMenuItem LogOutButton = new JMenuItem("Logout");
 
 		LogOnButton.addActionListener(listener);			
@@ -137,7 +138,7 @@ public class MainGUI extends JPanel implements ActionListener{
 		return Menu;
 	}
 	
-	/* Detecta los botones que se aprieten, tanto menu de arriba como los demÃ¡s. 
+	/* Detecta los botones que se aprieten, tanto menu de arriba como los demás. 
 	 * Tambien tiene en cuenta cada vez que el timer se activa(si evt == null pero entra en la funcion);*/
 	public void actionPerformed(ActionEvent evt){
 		String command = evt.getActionCommand();
@@ -202,7 +203,7 @@ public class MainGUI extends JPanel implements ActionListener{
             window.setContentPane(things);
             window.setSize(100,200);
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            window.setLocation(0,screenSize.height-window.getHeight()); //hacer un pequeÃ±o ini con posicion inicial predeterminada? (en este caso, abajo a la izq)
+            window.setLocation(0,screenSize.height-window.getHeight()-150); //hacer un pequeño ini con posicion inicial predeterminada? (en este caso, abajo a la izq)
             window.pack();
 		//window.setSize(1100,750);
 		//window.setLocation(100,0);  //Pillarho per resolucio
