@@ -28,6 +28,9 @@ public class DatabaseHandler {
 		}
 		catch(Exception e){
 			System.out.println("El driver para conectarse con la BBDD no existe,\n debes incluir las dependencias (mysql-connector-java) en tu classpath " + e.toString());
+			System.out.println("La pagina de descarga es: https://dev.mysql.com/downloads/connector/j/");
+			System.out.println("Busca mysql-connector-java-*(usado version 5.1.41), descargalo, descomprime y linkea el .jar que hay dentro con el mismo nombre");
+			System.out.println("Si hay más errores con la base de datos comprueba que has usado los tres scripts para generarla, poner datos y poner el usuario");
 		}
 	}
 

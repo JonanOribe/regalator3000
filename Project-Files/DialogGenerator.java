@@ -20,6 +20,7 @@ import javax.swing.UIManager;
 public class DialogGenerator {
 		
 	/*Clase especial de JButtons que contiene informacion extra para cuando son clickados*/
+	@SuppressWarnings("serial")
 	private static class NumberedJButton extends JButton{
 		private int position; //Una variable para cada boton que determina en que posicion de la array de eventos estan (vamos, que a que evento pertenece el boton)
 		private static ArrayList<EventData> eventos = new ArrayList<EventData>(); //static -> una sola variable para todas las instancias de los botones, guarda la lista de eventos del usuario
@@ -113,7 +114,7 @@ public class DialogGenerator {
 		}
 		panel.add(listadoEventos, BorderLayout.CENTER);
 		panel.add(listadoBotones, BorderLayout.EAST);
-		JOptionPane.showOptionDialog(frame, panel,"Eventos actuales", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atr√°s"}, null);
+		JOptionPane.showOptionDialog(frame, panel,"Eventos actuales", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atr·s"}, null);
 		return whatButtonIsPressed(botones); //Retorna cual de los eventos ha elegido (en el array de eventos)
 	}
 	
@@ -123,7 +124,7 @@ public class DialogGenerator {
 	 * en su array y usando EventoControl.getEventData para la resta de datos del evento.
 	 * Entonces le pasa los datos a proposal_GUI y le dice que no deje modificarlos con las dos
 	 * funciones displayEventData(evento) y freezeAllInput().
-	 * Una vez tienes proposal_GUI preparada, crea un JOptionPane que incluira a proposal_GUI y un boton que te permite volver atr√°s	 */
+	 * Una vez tienes proposal_GUI preparada, crea un JOptionPane que incluira a proposal_GUI y un boton que te permite volver atr·s	 */
 	private static void verEvento(java.awt.event.ActionEvent evt){
 		NumberedJButton src = (NumberedJButton)evt.getSource();
 		Proposal_GUI ProposalGUIPanel = new Proposal_GUI();
@@ -135,7 +136,7 @@ public class DialogGenerator {
 		ProposalGUIPanel.displayEventData(eventoElegido);
 		ProposalGUIPanel.freezeAllInput();
 		JPanel contenidos = (JPanel)ProposalGUIPanel.getContentPane();
-        JOptionPane.showOptionDialog(new JFrame("test"), contenidos,"Ver detalles evento", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atr√°s"}, null);
+        JOptionPane.showOptionDialog(new JFrame("test"), contenidos,"Ver detalles evento", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atr·s"}, null);
 	}
 	
 	/*Igual que el boton ver para saber a que evento se refiere, excepto que te abre un dialogo
@@ -181,7 +182,7 @@ public class DialogGenerator {
 			EventoControl.modifyEvent(DbConnector, eventoCambiado);
 					//Modifca evento con los nuevos datos
 		}
-        UIManager.put("OptionPane.yesButtonText", "S√≠");
+        UIManager.put("OptionPane.yesButtonText", "SÌ");
         UIManager.put("OptionPane.noButtonText", "No");
 	}
 	/*Funcion auxiliar para ver que boton es el presionado*/
