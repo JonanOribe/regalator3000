@@ -1,8 +1,9 @@
-package regalator3000;
+package regalator3000.db;
 
-import regalator3000.DatabaseHandler;
 import java.sql.ResultSet;
 import java.sql.Statement;
+
+import regalator3000.db.DatabaseHandler;
 
 /*Clase con metodos estaticos (no hay que crear instancia de clase) para gestionar los usuarios que hay en la base de datos +
  * Work in progress los del fichero en memoria con preferencias.

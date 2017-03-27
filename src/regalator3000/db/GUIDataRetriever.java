@@ -1,4 +1,4 @@
-package regalator3000;
+package regalator3000.db;
 
 import java.sql.ResultSet;
 import java.sql.Statement;

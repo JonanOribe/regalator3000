@@ -1,4 +1,4 @@
-package regalator3000;
+package regalator3000.aux;
 
 import java.util.Arrays;
 

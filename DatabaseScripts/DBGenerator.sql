@@ -92,4 +92,3 @@ CREATE TABLE IF NOT EXISTS `regalator`.`regalos`(
 	)ENGINE = InnoDB;    
 	CREATE INDEX `fk_eventos_marcas_eventos_idx` ON `regalator`.`eventos_categorias` (`id_evento` ASC);
 	CREATE INDEX `fk_eventos_marcas_categorias_idx` ON `regalator`.`eventos_categorias` (`id_categoria` ASC);
-

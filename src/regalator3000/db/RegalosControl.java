@@ -1,4 +1,4 @@
-package regalator3000;
+package regalator3000.db;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JOptionPane;
+
+import regalator3000.aux.EventData;
 
 /*Clase con metodos estaticos para gestionar criterios de obtencion de IDs de los regalos basados en los criterios del usuario, de aleatoriedad y de marcas/categorias elegidas
  * 

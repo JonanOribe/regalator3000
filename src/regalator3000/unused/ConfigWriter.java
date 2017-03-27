@@ -37,12 +37,10 @@ public class ConfigWriter {
 	RandomAccessFile raf;
 	
 	public ConfigWriter(String filename){
-		//System.out.println(System.getProperty("user.dir")); //Da el directorio donde esta leyendo
 		System.out.println("Directorio actual: " + System.getProperty("user.dir")); //Da el directorio donde esta leyendo
 		loadIniFile(filename); //canviar per direccionar a un directori o mantenir al local
 	}
 	
-	/*Separar en load para lectura y escritura*/
 	public boolean loadIniFile(String filename){
 		try{
 			this.raf = new RandomAccessFile(filename,"rw");
@@ -59,11 +57,7 @@ public class ConfigWriter {
 		long oldPosition = goToLineWithTag("user",userID, false); 
 		if (oldPosition == -1) { return false; } //l'usuari no existeix
 		ArrayList<String> restOfDocument = getNextLines(false); //guardem la resta del document cap avall...
-		/*for(int i = 0; i < restOfDocument.size(); i++)  {
-			System.out.println("Resta del document: " + restOfDocument.get(i));
-		}*/
 		raf.seek(oldPosition); //ves a l'antiga posicio abans de la lectura del que l'user té a les lines de sota(els altres events i users)
-		//System.out.println("Estem a posicio: " + oldPosition);
 		writeEventData(eventData,eventData.eventID); //escriu data del nou event
 		fillWithOldData(restOfDocument); //Escriu, sota la nova informacio, la resta del document que hi habia a sota
 		raf.seek(0); //torna el punter a l'inici del document
@@ -106,7 +100,6 @@ public class ConfigWriter {
 			try{
 				for(int i = 0; i < oldLines.size(); i++)  { //Escriu la resta del document antic
 					tmpLine = oldLines.get(i);
-					//System.out.println("Escrivint: " + tmpLine);
 					raf.writeBytes(tmpLine +"\n");	
 				} 	
 			}
@@ -132,11 +125,10 @@ public class ConfigWriter {
 	 * COMPROBAR AMB ConfigWhatever.getEventDataForUser EN LA LOGICA*/
 	public boolean editEvent(String userID, oldEventData newEventData) throws IOException{
 		long position = goToLineWithTag("evento",newEventData.eventID,false);
-		if (position == -1) {return false;} //No existe el evento
-		ArrayList<String> restOfDocument = getNextLines(false); //guardem la resta del document cap avall...
-		//System.out.println("primer element eliminat " + restOfDocument.get(0));
-		restOfDocument.remove(0); 		//Ens carreguem les linees corresponets a lantic event...(les de <cat>..<cat> i <marca>..<marca>), cal usar 0 els dos cops 
-		restOfDocument.remove(0); 		//perque els indexs van cap a leskerra al eliminar un(el que estaba a 1 ara és a 0, 2 -> 1, 3 -> 2, etc i son els dos consecutius del principi
+		if (position == -1) {return false;} 									 //No existe el evento
+		ArrayList<String> restOfDocument = getNextLines(false);					 //guardem la resta del document cap avall...
+		restOfDocument.remove(0); 												//Ens carreguem les linees corresponets a lantic event...(les de <cat>..<cat> i <marca>..<marca>), cal usar 0 els dos cops 
+		restOfDocument.remove(0); 												//perque els indexs van cap a leskerra al eliminar un(el que estaba a 1 ara és a 0, 2 -> 1, 3 -> 2, etc i son els dos consecutius del principi
 		raf.seek(position);			
 		writeEventData(newEventData,"");
 		fillWithOldData(restOfDocument);
@@ -151,15 +143,12 @@ public class ConfigWriter {
 		raf.seek(0);
 		while ((tmpLine = raf.readLine()) != null){
 			lineValues = getLineTypeValue(tmpLine);
-			//System.out.println("Tag: " + lineValues[0] + ", Valor: " + lineValues[1] + ". OLD: "+tagName+" , " +value);
 			if (lineValues[0].equals(tagName) && lineValues[1].equals(value)){
 				//System.out.println("Estem a: " + raf.getFilePointer()); //debug
-				//A PARTIR DE tmpLine.length o size o el k sigui podem trobar algo?
 				if (startPreviousLine) { 
-					raf.seek(raf.getFilePointer() - tmpLine.length()); //Retorna la linea anterior (sense comptar el tamany de \n per aixo........
+					raf.seek(raf.getFilePointer() - tmpLine.length()); 								//Retorna la linea anterior (sense comptar el tamany de \n per aixo........
 				}
-				//System.out.println("found it at position " + raf.getFilePointer());
-				return raf.getFilePointer(); //estem a la linea que buscavem retorna la posiicio per al RAF
+				return raf.getFilePointer(); //estem a la linea que buscavem retorna la posiicio pel RandomAccessFile
 			}
 		}
 		System.out.println("Tag with value not found");
@@ -169,11 +158,9 @@ public class ConfigWriter {
 	/*Et diu quina tag te la linea y el valor de la tag, ej: <evento>15<evento> retorna ["evento","15"]*/
 	public String[] getLineTypeValue(String line) throws IOException{
 		try {
-			//System.out.println("getting line type, the line is: " + line);
 			String[] regexLine = line.split("<|>"); //amb aixo dona empty,user,value,user
 			//String[] test = tmpLine.split("[<|>]\\w*[<|>]"); //amb aixo dona empty,value
 			//String[] test = tmpLine.split("<\\w*>|</\\w*>"); //amb aixo dona empty,value
-			//System.out.println("regex dona: " + Arrays.toString(regexLine));
 			String[] finalString = new String[2];
 			finalString[0] = regexLine[1]; //tagValue
 			finalString[1] = regexLine[2]; //valor de la tag
@@ -192,7 +179,7 @@ public class ConfigWriter {
 		if (oldPosition == -1) { return false; } //no existeix l'event
 		ArrayList<String> restOfDocument = getNextLines(false); //guardem la resta del document cap avall...
 		long oldSize = raf.length();
-		raf.seek(oldPosition-1); //ves a l'antiga posicio(cal restarli el -1 pel \n que ens mengem amb patates sino
+		raf.seek(oldPosition-1); 									//ves a l'antiga posicio(cal restarli el -1 pel \n que ens mengem amb patates sino
 		for(int i = 0; i < 3; i++) {
 			System.out.println("ens carreguem: " + restOfDocument.get(0));
 			restOfDocument.remove(0);
@@ -244,27 +231,23 @@ public class ConfigWriter {
 		configTest.addNewUser("45");
 		configTest.addNewUser("132");
 		configTest.addNewUser("12");
-		configTest.addNewUser(Integer.toString(configTest.randomGen.nextInt(100)));
+		//configTest.addNewUser(Integer.toString(configTest.randomGen.nextInt(100)));
 		//configTest.goToLineWithTag("evento", "4",true);
 		ConfigReader reader = new ConfigReader(filename);
 		String newEventID = Integer.toString(configTest.randomGen.nextInt(100));
-		oldEventData evento = configTest.generateRandomEvent("45",newEventID);  
+		oldEventData evento = configTest.generateRandomEvent("1",newEventID);  
 		System.out.println("Generating new event for user 45 with eventID: " + newEventID);
-		configTest.writeNewEvent("45", evento); //generamos un nuevo evento prueba
+		configTest.writeNewEvent("1", evento); //generamos un nuevo evento prueba
 		System.out.println("Checking generated event data...");
-		reader.getEventDataForUser("45"); //leemos sus datos
-		System.out.println("Modifying event for user 45...");
-		evento = configTest.generateRandomEvent("45",newEventID);  //editamos el evento prueba
+		reader.getEventDataForUser("1"); //leemos sus datos
+		System.out.println("Modifying event for user 1...");
+		evento = configTest.generateRandomEvent("1",newEventID);  //editamos el evento prueba
 		configTest.editEvent(newEventID, evento);
 		System.out.println("New event data...");
-		reader.getEventDataForUser("45"); //leemos sus datos otra vez
+		reader.getEventDataForUser("1"); //leemos sus datos otra vez
 		//configTest.eliminateEvent(newEventID); //Eliminamos el evento prueba
 		//reader.getEventDataForUser("45"); //leemos sus datos otra vez
 
-		/*ArrayList<String> test = configTest.getNextLines(false);
-		for (int i = 0; i < test.size(); i++) {
-			System.out.println("lines read: " + test.get(i));
-		}*/
 		// TODO Auto-generated method stub
 
 	}

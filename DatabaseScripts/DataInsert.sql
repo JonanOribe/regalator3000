@@ -28,6 +28,8 @@ INSERT INTO categorias values(5,"Joyeria");
 INSERT INTO categorias values(6,"Moda");
 INSERT INTO categorias values(7,"Restaurantes");
 INSERT INTO categorias values(8,"Otros");
+INSERT INTO categorias values(9,"Exoticos");
+INSERT INTO categorias values(10,"Acongojantes");
 -- ----------------------------
 
 -- DATOS MARCAS --
@@ -81,3 +83,4 @@ INSERT INTO eventos_categorias values(7,1);
 INSERT INTO eventos_categorias values(8,4);
 INSERT INTO eventos_categorias values(9,5);
 INSERT INTO eventos_categorias values(9,8);
+
