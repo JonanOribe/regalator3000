@@ -1,0 +1,2 @@
+Usa los tres scripts sql para poblar y llenar de datos tu base de datos local antes de ejecutar
+el regalator. Primero el BDGenerator, luego el DataInsert y luego UserAndMethods
