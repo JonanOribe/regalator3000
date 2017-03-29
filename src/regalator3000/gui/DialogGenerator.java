@@ -1,5 +1,6 @@
 package regalator3000.gui;
 
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -40,8 +41,9 @@ public class DialogGenerator {
 	}
 	
 	/*Crea un Dialog para que el usuario introduzca User y Password y te los devuelve como una array
-	  de String de 2 elementos	 */
-	public static String[] createUserPwdDialog(JFrame frame) {
+	  de String de 2 elementos, cogido y modificado de stack overflow	 */
+	public static String[] createUserPwdDialog(JFrame frame, int tipo) {
+		//tipo = 0; login user; tipo = 1; agregar user; tipo = 2 borrar user;
 	    String[] logininformation = new String[2];
 
 	    JPanel panel = new JPanel(new BorderLayout(5, 5));
@@ -56,9 +58,17 @@ public class DialogGenerator {
 	    JPasswordField password = new JPasswordField();
 	    controls.add(password);
 	    panel.add(controls, BorderLayout.CENTER);
+	    String message;
+	    if(tipo == 0){
+	    	message = "Introduce tus datos";
+	    }
+	    else{
+	    	message = "Introduce los datos del usuario a borrar";
+	    }
+        UIManager.put("OptionPane.noButtonText", "Cancelar");
+	    JOptionPane.showConfirmDialog(frame, panel,message,JOptionPane.YES_NO_OPTION);
+        UIManager.put("OptionPane.noButtonText", "No");
 
-	    JOptionPane.showMessageDialog(frame, panel);
-	    
 	    try {
 	    logininformation[0] = username.getText();
 	    logininformation[1] = new String(password.getPassword());
