@@ -1,5 +1,6 @@
 package regalator3000.db;
 
+
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;

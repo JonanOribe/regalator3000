@@ -1,7 +1,8 @@
+package regalator3000.db;
 /*Comentarios: Hay algunas funciones que usan String para unos valores y int para otros que habria que estandarizar, tambien en EventData,
  * Necesita muuucho mas testeo.
  */
-package regalator3000.db;
+
 
 import java.sql.ResultSet;
 import java.sql.Statement;
