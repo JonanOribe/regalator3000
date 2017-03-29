@@ -42,13 +42,19 @@ DELIMITER ;
 -- CREA LA PROCEDURE PARA ELIMINAR UN USUARIO, NOTA: SI QUIERES HAZLA FUNCION PARA QUE --
 -- HAGA SELECT LUEGO Y DEVUELVA UN ENTERO SI SE HA CONSEGUIDO BORRAR ETC --
 USE `regalator`;
-DROP PROCEDURE IF EXISTS `removeUser`;
+DROP FUNCTION IF EXISTS `removeUser`;
 
 DELIMITER $$
 USE `regalator`$$
-CREATE PROCEDURE removeUser (nom VARCHAR(20), pwd VARCHAR(20))
+CREATE FUNCTION removeUser (nom VARCHAR(20), pwd VARCHAR(20))
+RETURNS INTEGER
 BEGIN
+    DECLARE existantID INT;
+    SELECT id INTO existantID FROM usuarios WHERE nom = nombre AND pwd = password; 
     DELETE FROM usuarios WHERE nombre = nom AND pwd = password; 
+    IF existantID IS NOT NULL THEN RETURN 1; -- Si el usuario existia, devuelve 1
+    END IF;
+    RETURN 0; -- Devuelve 0 si el usuario no existia
 END$$
 
 DELIMITER ;
@@ -90,7 +96,7 @@ GRANT INSERT ON regalator.eventos_marcas TO 'usuarioMedio';
 GRANT DELETE ON regalator.eventos_marcas TO 'usuarioMedio';
 GRANT EXECUTE ON FUNCTION regalator.getuserID TO 'usuarioMedio';
 GRANT EXECUTE ON FUNCTION regalator.addUser TO 'usuarioMedio';
-GRANT EXECUTE ON PROCEDURE regalator.removeUser TO 'usuarioMedio';
+GRANT EXECUTE ON FUNCTION regalator.removeUser TO 'usuarioMedio';
 GRANT EXECUTE ON PROCEDURE regalator.getEventos TO 'usuarioMedio';
 
 
