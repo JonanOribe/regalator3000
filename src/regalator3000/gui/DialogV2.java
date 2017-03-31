@@ -171,6 +171,7 @@ public class DialogV2 extends JPanel implements ActionListener{
     public void generateDummyFrame(){
 		JFrame newWindow = new JFrame(". . .");
 		newWindow.setLocation(randomGen.nextInt(400), randomGen.nextInt(400));
+		newWindow.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		JPanel broma = new JPanel();
 		JButton throw2 = new JButton("De acuerdo!");
 		throw2.addActionListener(new java.awt.event.ActionListener() {
