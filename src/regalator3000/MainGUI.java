@@ -32,6 +32,7 @@ import regalator3000.db.EventoControl;
 import regalator3000.db.RegalosControl;
 import regalator3000.db.UserControl;
 import regalator3000.gui.DialogGenerator;
+import regalator3000.gui.DialogV2;
 import regalator3000.gui.Proposal_GUI;
 
 /*Clase Principal del programa, llamarla para generar la GUI y comenzar 
@@ -228,6 +229,18 @@ public class MainGUI extends JPanel implements ActionListener{
 					EventoControl.addEvent(DbConnector, eventoNuevo);
 	            }
 			}
+		}
+		else if (command.equals("Créditos")){
+			JFrame window = new JFrame("Copyright ChichiNabo Productions 2017");
+			DialogV2 panelCreditos = new DialogV2();
+			window.setContentPane(panelCreditos);
+			window.setSize(500,500);
+			window.setLocation(500,500); //Hace falta comprobar tamaño ventana usuario etc (otro dia)
+			window.setResizable(false);
+			window.setVisible(true);
+	        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			window.pack();
+
 		}
 		else if (command.equals("Logout")) {
 			UserControl.logOutUser(DbConnector);
