@@ -1,5 +1,6 @@
 package regalator3000.db;
 
+
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
@@ -77,7 +78,8 @@ public class RegalosControl {
 		EventData evento;
 		String valoresData = LocalDate.now().toString();
 		String[] valores = valoresData.split("-"); 
-		long tiempoEnHorasHoy = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * 12 * 24) + (Long.parseLong(valores[2]) * 24); //anyos + meses + dias en segundos
+		int MonthLengthDays = getMonthLengthDays(Integer.parseInt(valores[1]),Integer.parseInt(valores[0]));
+		long tiempoEnHorasHoy = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * MonthLengthDays * 24) + (Long.parseLong(valores[2]) * 24); //anyos + meses + dias en segundos (puede estar mal, sobretodo meses, buscar una funcion mas completa o hacerla
 		long tiempoEnHorasEvento = 0;
 		long diasAntesEnHoras = 0;
 		long diferencia = 0;
@@ -86,7 +88,7 @@ public class RegalosControl {
 			try {
 				valoresData = evento.fecha;
 				valores = valoresData.split("-"); 
-				tiempoEnHorasEvento = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * 12 * 24) + (Long.parseLong(valores[2]) * 24); 
+				tiempoEnHorasEvento = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * MonthLengthDays * 24) + (Long.parseLong(valores[2]) * 24); 
 				diasAntesEnHoras = evento.diasAviso * 24;
 				diferencia = tiempoEnHorasEvento - tiempoEnHorasHoy;
 				//System.out.println("Horas hoy: " + tiempoEnHorasHoy + " , horas dia regalo: " + tiempoEnHorasEvento + " , dias en horas: " + diasAntesEnHoras + " , diferencia " + diferencia);
@@ -104,6 +106,21 @@ public class RegalosControl {
 			catch(Exception e){
 				System.out.println("Datos de evento mal formateados " + e.toString());
 			}
+		}
+	}
+	
+	private static int getMonthLengthDays(int month, int anyo){
+		switch (month){
+		case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+			return 31;
+		case 2:
+			//Sacado de wikipedia: un año es bisiesto si es divisible entre cuatro y (no es divisible entre 100 ó es divisible entre 400).
+			if (anyo % 4 == 0 && ( !(anyo % 100 == 0) || anyo % 400 == 0) ){
+				return 29;
+			}
+			return 28;
+		default:
+			return 30;
 		}
 	}
 	

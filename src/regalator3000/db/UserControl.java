@@ -1,9 +1,8 @@
 package regalator3000.db;
 
+
 import java.sql.ResultSet;
 import java.sql.Statement;
-
-import regalator3000.db.DatabaseHandler;
 
 /*Clase con metodos estaticos (no hay que crear instancia de clase) para gestionar los usuarios que hay en la base de datos +
  * Work in progress los del fichero en memoria con preferencias.
@@ -28,7 +27,7 @@ public class UserControl {
 	        return newUserID;
 		}
 		catch(Exception e){
-			System.out.println(e.toString());
+			System.out.println("Error al agregar el usuario " + e.toString());
 			return newUserID;
 		}
 		finally{
@@ -55,7 +54,7 @@ public class UserControl {
 	        return true;
 	    }
 		catch(Exception e){
-			System.out.println(e.toString());
+			System.out.println("Error al hacer el login del usuario " + e.toString());
 			return false;
 		}
 		finally{
@@ -78,16 +77,18 @@ public class UserControl {
 	
 	/*Elimina un usuario SOLO si se conocen su nombre i password,
 	 * LA BASE DE DATOS NO PUEDE ESTAR EN SAFE MODE!(sino añadir LIMIT 1 creo?	 */
-	public static boolean removeUser(DatabaseHandler DbConnector, String name, String pwd){
+	public static int removeUser(DatabaseHandler DbConnector, String name, String pwd){
 		try{
 			Statement instruccionSQL = DbConnector.openNewConnection().createStatement();
-	        instruccionSQL.execute("call removeUser('"+name+"','"+pwd+"');");
+	        ResultSet rs = instruccionSQL.executeQuery("select removeUser('"+name+"','"+pwd+"') as borrado;");
+	        rs.next();
+	        int resultado = rs.getInt("borrado");
 	        instruccionSQL.close();
-	        return true;
+	        return resultado;
 		}
 		catch(Exception e){
-			System.out.println(e.toString());
-			return false;
+			System.out.println("Error al borrar el usuario " + e.toString());
+			return -2;
 		}
 		finally{
 			DbConnector.closeConnection();

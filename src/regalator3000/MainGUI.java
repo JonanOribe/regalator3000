@@ -1,4 +1,6 @@
 package regalator3000;
+/*Añadir creditos, Añadir mas datos en la BBDD, añadir extra campos para: imagenes que renderear de los productos, mail de los usuarios, paginas web para los productos que el usuario pueda clickar etc*/
+/*Crear calendario grafico para que el usuario pueda clickar en un dia y que tenga colores diferentes dependiendo de si tiene evento ahi o no, con posibilidad de verlos? (FUTURO)*/
 			
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -10,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
-import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -31,6 +32,7 @@ import regalator3000.db.EventoControl;
 import regalator3000.db.RegalosControl;
 import regalator3000.db.UserControl;
 import regalator3000.gui.DialogGenerator;
+import regalator3000.gui.DialogV2;
 import regalator3000.gui.Proposal_GUI;
 
 /*Clase Principal del programa, llamarla para generar la GUI y comenzar 
@@ -47,6 +49,7 @@ public class MainGUI extends JPanel implements ActionListener{
             setupMainPanel();
 	}
 
+	
 	public void setupMainPanel() { 
 		this.setLayout(new BorderLayout(10,10));		
 		JPanel southPanel = new JPanel();
@@ -67,9 +70,10 @@ public class MainGUI extends JPanel implements ActionListener{
 		southPanel2.add(southPanel);
         southPanel2.add(LabelLogged);
 		String[] todayValues = LocalDate.now().toString().split("-");
+		String dayOfWeek = LocalDate.now().getDayOfWeek().toString().toLowerCase();
+        dayOfWeek = capitalizeFirst(dayOfWeek);
 		DateFormatSymbols dfs = new DateFormatSymbols();
 		String[] monthNames = dfs.getMonths();
-                String[] dayNames = dfs.getWeekdays();
 		LabelMes = new JLabel(monthNames[Integer.parseInt(todayValues[1])]);
 		LabelMes.setFont(new Font("TimesRoman",Font.BOLD,24));
                 LabelMes.setHorizontalAlignment(SwingConstants.CENTER);
@@ -81,8 +85,7 @@ public class MainGUI extends JPanel implements ActionListener{
 		LabelAnyo = new JLabel(todayValues[0]);
 		LabelAnyo.setFont(new Font("TimesRoman",Font.BOLD,28));
                 LabelAnyo.setHorizontalAlignment(SwingConstants.CENTER);
-                dayNames = Arrays.copyOfRange(dayNames, 1, (dayNames.length-1));
-                LabelDiaNombre = new JLabel("(" + dayNames[Integer.parseInt(todayValues[2])%9] + ")"); //Este calculo esta mal, cambiar
+                LabelDiaNombre = new JLabel("(" + dayOfWeek + ")"); //Este calculo esta mal, cambiar
 		LabelDiaNombre.setFont(new Font("TimesRoman",Font.PLAIN,24));
                 LabelDiaNombre.setHorizontalAlignment(SwingConstants.CENTER);
                 JPanel centralPanel = new JPanel();
@@ -160,7 +163,7 @@ public class MainGUI extends JPanel implements ActionListener{
 			System.exit(0);
 		}
 		else if (command.equals("Login")) {
-			String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame()); //Abre el dialogo que pide User y pwd y obtiene el resultado
+			String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),0); //Abre el dialogo que pide User y pwd y obtiene el resultado
 			boolean loginConseguido = UserControl.logInUser(DbConnector, userYPwd[0], userYPwd[1]);
 			if (loginConseguido){
 				LabelLogged.setText("Conectado como: " + userYPwd[0]);
@@ -170,6 +173,40 @@ public class MainGUI extends JPanel implements ActionListener{
 			else {
 				LabelLogged.setText("Usuario/Pwd desconocido");
 			}	
+		}
+		else if (command.equals("Nuevo usuario")){
+			if (UserControl.isUserLogged(DbConnector) == false){
+				String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),0);
+				int agregado = UserControl.insertUser(DbConnector, userYPwd[0], userYPwd[1]);
+				switch (agregado){
+				case -1:
+					LabelLogged.setText("Error en la base de datos");
+					break;
+				case -2:
+					LabelLogged.setText("El usuario ya existe!");
+					break;
+				default:
+					LabelLogged.setText("Usuario agregado, bienvenido: " + userYPwd[0]);
+					UserControl.logInUser(DbConnector, userYPwd[0], userYPwd[1]);
+					Button3.setText("Logout");
+					//No comprovamos eventos porque sera nuevo user
+				}
+			}
+			else{
+				LabelLogged.setText("No puedes agregar usuario si estas conectado!");
+			}
+		}
+		else if (command.equals("Borrar usuario")){
+			String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),1);
+			int borrado = UserControl.removeUser(DbConnector, userYPwd[0], userYPwd[1]); //La funcion retorna siempre true a menos que haya error, cambiarla
+			if(borrado == 1){
+				LabelLogged.setText("Usuario borrado, desconectando...");
+				UserControl.logOutUser(DbConnector); //Desconecta a quien esté conectado...
+				Button3.setText("Login");
+			}
+			else {
+				LabelLogged.setText("Usuario/Pwd equivocado");
+			}
 		}
 		else if (command.equals("Tus eventos")){
 			if(UserControl.isUserLogged(DbConnector)) {
@@ -193,6 +230,18 @@ public class MainGUI extends JPanel implements ActionListener{
 	            }
 			}
 		}
+		else if (command.equals("Créditos")){
+			JFrame window = new JFrame("Copyright ChichiNabo Productions 2017");
+			DialogV2 panelCreditos = new DialogV2();
+			window.setContentPane(panelCreditos);
+			window.setSize(500,500);
+			window.setLocation(500,500); //Hace falta comprobar tamaño ventana usuario etc (otro dia)
+			window.setResizable(false);
+			window.setVisible(true);
+	        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			window.pack();
+
+		}
 		else if (command.equals("Logout")) {
 			UserControl.logOutUser(DbConnector);
 			LabelLogged.setText("Usuario no conectado");
@@ -201,7 +250,12 @@ public class MainGUI extends JPanel implements ActionListener{
 		//etc para la resta de botones, hacer que llamen a la resta de clases para interacciones
 	}
 	
-
+	/*Funcion auxiliar para capitalizar la primera letra de una string en lowercase*/
+	private static String capitalizeFirst(String word){
+		char[] letters = word.toCharArray();
+		letters[0] -= 32;
+		return String.copyValueOf(letters);
+	}
 
 	public static void main(String[] args) {
             JFrame window = new JFrame("Regalator 3000");
@@ -224,9 +278,6 @@ public class MainGUI extends JPanel implements ActionListener{
             UIManager.put("OptionPane.yesButtonText", "Aceptar");
             UIManager.put("OptionPane.okButtonText", "Introducir");
 			//TESTING, no tengo ganas de reintroducir usuario cada vez...
-            things.LabelLogged.setText("Conectado como: Felipe");
-			things.DbConnector.setUserID(2);
-			things.Button3.setText("Logout");
 	}
 
 }
