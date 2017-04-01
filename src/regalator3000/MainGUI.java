@@ -164,6 +164,7 @@ public class MainGUI extends JPanel implements ActionListener{
 		}
 		else if (command.equals("Login")) {
 			String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),0); //Abre el dialogo que pide User y pwd y obtiene el resultado
+			if (userYPwd[0] == null || userYPwd[0].equals("") || userYPwd[1].equals("")){ return;} //User pressed cancel or introduced a non valid username/pwd (add more checks to validate input in the future)
 			boolean loginConseguido = UserControl.logInUser(DbConnector, userYPwd[0], userYPwd[1]);
 			if (loginConseguido){
 				LabelLogged.setText("Conectado como: " + userYPwd[0]);
@@ -177,6 +178,7 @@ public class MainGUI extends JPanel implements ActionListener{
 		else if (command.equals("Nuevo usuario")){
 			if (UserControl.isUserLogged(DbConnector) == false){
 				String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),0);
+				if (userYPwd[0] == null || userYPwd[0].equals("") || userYPwd[1].equals("")){ return;} 
 				int agregado = UserControl.insertUser(DbConnector, userYPwd[0], userYPwd[1]);
 				switch (agregado){
 				case -1:
@@ -196,9 +198,10 @@ public class MainGUI extends JPanel implements ActionListener{
 				LabelLogged.setText("No puedes agregar usuario si estas conectado!");
 			}
 		}
-		else if (command.equals("Borrar usuario")){
+		else if (command.equals("Borrar usuario")){ //01/04/17: Arreglar aqui i en agregar user i en login al apretar cancelar en el dialogo
 			String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),1);
-			int borrado = UserControl.removeUser(DbConnector, userYPwd[0], userYPwd[1]); //La funcion retorna siempre true a menos que haya error, cambiarla
+			if (userYPwd[0] == null || userYPwd[0].equals("") || userYPwd[1].equals("")){ return;} 
+			int borrado = UserControl.removeUser(DbConnector, userYPwd[0], userYPwd[1]); 
 			if(borrado == 1){
 				LabelLogged.setText("Usuario borrado, desconectando...");
 				UserControl.logOutUser(DbConnector); //Desconecta a quien esté conectado...
