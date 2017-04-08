@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -24,6 +25,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 
 import regalator3000.aux.EventData;
@@ -35,6 +37,8 @@ import regalator3000.gui.DialogGenerator;
 import regalator3000.gui.DialogV2;
 import regalator3000.gui.Proposal_GUI;
 
+
+
 /*Clase Principal del programa, llamarla para generar la GUI y comenzar 
  * el proceso de controlar el dia actual y cuando pasa cada dia*/
 @SuppressWarnings("serial")
@@ -43,7 +47,7 @@ public class MainGUI extends JPanel implements ActionListener{
 	private JButton Button1,Button2,Button3; //usarl array de JButtons?
 	private JLabel LabelMes,LabelAnyo,LabelDia,LabelDiaNombre,LabelLogged; //Contiene y enseña el dia/mes/año actual (no usar JLabel, currarse algo del palo dibujar un numero bonito o usar mas de una Label con fonts wapas para k kede bonito
 	private DatabaseHandler DbConnector = new DatabaseHandler(); //instancia de DatabaseHandler que controlara las conexiones con la BBDD
-	
+	private Timer dayTimer;
 	//Main constructor(add parameters?)
 	public MainGUI(){
             setupMainPanel();
@@ -157,15 +161,26 @@ public class MainGUI extends JPanel implements ActionListener{
 		String command = evt.getActionCommand();
 		//Object src = evt.getSource();
 		if (command == null) { //El timer se ha activado (despues del intervalo)(aun no implementado(cambiar))
-			return; //Por ahora sal ya que dara error de isnull sino, cambiar al poner timer
+			RegalosControl.checkForPresents(DbConnector, EventoControl.getEvents(DbConnector)); //Comprueba si toca avisar de algun evento para regalar cuando es medianoche
+			dayTimer = null;
+			dayTimer = new Timer(24*60*60*1000,this); //Un poco cutre no? nose...
+			dayTimer.start();
 		}
 		if (command.equals("Exit")) {
 			System.exit(0);
 		}
 		else if (command.equals("Login")) {
 			String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),0); //Abre el dialogo que pide User y pwd y obtiene el resultado
+			if (userYPwd[0] == null || userYPwd[0].equals("") || userYPwd[1].equals("")){ return;} //User pressed cancel or introduced a non valid username/pwd (add more checks to validate input in the future)
 			boolean loginConseguido = UserControl.logInUser(DbConnector, userYPwd[0], userYPwd[1]);
 			if (loginConseguido){
+				if (dayTimer != null){
+					dayTimer = null;
+				}
+				String[] nowValues = LocalTime.now().toString().split(":");
+				int totalMilliSecs = ( ((24 - Integer.parseInt(nowValues[0])) * 60 * 60) - (Integer.parseInt(nowValues[1]) * 60) ) * 1000;
+				dayTimer = new Timer(totalMilliSecs,this);
+				dayTimer.start();
 				LabelLogged.setText("Conectado como: " + userYPwd[0]);
 				Button3.setText("Logout");
 				RegalosControl.checkForPresents(DbConnector, EventoControl.getEvents(DbConnector)); //Comprueba si toca avisar de algun evento para regalar cuando el usuario se loguea
@@ -177,6 +192,7 @@ public class MainGUI extends JPanel implements ActionListener{
 		else if (command.equals("Nuevo usuario")){
 			if (UserControl.isUserLogged(DbConnector) == false){
 				String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),0);
+				if (userYPwd[0] == null || userYPwd[0].equals("") || userYPwd[1].equals("")){ return;} 
 				int agregado = UserControl.insertUser(DbConnector, userYPwd[0], userYPwd[1]);
 				switch (agregado){
 				case -1:
@@ -196,9 +212,10 @@ public class MainGUI extends JPanel implements ActionListener{
 				LabelLogged.setText("No puedes agregar usuario si estas conectado!");
 			}
 		}
-		else if (command.equals("Borrar usuario")){
+		else if (command.equals("Borrar usuario")){ //01/04/17: Arreglar aqui i en agregar user i en login al apretar cancelar en el dialogo
 			String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),1);
-			int borrado = UserControl.removeUser(DbConnector, userYPwd[0], userYPwd[1]); //La funcion retorna siempre true a menos que haya error, cambiarla
+			if (userYPwd[0] == null || userYPwd[0].equals("") || userYPwd[1].equals("")){ return;} 
+			int borrado = UserControl.removeUser(DbConnector, userYPwd[0], userYPwd[1]); 
 			if(borrado == 1){
 				LabelLogged.setText("Usuario borrado, desconectando...");
 				UserControl.logOutUser(DbConnector); //Desconecta a quien esté conectado...
@@ -227,6 +244,7 @@ public class MainGUI extends JPanel implements ActionListener{
 					EventData eventoNuevo = ventana.getNewEventData(); //leo los datos introducidos en la ventana de proposal_gui...
 					eventoNuevo.userID = Integer.toString(DbConnector.getUserID()); //Cutre pero necesario
 					EventoControl.addEvent(DbConnector, eventoNuevo);
+					RegalosControl.checkForPresents(DbConnector, EventoControl.getEvents(DbConnector)); //Comprueba si toca avisar de algun evento por si el que ha agregado toca...
 	            }
 			}
 		}
@@ -238,9 +256,8 @@ public class MainGUI extends JPanel implements ActionListener{
 			window.setLocation(500,500); //Hace falta comprobar tamaño ventana usuario etc (otro dia)
 			window.setResizable(false);
 			window.setVisible(true);
-	        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	        window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			window.pack();
-
 		}
 		else if (command.equals("Logout")) {
 			UserControl.logOutUser(DbConnector);
