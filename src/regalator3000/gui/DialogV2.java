@@ -3,6 +3,7 @@
 package regalator3000.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.MouseInfo;
 import java.awt.Point;
@@ -22,11 +23,10 @@ import javax.swing.Timer;
 public class DialogV2 extends JPanel implements ActionListener{
 	
 	private static int estado; //En que estado de la "broma" estamos
-	private JButton primerClick,secondClick,thirdClick;
-	private JPanel southPanel;
 	private JFrame broma2Frame;
 	private Timer broma2;
 	private static Random randomGen = new Random();
+	private JFrame dummyFrame1,dummyFrame2;
 	
 	/*Constructor*/
 	public DialogV2(){
@@ -40,39 +40,42 @@ public class DialogV2 extends JPanel implements ActionListener{
 	public void initcomponents(){
 		this.setLayout(new BorderLayout(5,5));
 		JPanel centerPanel = new JPanel();
-		southPanel = new JPanel();
+		JPanel southPanel = new JPanel();
 		southPanel.setLayout(new GridLayout(3,1,5,5));
-		centerPanel.add(new JLabel("Made by stupid, with stupid, for stupid"));
+		JLabel creditsText1 = new JLabel("Hecho con mucho cariño y respeto");
+		JLabel creditsText2 = new JLabel("en 2017");
+		creditsText1.setFont(new Font("Calibri",Font.BOLD,22));
+		creditsText2.setFont(new Font("Calibri",Font.BOLD,22));
+		centerPanel.add(creditsText1);
+		centerPanel.add(creditsText2);
 		if (estado == 0){
-			primerClick = new JButton("De acuerdo!");
+			JButton primerClick = new JButton("De acuerdo!");
 			primerClick.addActionListener(this);
 			southPanel.add(primerClick);
 		}
 		else { southPanel.add(new JLabel(""));}
 		if (estado == 1) {
-			secondClick = new JButton("Dejadme salir cabrones!");
+			JButton secondClick = new JButton("Dejadme salir aaah!");
 			secondClick.addActionListener(this);
 			southPanel.add(secondClick);
 		}
 		if (estado == 2){
 			JLabel DummyLabel1 = new JLabel(" ");
-			thirdClick = new JButton("Ahora de verdad, salimos");
+			JButton thirdClick = new JButton("Ahora de verdad, salimos");
 			thirdClick.addActionListener(this);
 			southPanel.add(DummyLabel1);
 			southPanel.add(thirdClick);
 		}
 		if (estado == 3){
 			JLabel DummyLabel1 = new JLabel(" ");
-			thirdClick = new JButton("Seguro?");
+			JButton thirdClick = new JButton("Seguro que quieres salir?");
 			thirdClick.addActionListener(this);
 			southPanel.add(DummyLabel1);
 			southPanel.add(thirdClick);
 		}
 		if (estado >= 4){
-			JLabel DummyLabel1 = new JLabel(" ");
-			thirdClick = new JButton("Vaaaale");
+			JButton thirdClick = new JButton("Vaaaale");
 			thirdClick.addActionListener(this);
-			southPanel.add(DummyLabel1);
 			southPanel.add(thirdClick);
 		}
 			this.add(centerPanel, BorderLayout.CENTER);
@@ -92,6 +95,8 @@ public class DialogV2 extends JPanel implements ActionListener{
 			broma2Frame.dispose();
 			broma2.stop();
 			estado = 0;
+			dummyFrame1.dispose();
+			dummyFrame2.dispose();
 		}
 		String command = evt.getActionCommand();
 		if (command == null){ //timer
@@ -122,12 +127,13 @@ public class DialogV2 extends JPanel implements ActionListener{
 		else{
 	    	if (command.equals("De acuerdo!") && estado == 0){
 	    		estado=1;
-	    		generateDummyFrame(); 	//the dummy frame can generate others
+	    		this.getTopLevelAncestor().setLocation(randomGen.nextInt(600)+150, randomGen.nextInt(450));
+	    		generateDummyFrame(0); 	//the dummy frame can generate others
 	    		this.removeAll(); 		//Reinitialize the main panel's components
 	    		this.initcomponents();
 	    		this.revalidate();
 	    	}
-	    	else if (command.equals("Dejadme salir cabrones!")){
+	    	else if (command.equals("Dejadme salir aaah!")){
 	    		estado=2;
 	    		broma2Frame = new JFrame("No puedes salir...");
 	    		JPanel content = new JPanel();
@@ -152,8 +158,9 @@ public class DialogV2 extends JPanel implements ActionListener{
 	    		this.removeAll();
 	    		this.initcomponents();
 	    		this.revalidate();
+	    		this.getTopLevelAncestor().setLocation(randomGen.nextInt(400)+200, randomGen.nextInt(450));
 	    	}
-	    	else if (command.equals("Seguro?")){
+	    	else if (command.equals("Seguro que quieres salir?")){
 	    		estado = 4;
 	    		this.removeAll();
 	    		this.initcomponents();
@@ -162,41 +169,66 @@ public class DialogV2 extends JPanel implements ActionListener{
 	    	else if (command.equals("Vaaaale")){
 	    		estado = 5;
 	    		JFrame myWindow = (JFrame)getTopLevelAncestor();
+	    		dummyFrame1.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	    		dummyFrame1.dispatchEvent((new WindowEvent(myWindow, WindowEvent.WINDOW_CLOSING)));
+	    		dummyFrame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	    		dummyFrame2.dispatchEvent((new WindowEvent(myWindow, WindowEvent.WINDOW_CLOSING)));
 	    		myWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    		myWindow.dispatchEvent((new WindowEvent(myWindow, WindowEvent.WINDOW_CLOSING)));
 	    	}
 		}
 	}
     
-    public void generateDummyFrame(){
-		JFrame newWindow = new JFrame(". . .");
-		newWindow.setLocation(randomGen.nextInt(400), randomGen.nextInt(400));
-		newWindow.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		JPanel broma = new JPanel();
-		JButton throw2 = new JButton("De acuerdo!");
-		throw2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-               if (estado != 0 && estado < 5){ 
-               generateDummyFrame();
-               }
-               newWindow.dispose();
+    public void generateDummyFrame(int window){
+    	if (window == 0 || window == 1){
+    	dummyFrame1 = new JFrame("Aqui estoy!");
+    	dummyFrame1.setLocation(randomGen.nextInt(800), randomGen.nextInt(400));
+		dummyFrame1.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		JPanel broma1 = new JPanel();
+		JButton throw1 = new JButton("De acuerdo!");
+		throw1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) { 
+               dummyFrame1.dispose();
+               generateDummyFrame(1);
                }
 		});
-		broma.add(throw2);
-		newWindow.setContentPane(broma);
-		newWindow.setVisible(true);
-		newWindow.pack();
+		broma1.add(throw1);
+		dummyFrame1.setContentPane(broma1);
+		dummyFrame1.setVisible(true);
+		dummyFrame1.pack();
+		dummyFrame1.setSize(300,80);
+    	}
+    	if (window == 0 || window == 2){
+    	dummyFrame2 = new JFrame("Estoy aqui!");
+    	dummyFrame2.setLocation(randomGen.nextInt(800), randomGen.nextInt(400));
+		dummyFrame2.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+		JPanel broma2 = new JPanel();
+		JButton throw2 = new JButton("De acuerdo!");
+
+		throw2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) { 
+               dummyFrame2.dispose();
+               generateDummyFrame(2);
+               }
+		});
+		broma2.add(throw2);
+		dummyFrame2.setContentPane(broma2);
+		dummyFrame2.setVisible(true);
+		dummyFrame2.pack();
+		dummyFrame2.setSize(300,80);
+    	}
     }
     	
 	public static void main(String[] args){
 		JFrame window = new JFrame("testing");
 		DialogV2 panelCreditos = new DialogV2();
 		window.setContentPane(panelCreditos);
-		window.setSize(500,500);
 		window.setResizable(false);
 		window.setVisible(true);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.pack();
+		window.setSize(400,200);
 	}
 
 	/*Fer tambe calendari grafic aki*/

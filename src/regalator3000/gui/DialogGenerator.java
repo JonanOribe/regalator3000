@@ -18,7 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
-import regalator3000.aux.EventData;
+import regalator3000.misc.EventData;
 import regalator3000.db.DatabaseHandler;
 import regalator3000.db.EventoControl;
 
