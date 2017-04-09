@@ -9,7 +9,7 @@ import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 
-import regalator3000.aux.EventData;
+import regalator3000.misc.EventData;
 import regalator3000.db.DatabaseHandler;
 import regalator3000.db.GUIDataRetriever;
 
