@@ -28,7 +28,7 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 
-import regalator3000.aux.EventData;
+import regalator3000.misc.EventData;
 import regalator3000.db.DatabaseHandler;
 import regalator3000.db.EventoControl;
 import regalator3000.db.RegalosControl;
