@@ -9,7 +9,7 @@ import java.util.Random;
 
 import javax.swing.JOptionPane;
 
-import regalator3000.aux.EventData;
+import regalator3000.misc.EventData;
 
 /*Clase con metodos estaticos para gestionar criterios de obtencion de IDs de los regalos basados en los criterios del usuario, de aleatoriedad y de marcas/categorias elegidas
  * 
