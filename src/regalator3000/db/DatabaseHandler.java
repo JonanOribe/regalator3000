@@ -21,6 +21,7 @@ public class DatabaseHandler {
 	
 	private Connection actualConnection;
 	private int actualUserID = -1;
+	private String actualUserName = "";
 
 	/*Constructor vacio, a lo mejor cambiar a metodos estaticos cuando tengas la logica del programa principal*/
 	public DatabaseHandler(){ 
@@ -54,6 +55,14 @@ public class DatabaseHandler {
 	
 	public void setUserID(int newID){
 		this.actualUserID = newID;
+	}
+	
+	public String getUserName(){
+		return actualUserName;
+	}
+	
+	public void setUserName(String newID){
+		this.actualUserName = newID;
 	}
 	
 	public void closeConnection(){
