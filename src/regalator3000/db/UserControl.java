@@ -51,6 +51,7 @@ public class UserControl {
 	        if(resultado == -1) { //La funcion devolvera un valor siempre, aunque sea -1
 	        	return false;
 	        }
+	        DbConnector.setUserName(name);
 	        return true;
 	    }
 		catch(Exception e){
@@ -65,6 +66,7 @@ public class UserControl {
 	/*Deslogea a un usuario*/
 	public static void logOutUser(DatabaseHandler DbConnector){
 		DbConnector.setUserID(-1);
+        DbConnector.setUserName("");
 	}
 	
 	/*Comprueba si hay algun user logeado*/

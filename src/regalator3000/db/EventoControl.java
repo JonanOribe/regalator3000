@@ -71,7 +71,7 @@ public class EventoControl {
         	int id_usuario = DbConnector.getUserID(); 
         	if(id_usuario == -1) return -1; //No hay usuario logeado
             Statement stmt = DbConnector.openNewConnection().createStatement(); //Creo que hay que usar un statement por query y no se reciclan pero no estoy seguro
-            String codigoSQL = "INSERT INTO eventos VALUES(null,'"+id_usuario+"','"+evento.fecha+"','"+evento.descripcion+"','"+evento.diasAviso+"',null);";
+            String codigoSQL = "INSERT INTO eventos VALUES(null,'"+id_usuario+"','"+evento.fecha+"','"+evento.descripcion+"','"+evento.diasAviso+"','"+evento.regaloConcreto+"');";
             stmt.execute(codigoSQL); //podemos reciclar stmts despues de usarlos?  pos se ve k si
             codigoSQL = "SELECT max(id) as id FROM eventos"; //para saber la id del evento agregado, problemas si hay mucha actividad en la BdD????
             ResultSet rs = stmt.executeQuery(codigoSQL);

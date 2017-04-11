@@ -42,10 +42,10 @@ public class DialogV2 extends JPanel implements ActionListener{
 		JPanel centerPanel = new JPanel();
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(new GridLayout(3,1,5,5));
-		JLabel creditsText1 = new JLabel("Hecho con mucho cariño y respeto");
+		JLabel creditsText1 = new JLabel("Hecho con mucho carinyo y respeto");
 		JLabel creditsText2 = new JLabel("en 2017");
-		creditsText1.setFont(new Font("Calibri",Font.BOLD,22));
-		creditsText2.setFont(new Font("Calibri",Font.BOLD,22));
+		creditsText1.setFont(new Font("Calibri",Font.BOLD,18));
+		creditsText2.setFont(new Font("Calibri",Font.BOLD,18));
 		centerPanel.add(creditsText1);
 		centerPanel.add(creditsText2);
 		if (estado == 0){

@@ -1,3 +1,4 @@
+/*FUTURO: enganchar calendarPanel aqui, cambiar todo de sitio*/
 package regalator3000.gui;
 
 import java.text.SimpleDateFormat;

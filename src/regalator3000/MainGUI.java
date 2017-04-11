@@ -1,6 +1,7 @@
 package regalator3000;
-/*Añadir creditos, Añadir mas datos en la BBDD, añadir extra campos para: imagenes que renderear de los productos, mail de los usuarios, paginas web para los productos que el usuario pueda clickar etc*/
-/*Crear calendario grafico para que el usuario pueda clickar en un dia y que tenga colores diferentes dependiendo de si tiene evento ahi o no, con posibilidad de verlos? (FUTURO)*/
+/* A FECHA DE 11/04 FALTA: Añadir mas datos en la BBDD, añadir extra campos para: imagenes que renderear de los productos, mail de los usuarios, paginas web para los productos que el usuario pueda clickar etc*/
+/* Crear calendario grafico para que el usuario pueda clickar en un dia y que tenga colores diferentes dependiendo de si tiene evento ahi o no, con posibilidad de verlos?(HECHO A MEDIAS, FALTA ENGANCHAR A PROPOSAL_GUI
+ * Añadir cambio de idioma a la GUI en opciones -> más...*/
 			
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,8 +33,10 @@ import regalator3000.db.DatabaseHandler;
 import regalator3000.db.EventoControl;
 import regalator3000.db.RegalosControl;
 import regalator3000.db.UserControl;
+import regalator3000.gui.CalendarPanel;
 import regalator3000.gui.DialogGenerator;
 import regalator3000.gui.DialogV2;
+import regalator3000.gui.EventsPanel;
 import regalator3000.gui.Proposal_GUI;
 import regalator3000.misc.EventData;
 
@@ -44,8 +47,6 @@ import regalator3000.misc.EventData;
 @SuppressWarnings("serial")
 public class MainGUI extends JPanel implements ActionListener{
 	
-	public static final String[] dayNames_ESP = {"Domingo","Lunes","Martes","Mi�rcoles","Jueves","Viernes","S�bado"};
-	public static final String[] monthNames_ESP = {"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
 	private JButton Button1,Button2,Button3; //usarl array de JButtons?
 	private JLabel LabelMes,LabelAnyo,LabelDia,LabelDiaNombre,LabelLogged; //Contiene y enseña el dia/mes/año actual (no usar JLabel, currarse algo del palo dibujar un numero bonito o usar mas de una Label con fonts wapas para k kede bonito
 	private DatabaseHandler DbConnector = new DatabaseHandler(); //instancia de DatabaseHandler que controlara las conexiones con la BBDD
@@ -54,7 +55,7 @@ public class MainGUI extends JPanel implements ActionListener{
 	public MainGUI(){
             setupMainPanel();
 			String[] nowValues = LocalTime.now().toString().split(":"); //Inicializamos el timer hasta medianoche
-			int totalMilliSecs = ( ((24 - Integer.parseInt(nowValues[0])) * 60 * 60) - (Integer.parseInt(nowValues[1]) * 60) ) * 1000;
+            int totalMilliSecs = ( ((24 - Integer.parseInt(nowValues[0])) * 60 * 60) - (Integer.parseInt(nowValues[1]) * 60) ) * 1000;
 			dayTimer = new Timer(totalMilliSecs,this);
 			dayTimer.start();
 	}
@@ -82,7 +83,7 @@ public class MainGUI extends JPanel implements ActionListener{
         Calendar myCalendar = Calendar.getInstance();
         Date today = new Date(); 
         myCalendar.setTime(today);
-		LabelMes = new JLabel(capitalizeFirst(monthNames_ESP[myCalendar.get(Calendar.MONTH)]));
+		LabelMes = new JLabel(capitalizeFirst(CalendarPanel.monthNames_ESP[myCalendar.get(Calendar.MONTH)]));
 		LabelMes.setFont(new Font("TimesRoman",Font.BOLD,28));
                 LabelMes.setHorizontalAlignment(SwingConstants.CENTER);
 		LabelDia = new JLabel("" + myCalendar.get(Calendar.DAY_OF_MONTH));
@@ -93,7 +94,7 @@ public class MainGUI extends JPanel implements ActionListener{
 		LabelAnyo = new JLabel("" + myCalendar.get(Calendar.YEAR));
 		LabelAnyo.setFont(new Font("TimesRoman",Font.BOLD,32));
                 LabelAnyo.setHorizontalAlignment(SwingConstants.CENTER);
-                LabelDiaNombre = new JLabel("(" + capitalizeFirst(dayNames_ESP[(myCalendar.get(Calendar.DAY_OF_WEEK)-1)]) + ")"); 
+                LabelDiaNombre = new JLabel("(" + capitalizeFirst(CalendarPanel.dayNames_ESP[(myCalendar.get(Calendar.DAY_OF_WEEK)-1)]) + ")"); //Lunes -> 0, etc...
 		LabelDiaNombre.setFont(new Font("TimesRoman",Font.PLAIN,24));
                 LabelDiaNombre.setHorizontalAlignment(SwingConstants.CENTER);
                 JPanel centralPanel = new JPanel();
@@ -142,8 +143,8 @@ public class MainGUI extends JPanel implements ActionListener{
 		AboutMenu.add(ExitButton2);
 		
                 //Pestaña "Más"
-		JMenu LoginMenu = new JMenu("M�s");
-		JMenuItem LogOnButton = new JMenuItem("Cr�ditos");
+		JMenu LoginMenu = new JMenu("Mas");
+		JMenuItem LogOnButton = new JMenuItem("Creditos");
 		JMenuItem LogOutButton = new JMenuItem("Logout");
 
 		LogOnButton.addActionListener(listener);			
@@ -230,7 +231,15 @@ public class MainGUI extends JPanel implements ActionListener{
 		}
 		else if (command.equals("Tus eventos")){
 			if(UserControl.isUserLogged(DbConnector)) {
-				DialogGenerator.createElegirVerEventoDialog(new JFrame("Eventos"), EventoControl.getEvents(DbConnector));
+				JFrame window = new JFrame("Eventos de " + DbConnector.getUserName() ); //Habra que guardar el nombre en alguna global si queremos saludar en estos dialogos
+		        EventsPanel content = new EventsPanel(DbConnector);
+		        window.setContentPane(content);
+		        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		        window.setPreferredSize(new Dimension(screenSize.width/3,screenSize.height/3)); 
+		        window.setLocation(200, 200);
+		        window.setVisible(true);
+		        window.pack();
+		        window.setSize(500,400);
 			}
 		}
 		else if (command.equals("Agregar evento")) {
@@ -251,7 +260,7 @@ public class MainGUI extends JPanel implements ActionListener{
 	            }
 			}
 		}
-		else if (command.equals("Cr�ditos")){
+		else if (command.equals("Creditos")){
 			JFrame window = new JFrame("Copyright ChichiNabo Productions 2017");
 			DialogV2 panelCreditos = new DialogV2();
 			window.setContentPane(panelCreditos);
