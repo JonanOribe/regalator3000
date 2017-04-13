@@ -37,8 +37,6 @@ import regalator3000.gui.CalendarPanel;
 import regalator3000.gui.DialogGenerator;
 import regalator3000.gui.DialogV2;
 import regalator3000.gui.EventsPanel;
-import regalator3000.gui.Proposal_GUI;
-import regalator3000.misc.EventData;
 
 
 
@@ -47,7 +45,7 @@ import regalator3000.misc.EventData;
 @SuppressWarnings("serial")
 public class MainGUI extends JPanel implements ActionListener{
 	
-	private JButton Button1,Button2,Button3; //usarl array de JButtons?
+	private JButton Button2,Button3; 
 	private JLabel LabelMes,LabelAnyo,LabelDia,LabelDiaNombre,LabelLogged; //Contiene y enseña el dia/mes/año actual (no usar JLabel, currarse algo del palo dibujar un numero bonito o usar mas de una Label con fonts wapas para k kede bonito
 	private DatabaseHandler DbConnector = new DatabaseHandler(); //instancia de DatabaseHandler que controlara las conexiones con la BBDD
 	private Timer dayTimer;
@@ -65,19 +63,26 @@ public class MainGUI extends JPanel implements ActionListener{
 		this.setLayout(new BorderLayout(10,10));		
 		JPanel southPanel = new JPanel();
 		JPanel southPanel2 = new JPanel();
-		southPanel2.setLayout(new GridLayout(2,1,5,5));
-		southPanel.setLayout(new GridLayout(1,3,5,5));
-		Button1 = new JButton("Agregar evento");
+		southPanel2.setLayout(new GridLayout(3,1,5,5)); //Cambiar
+		southPanel.setLayout(new BorderLayout(25,25));
+		//Button1 = new JButton("Agregar evento");
 		Button2 = new JButton("Tus eventos");
 		Button3 = new JButton("Login");
         LabelLogged = new JLabel("Usuario no conectado");
         LabelLogged.setHorizontalAlignment(SwingConstants.CENTER);
-		Button1.addActionListener(this);
+		//Button1.addActionListener(this);
 		Button2.addActionListener(this);
 		Button3.addActionListener(this);
-		southPanel.add(Button1);
-		southPanel.add(Button2);
-		southPanel.add(Button3);
+		//southPanel.add(Button1);
+		JPanel auxPanel = new JPanel();
+		auxPanel.setLayout(new BorderLayout(25,25));
+		auxPanel.add(new JLabel("                   "), BorderLayout.WEST); //Manera cutre de poner espacios, pero quiero montar todo antes de poner bonita la GUI
+		auxPanel.add(Button2,BorderLayout.CENTER);
+		auxPanel.add(new JLabel("                   "), BorderLayout.EAST);
+		southPanel.add(new JLabel("                                 "), BorderLayout.WEST);
+		southPanel.add(Button3,BorderLayout.CENTER);
+		southPanel.add(new JLabel("                                 "), BorderLayout.EAST);
+		southPanel2.add(auxPanel);
 		southPanel2.add(southPanel);
         southPanel2.add(LabelLogged);
         Calendar myCalendar = Calendar.getInstance();
@@ -231,33 +236,8 @@ public class MainGUI extends JPanel implements ActionListener{
 		}
 		else if (command.equals("Tus eventos")){
 			if(UserControl.isUserLogged(DbConnector)) {
-				JFrame window = new JFrame("Eventos de " + DbConnector.getUserName() ); //Habra que guardar el nombre en alguna global si queremos saludar en estos dialogos
 		        EventsPanel content = new EventsPanel(DbConnector);
-		        window.setContentPane(content);
-		        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		        window.setPreferredSize(new Dimension(screenSize.width/3,screenSize.height/3)); 
-		        window.setLocation(200, 200);
-		        window.setVisible(true);
-		        window.pack();
-		        window.setSize(500,400);
-			}
-		}
-		else if (command.equals("Agregar evento")) {
-			if(UserControl.isUserLogged(DbConnector)) {
-				Proposal_GUI ventana = new Proposal_GUI(); //Crea una nueva Proposal_GUI (es una JFrame, con esta instancia veo los cambios que ocurren despues de llamar a la ventanita
-				JPanel ProposalGUIPanel = (JPanel)ventana.getContentPane(); //Como Proposal_GUI es una JFrame obtengo lo de dentro asi para ponerlo en el dialogo
-	            UIManager.put("OptionPane.yesButtonText", "Agregar evento");
-	            UIManager.put("OptionPane.noButtonText", "Cancelar");
-				int dialogResult = JOptionPane.showConfirmDialog (new JFrame("test"), ProposalGUIPanel,"Agregar evento",JOptionPane.YES_NO_OPTION); //Lanzo un dialogo con el contenido de Proposal_GUI, cuyos cambios afectaran a la instancia de proposalGUI que tengo
-	            UIManager.put("OptionPane.yesButtonText", "Aceptar");
-	            UIManager.put("OptionPane.noButtonText", "No");
-	            if (dialogResult == JOptionPane.YES_OPTION){ //Si el usuario quiere agregar el evento introducido...
-					//HACER COMPROVACIONES AQUI DE QUE TODOS LOS DATOS INTRODUCIDOS SON CORRECTOS Y LEGALES, ya sea en el metodo de PropGUI o algun metodo en EventData que comprueba que todos los datos son legales...
-					EventData eventoNuevo = ventana.getNewEventData(); //leo los datos introducidos en la ventana de proposal_gui...
-					eventoNuevo.userID = Integer.toString(DbConnector.getUserID()); //Cutre pero necesario
-					EventoControl.addEvent(DbConnector, eventoNuevo);
-					RegalosControl.checkForPresents(DbConnector, EventoControl.getEvents(DbConnector)); //Comprueba si toca avisar de algun evento por si el que ha agregado toca...
-	            }
+		        JOptionPane.showOptionDialog(new JFrame("test"), content,"Eventos de " + DbConnector.getUserName(), JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atrás"}, null);
 			}
 		}
 		else if (command.equals("Creditos")){
@@ -287,6 +267,18 @@ public class MainGUI extends JPanel implements ActionListener{
 	}
 
 	public static void main(String[] args) {
+		try {//Pruebas con el Look and feel este a ver que tal va...
+        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+		} 
+		catch (Exception e) {
+			try{
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());	
+			}
+			catch(Exception a){
+				System.out.println("Program not supported. " + a.getMessage());
+				System.exit(0);
+			}
+		}
             JFrame window = new JFrame("Regalator 3000");
             MainGUI things = new MainGUI();
 	    window.setContentPane(things);
@@ -296,7 +288,7 @@ public class MainGUI extends JPanel implements ActionListener{
             window.setContentPane(things);
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             window.pack();
-            window.setSize(450,350);
+            window.setSize(420,350);
             window.setLocation(0,screenSize.height-window.getHeight()-80); //hacer un pequeño ini con posicion inicial predeterminada? (en este caso, abajo a la izq)
 		//window.setSize(1100,750);
 		//window.setLocation(100,0);  //Pillarho per resolucio

@@ -1,4 +1,5 @@
 /* FECHA 11/04: FUTURO Agregar boton de agregar al lado del listado, que te abra proposal_GUI como harias desde agregar eventos a pelo UNA VEZ CAMBIADA PROPOSAL GUI. 
+ * Cargarte agregar eventos en main_GUI i dejar solo tus eventos?
  * AGREGAR A LOS TRES BOTONES DE LISTADO UNO (IR) QUE TE LLEVA A LA FECHA? (Penyazo de hacer, hay que añadir referencias a dialogGenerator...*/
 package regalator3000.gui;
 
@@ -19,7 +20,10 @@ import javax.swing.UIManager;
 
 import regalator3000.db.DatabaseHandler;
 import regalator3000.db.EventoControl;
+import regalator3000.db.RegalosControl;
+import regalator3000.misc.AuxFunctions;
 import regalator3000.misc.EventData;
+
 
 @SuppressWarnings("serial")
 public class EventsPanel extends JPanel implements ActionListener{
@@ -35,11 +39,12 @@ public class EventsPanel extends JPanel implements ActionListener{
 	
 	public EventsPanel(DatabaseHandler DbConnector){
 		this.DbConnector = DbConnector;
-		actualMonth = getFieldFromDate(LocalDate.now().toString(),1)-1;
-		actualYear = getFieldFromDate(LocalDate.now().toString(),0);
+		actualMonth = AuxFunctions.getFieldFromDate(LocalDate.now().toString(),1)-1;
+		actualYear = AuxFunctions.getFieldFromDate(LocalDate.now().toString(),0);
 		initcomponents();
 	}
 	
+	/*Posibles cambios, cambiar estructura para usar getMonth/getYear de calendarGUI para dejar puesto el mes que toque o resetear*/
 	public void initcomponents(){
 		JPanel southPanel = new JPanel();
 		userEvents = EventoControl.getEvents(DbConnector);
@@ -60,10 +65,14 @@ public class EventsPanel extends JPanel implements ActionListener{
 		modButton = createInvisButton("Modificar");
 		delButton = createInvisButton("Eliminar");
 		JButton allButton = new JButton("Listado eventos");
+		JButton goToButton = new JButton("Ir a");
+		JButton addButton = new JButton("Agregar evento");
 		allButton.addActionListener(this);
-		southBottomGrid.add(new JLabel(" ")); //Dummy spacing labels (wasnt in the mood to create a more complex layout
+		addButton.addActionListener(this);
+		goToButton.addActionListener(this);
+		southBottomGrid.add(addButton);
+		southBottomGrid.add(goToButton); //Dummy spacing labels (wasnt in the mood to create a more complex layout
 		southBottomGrid.add(allButton);
-		southBottomGrid.add(new JLabel(" "));
 		southCenterGrid.add(dateLabel);
 		southCenterGrid.add(descLabel);
 		southTopGrid.add(seeButton);
@@ -100,15 +109,37 @@ public class EventsPanel extends JPanel implements ActionListener{
 				//Nota se podria llamar a getEvents y comprobar si == eventoActual y entonces reiniciar pero que prefieres, llamada a DDBB obligada o restart GUI obligado...?
 				restartWindow();
 			}
+			else if (command.equals("Agregar evento")){
+				Proposal_GUI ventana = new Proposal_GUI(DbConnector); //Crea una nueva Proposal_GUI (es una JFrame, con esta instancia veo los cambios que ocurren despues de llamar a la ventanita
+				JPanel ProposalGUIPanel = (JPanel)ventana.getContentPane(); //Como Proposal_GUI es una JFrame obtengo lo de dentro asi para ponerlo en el dialogo
+	            UIManager.put("OptionPane.yesButtonText", "Agregar evento");
+	            UIManager.put("OptionPane.noButtonText", "Cancelar");
+				int dialogResult = JOptionPane.showConfirmDialog (new JFrame("test"), ProposalGUIPanel,"Agregar evento",JOptionPane.YES_NO_OPTION); //Lanzo un dialogo con el contenido de Proposal_GUI, cuyos cambios afectaran a la instancia de proposalGUI que tengo
+	            UIManager.put("OptionPane.yesButtonText", "Aceptar");
+	            UIManager.put("OptionPane.noButtonText", "No");
+	            if (dialogResult == JOptionPane.YES_OPTION){ //Si el usuario quiere agregar el evento introducido...
+					//HACER COMPROVACIONES AQUI DE QUE TODOS LOS DATOS INTRODUCIDOS SON CORRECTOS Y LEGALES, ya sea en el metodo de PropGUI o algun metodo en EventData que comprueba que todos los datos son legales...
+	            	EventData eventoNuevo = ventana.getNewEventData(); //leo los datos introducidos en la ventana de proposal_gui...
+					if (ventana.canCreateEvent(eventoNuevo)){
+						eventoNuevo.userID = Integer.toString(DbConnector.getUserID()); //Cutre pero necesario
+						EventoControl.addEvent(DbConnector, eventoNuevo);
+						RegalosControl.checkForPresents(DbConnector, EventoControl.getEvents(DbConnector)); //Comprueba si toca avisar de algun evento por si el que ha agregado toca...
+						restartWindow();
+					}
+					else {
+				        JOptionPane.showOptionDialog(new JFrame("test"), "    Ya hay un evento en esa fecha","Error", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atrás"}, null);
+					}
+	            }
+			}
 			else if (command.equals("Ver")){
-				Proposal_GUI ProposalGUIPanel = new Proposal_GUI();
+				Proposal_GUI ProposalGUIPanel = new Proposal_GUI(DbConnector);
 				ProposalGUIPanel.displayEventData(actualEvent);
 				ProposalGUIPanel.freezeAllInput();
 				JPanel contenidos = (JPanel)ProposalGUIPanel.getContentPane();
 		        JOptionPane.showOptionDialog(new JFrame("test"), contenidos,"Ver detalles evento", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atrás"}, null);	
 			}
 			else if (command.equals("Modificar")){
-				Proposal_GUI ProposalGUIPanel = new Proposal_GUI();
+				Proposal_GUI ProposalGUIPanel = new Proposal_GUI(DbConnector);
 				ProposalGUIPanel.displayEventData(actualEvent);
 				JPanel contenidos = (JPanel)ProposalGUIPanel.getContentPane();
 		        UIManager.put("OptionPane.yesButtonText", "Modificar evento");
@@ -119,8 +150,8 @@ public class EventsPanel extends JPanel implements ActionListener{
 					eventoCambiado.eventID = actualEvent.eventID;
 					eventoCambiado.userID = actualEvent.userID;
 					EventoControl.modifyEvent(DbConnector, eventoCambiado);
-					actualMonth = getFieldFromDate(actualEvent.fecha,1)-1; //Nos quedamos en la fecha que estabamos no vamos a la del nuevo evento
-					actualYear = getFieldFromDate(actualEvent.fecha,0); 
+					actualMonth = AuxFunctions.getFieldFromDate(actualEvent.fecha,1)-1; //Nos quedamos en la fecha que estabamos no vamos a la del nuevo evento
+					actualYear = AuxFunctions.getFieldFromDate(actualEvent.fecha,0); 
 					actualEvent = eventoCambiado;
 					restartWindow();
 				}
@@ -135,6 +166,15 @@ public class EventsPanel extends JPanel implements ActionListener{
 					restartWindow();
 				}
 			}
+			else if (command.equals("Ir a")){ //go to a specific date, check for the separator after the year then... etc (gotta make the GUI ugh
+				String newDate = DialogGenerator.createGoToDialog();
+	            if (!newDate.equals("")){
+	            	actualMonth = (AuxFunctions.getFieldFromDate(newDate, 1)-1);
+	            	actualYear = AuxFunctions.getFieldFromDate(newDate, 0);
+	            	actualEvent = null;
+	            	restartWindow();
+	            }
+	        }
 			else if (src.getClass().equals(eventButton.getClass())){ //El user ha clickado en un dia con evento...
 				eventButton = (CalendarButton)src;
 				int selectedEventID = eventButton.getEventID();
@@ -173,15 +213,7 @@ public class EventsPanel extends JPanel implements ActionListener{
 			delButton.setVisible(true);
 		}
 	}
-	/*0 -> year; 1 -> month; 2 -> day*/
-	private int getFieldFromDate(String dateText,int timeField){
-		if (timeField >=0 && timeField <= 2){
-			char splitter = dateText.charAt(4); //El char despres de 2017X04...
-			String[] valoresData =  dateText.split(Character.toString(splitter));
-			return Integer.parseInt(valoresData[timeField]);
-		}
-		return -1;
-	}
+
 	public static void main(String[] args){
 		/*DatabaseHandler DbConnector = new DatabaseHandler(); //En teoria estara creado fuera de tests...
 		DbConnector.setUserID(1);
@@ -193,7 +225,7 @@ public class EventsPanel extends JPanel implements ActionListener{
         window.setLocation(200, 200);
         window.setVisible(true);
         window.pack();
-        window.setSize(500,400);*/
+        window.setSize(520,420);*/
 
 	}
 }

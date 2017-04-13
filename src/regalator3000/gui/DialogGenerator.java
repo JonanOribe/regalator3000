@@ -3,11 +3,14 @@ package regalator3000.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,9 +21,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
-import regalator3000.misc.EventData;
 import regalator3000.db.DatabaseHandler;
 import regalator3000.db.EventoControl;
+import regalator3000.misc.EventData;
 
 public class DialogGenerator {
 		
@@ -141,11 +144,11 @@ public class DialogGenerator {
 	 * Una vez tienes proposal_GUI preparada, crea un JOptionPane que incluira a proposal_GUI y un boton que te permite volver atrás	 */
 	private static void verEvento(java.awt.event.ActionEvent evt){
 		NumberedJButton src = (NumberedJButton)evt.getSource();
-		Proposal_GUI ProposalGUIPanel = new Proposal_GUI();
 		String userID = NumberedJButton.eventos.get(src.position).userID;
 		String eventoID = NumberedJButton.eventos.get(src.position).eventID;
 		DatabaseHandler DbConnector = new DatabaseHandler();
 		DbConnector.setUserID(Integer.parseInt(userID));
+		Proposal_GUI ProposalGUIPanel = new Proposal_GUI(DbConnector);
 		EventData eventoElegido = EventoControl.getEventData(DbConnector, Integer.parseInt(eventoID));
 		ProposalGUIPanel.displayEventData(eventoElegido);
 		ProposalGUIPanel.freezeAllInput();
@@ -177,11 +180,11 @@ public class DialogGenerator {
 	 * cambiar los datos del evento en la BBDD	 */
 	public static void modificarEvento(java.awt.event.ActionEvent evt){
 		NumberedJButton src = (NumberedJButton)evt.getSource();
-		Proposal_GUI ProposalGUIPanel = new Proposal_GUI();
 		String userID = NumberedJButton.eventos.get(src.position).userID;
 		String eventoID = NumberedJButton.eventos.get(src.position).eventID;
 		DatabaseHandler DbConnector = new DatabaseHandler();
 		DbConnector.setUserID(Integer.parseInt(userID));
+		Proposal_GUI ProposalGUIPanel = new Proposal_GUI(DbConnector);
 		EventData eventoElegido = EventoControl.getEventData(DbConnector, Integer.parseInt(eventoID));
 		ProposalGUIPanel.displayEventData(eventoElegido);
 		JPanel contenidos = (JPanel)ProposalGUIPanel.getContentPane();
@@ -198,6 +201,54 @@ public class DialogGenerator {
 		}
         UIManager.put("OptionPane.yesButtonText", "Sí");
         UIManager.put("OptionPane.noButtonText", "No");
+	}
+	
+	public static String createGoToDialog(){
+			JPanel thisPanel = new JPanel();
+			JLabel descLabel = new JLabel("Introduce la fecha:");
+			JLabel desc2Label = new JLabel("La fecha debe ser del tipo aaaa-mm-dd (ej: 2017-04-13)");
+			JFormattedTextField fechaInput = new JFormattedTextField();
+	        fechaInput = new javax.swing.JFormattedTextField((new SimpleDateFormat("yyyy-MM-dd")));
+	        fechaInput.setText(LocalDate.now().toString());
+
+	        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(thisPanel);
+	        thisPanel.setLayout(layout);
+	        
+	        layout.setHorizontalGroup(
+	                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	                .addGroup(layout.createSequentialGroup()
+	                    .addContainerGap()
+	                    .addComponent(descLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	                        .addComponent(fechaInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                        .addComponent(desc2Label, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                    .addContainerGap(15, Short.MAX_VALUE))
+	            );
+	            layout.setVerticalGroup(
+	                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+	                .addGroup(layout.createSequentialGroup()
+	                    .addComponent(desc2Label, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+	                        .addComponent(descLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+	                        .addComponent(fechaInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                    .addContainerGap(20,30))
+	            );
+
+	        UIManager.put("OptionPane.yesButtonText", "Ir a");
+	        UIManager.put("OptionPane.noButtonText", "Cancelar");
+		    int result = JOptionPane.showConfirmDialog(new JFrame(""), thisPanel,"Ir a fecha concreta",JOptionPane.YES_NO_OPTION);
+		    UIManager.put("OptionPane.yesButtonText", "Yes");
+		    UIManager.put("OptionPane.noButtonText", "No");
+		    String newDate ="";
+		    if (result == 0){
+			    try {
+				    newDate = fechaInput.getText();
+				    }
+				    catch(Exception e){
+				    }
+		    }
+			return newDate;       
 	}
 	/*Funcion auxiliar para ver que boton es el presionado*/
 	private static int whatButtonIsPressed(JRadioButton[] botones){

@@ -4,7 +4,6 @@ import javax.swing.JButton;
 
 @SuppressWarnings("serial")
 public class CalendarButton extends JButton{
-	
 	private int eventID;
 	
 	public CalendarButton(String name, int id){

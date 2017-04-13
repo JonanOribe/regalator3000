@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import regalator3000.db.RegalosControl;
+import regalator3000.misc.AuxFunctions;
 import regalator3000.misc.EventData;
 
 @SuppressWarnings("serial")
@@ -217,7 +218,7 @@ public class CalendarPanel extends JPanel{
 	    		button.setForeground(Color.RED);
 	    	}
 	    	else {
-		    	button.setBackground(Color.CYAN);
+		    	button.setBackground(Color.RED);
 	    	}
 	    	return button;
     	}
@@ -305,8 +306,41 @@ public class CalendarPanel extends JPanel{
         this.setupMonth();
         this.revalidate();
     }
-
     
+    /*Returns the actual month, used in proposal_GUI, la verdad es que deberia haber implementado y usado estos metodos mas...*/
+    public int getMonth(){
+    	return myCalendar.get(Calendar.MONTH);
+    }
+    
+    public void setMonth(int newValue){
+    	myCalendar.set(Calendar.MONTH, newValue);
+    }
+    
+    public int getYear(){
+    	return myCalendar.get(Calendar.YEAR);
+    }
+    
+    public void setYear(int newValue){
+    	myCalendar.set(Calendar.YEAR, newValue);
+    }
+    
+    public boolean isDayAnEvent(String date){
+    	int year = AuxFunctions.getFieldFromDate(date,0);
+    	int month = AuxFunctions.getFieldFromDate(date,1);
+    	int day = AuxFunctions.getFieldFromDate(date,2);
+    	String proposedDate = AuxFunctions.formatDateFromValues(year, month, day, "-");
+    	for (int i = 0; i < userEvents.size(); i++){
+    		if (proposedDate.equals(userEvents.get(i).fecha)){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    public void redraw(){
+    	this.removeAll();
+    	setupMonth();
+    	this.revalidate();
+    }
 
     public static void main(String[] args) {
 		/*DatabaseHandler DbConnector = new DatabaseHandler(); //En teoria estara creado fuera de tests...
