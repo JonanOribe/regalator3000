@@ -43,6 +43,8 @@ public class DialogGenerator {
 		}
 	}
 	
+	private static int goingToButton = -1;
+	
 	/*Crea un Dialog para que el usuario introduzca User y Password y te los devuelve como una array
 	  de String de 2 elementos, cogido y modificado de stack overflow	 */
 	public static String[] createUserPwdDialog(JFrame frame, int tipo) {
@@ -102,10 +104,10 @@ public class DialogGenerator {
 				first = false;
 			}
 			botones[i] = new JRadioButton(eventos.get(i).fecha +" // " + eventos.get(i).descripcion,first);
-			botonesVer[i] = new NumberedJButton("Ver", i, eventos);
+			botonesVer[i] = new NumberedJButton("Ir a", i, eventos);
 			botonesVer[i].addActionListener(new java.awt.event.ActionListener() {
 	            public void actionPerformed(java.awt.event.ActionEvent evt) {
-	                verEvento(evt);
+	                irAEvento(evt);
 	            }
 	        });
 			botonesModificar[i] = new NumberedJButton("Modificar", i, eventos);
@@ -132,7 +134,7 @@ public class DialogGenerator {
 		panel.add(listadoEventos, BorderLayout.CENTER);
 		panel.add(listadoBotones, BorderLayout.EAST);
 		JOptionPane.showOptionDialog(frame, panel,"Eventos actuales", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atrás"}, null);
-		return whatButtonIsPressed(botones); //Retorna cual de los eventos ha elegido (en el array de eventos). NO USADO DESDE EL CAMBIO A USAR LOS 3 BOTONES 
+		return goingToButton;
 	}
 	
 	/*Cuando el usuario apreta en un boton de ver, el boton recuerda por su atributo posicion
@@ -142,18 +144,11 @@ public class DialogGenerator {
 	 * Entonces le pasa los datos a proposal_GUI y le dice que no deje modificarlos con las dos
 	 * funciones displayEventData(evento) y freezeAllInput().
 	 * Una vez tienes proposal_GUI preparada, crea un JOptionPane que incluira a proposal_GUI y un boton que te permite volver atrás	 */
-	private static void verEvento(java.awt.event.ActionEvent evt){
+	private static void irAEvento(java.awt.event.ActionEvent evt){
 		NumberedJButton src = (NumberedJButton)evt.getSource();
-		String userID = NumberedJButton.eventos.get(src.position).userID;
-		String eventoID = NumberedJButton.eventos.get(src.position).eventID;
-		DatabaseHandler DbConnector = new DatabaseHandler();
-		DbConnector.setUserID(Integer.parseInt(userID));
-		Proposal_GUI ProposalGUIPanel = new Proposal_GUI(DbConnector);
-		EventData eventoElegido = EventoControl.getEventData(DbConnector, Integer.parseInt(eventoID));
-		ProposalGUIPanel.displayEventData(eventoElegido);
-		ProposalGUIPanel.freezeAllInput();
-		JPanel contenidos = (JPanel)ProposalGUIPanel.getContentPane();
-        JOptionPane.showOptionDialog(new JFrame("test"), contenidos,"Ver detalles evento", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atrás"}, null);
+		goingToButton = src.position;
+		JDialog mainPanel = (JDialog)src.getTopLevelAncestor();
+		mainPanel.dispose();
 	}
 	
 	/*Igual que el boton ver para saber a que evento se refiere, excepto que te abre un dialogo
@@ -161,9 +156,9 @@ public class DialogGenerator {
 	 * que se encargan de eso	 */
 	private static void borrarEvento(java.awt.event.ActionEvent evt){
 		NumberedJButton src = (NumberedJButton)evt.getSource();
-		JDialog programWindow = (JDialog)src.getTopLevelAncestor();
 		int dialogResult = JOptionPane.showConfirmDialog (null, "Estas seguro de que quieres borrar este evento?","ALERTA",JOptionPane.YES_NO_OPTION);
 		if (dialogResult == JOptionPane.YES_OPTION){
+			JDialog programWindow = (JDialog)src.getTopLevelAncestor();
 			DatabaseHandler DbConnector = new DatabaseHandler();
 			DbConnector.setUserID(Integer.parseInt(NumberedJButton.eventos.get(src.position).userID)); // Esto es un poco cutre............
 			EventoControl.removeEvent(DbConnector, Integer.parseInt(NumberedJButton.eventos.get(src.position).eventID)); //FUTURO: Llamar primero a un dialogo : ESTAS SEGURO? Y si confirma llamar BBDD y hacerlo
@@ -193,11 +188,20 @@ public class DialogGenerator {
 		int dialogResult = JOptionPane.showConfirmDialog (new JFrame("test"), contenidos,"Modificar evento",JOptionPane.YES_NO_OPTION);
 		if (dialogResult == JOptionPane.YES_OPTION){
 			EventData eventoCambiado =  ProposalGUIPanel.getNewEventData();
+			if (ProposalGUIPanel.canCreateEvent(eventoCambiado) || eventoCambiado.fecha.equals(eventoElegido.fecha)){ //Si sobreescribimos los datos de un evento existente que no sea el original...
 			eventoCambiado.userID = userID;
 			eventoCambiado.eventID = eventoID;
 			//eventoCambiado.toConsole();
 			EventoControl.modifyEvent(DbConnector, eventoCambiado);
 					//Modifca evento con los nuevos datos
+			JDialog programWindow = (JDialog)src.getTopLevelAncestor();
+			NumberedJButton.eventos = EventoControl.getEvents(DbConnector);
+			programWindow.dispose();
+			createElegirVerEventoDialog(new JFrame(), NumberedJButton.eventos); 
+			}
+			else {
+		        JOptionPane.showOptionDialog(new JFrame("test"), "    Ya hay otro evento en esa fecha","Error", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atrás"}, null);
+			}
 		}
         UIManager.put("OptionPane.yesButtonText", "Sí");
         UIManager.put("OptionPane.noButtonText", "No");
@@ -250,7 +254,8 @@ public class DialogGenerator {
 		    }
 			return newDate;       
 	}
-	/*Funcion auxiliar para ver que boton es el presionado*/
+	/*Funcion auxiliar para ver que radioButton es el elegido (NO USADA)*/
+	@SuppressWarnings("unused")
 	private static int whatButtonIsPressed(JRadioButton[] botones){
 		for (int i = 0; i < botones.length; i++) {
 			if (botones[i].isSelected()) {

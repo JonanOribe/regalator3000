@@ -289,22 +289,44 @@ public class CalendarPanel extends JPanel{
         if(monthOrYear == 0) { //modify months;
             if(incOrDec == 0) { //decrease
                 myCalendar.add(Calendar.MONTH, -1);
+                if (parentPanel.getClass().equals(EventsPanel.class)){ //MANERA CUTRE DE FERHO, caldria remontar eventsPanel perque hi ha moltes maneres de fer el mateix que es podrien unificar y falta control de mesos/anys al tocar botons mes/any... (que saconsegueix amb aixo...)
+              	   EventsPanel parent = (EventsPanel)parentPanel;
+              	   parent.actualMonth--;
+              	   if (parent.actualMonth <= 0){
+              		 parent.actualMonth = 11;
+              		 parent.actualYear--;
+              	   }
+                 }
             }
             else { //increase
                 myCalendar.add(Calendar.MONTH, 1);
+                if (parentPanel.getClass().equals(EventsPanel.class)){
+              	   EventsPanel parent = (EventsPanel)parentPanel;
+              	   parent.actualMonth++;
+              	   if (parent.actualMonth > 11){
+              		 parent.actualMonth = 0;
+              		 parent.actualYear++;
+              	   }
+                 }
             }
         }
         else { //modify Years;
             if (incOrDec == 0) { //decrease
-                myCalendar.add(Calendar.YEAR, -1);
+                myCalendar.add(Calendar.YEAR, -1); 
+               if (parentPanel.getClass().equals(EventsPanel.class)){
+            	   EventsPanel parent = (EventsPanel)parentPanel;
+            	   parent.actualYear -=1;
+               }
             }
             else { //increase
                 myCalendar.add(Calendar.YEAR, 1);
+                if (parentPanel.getClass().equals(EventsPanel.class)){
+             	   EventsPanel parent = (EventsPanel)parentPanel;
+             	   parent.actualYear +=1;
+                }
             }
         }       
-        this.removeAll();       
-        this.setupMonth();
-        this.revalidate();
+        redraw();
     }
     
     /*Returns the actual month, used in proposal_GUI, la verdad es que deberia haber implementado y usado estos metodos mas...*/
@@ -336,6 +358,7 @@ public class CalendarPanel extends JPanel{
     	}
     	return false;
     }
+    
     public void redraw(){
     	this.removeAll();
     	setupMonth();

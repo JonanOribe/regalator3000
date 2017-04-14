@@ -298,7 +298,7 @@ public class MainGUI extends JPanel implements ActionListener{
             UIManager.put("OptionPane.cancelButtonTetxt", "Cancelar");
             UIManager.put("OptionPane.yesButtonText", "Aceptar");
             UIManager.put("OptionPane.okButtonText", "Introducir");
-			//TESTING, no tengo ganas de reintroducir usuario cada vez...
+			//TESTING, no tengo ganas de reintroducir usuario cada vez
 	}
 
 }

@@ -256,7 +256,7 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
                             )
                         .addGap(18, 18, 18)
                         .addComponent(goToButton)
-                        .addGap(75)
+                        .addGap(83)
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -321,6 +321,7 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
     public void displayEventData(EventData evento){
     	if(evento == null){ return; }
     	fechaFormattedField.setText(evento.fecha);
+    	fechaFormattedField.postActionEvent();
     	descField.setText(evento.descripcion);
     	if (evento.marcas != null){
     		marcasList.setSelectedIndices(evento.marcas);
@@ -347,6 +348,12 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
     	EventData newEvent = new EventData("0"); //user temporal
     	newEvent.fecha = fechaFormattedField.getText();
     	newEvent.descripcion = descField.getText();
+    	if (newEvent.descripcion == null){
+    		newEvent.descripcion = "";
+    	}
+    	if (newEvent.descripcion.length() > 150) { //Maxima cantidad de caracteres en la descripcion(hacerla un campo de texto de mas filas?
+    		newEvent.descripcion = newEvent.descripcion.substring(0, 150);
+    	}
     	int[] marcas = marcasList.getSelectedIndices();
     	newEvent.marcas = marcas;
     	ArrayList<Integer> categorias = new ArrayList<Integer>();
@@ -360,7 +367,18 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
     		catArray[i] = categorias.get(i);
     	}
     	newEvent.categorias = catArray;
-    	newEvent.diasAviso = Integer.parseInt(diasAvisoField.getText());
+    	try{ //Control de errores minimo, comprobar si se necesita más
+    		newEvent.diasAviso = Integer.parseInt(diasAvisoField.getText());
+    		if (newEvent.diasAviso < 0) {
+    			newEvent.diasAviso = 0;
+    		}
+    		else if (newEvent.diasAviso > 960){
+    			newEvent.diasAviso = 960;
+    		}
+    	}
+    	catch (Exception e){
+    		newEvent.diasAviso = 0;
+    	}
     	if (regAleatorioRadioButton.isSelected() || regConcretoComboBox.getSelectedIndex() == 0) {
     		newEvent.regaloConcreto = 0;
     	}
@@ -481,7 +499,7 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
 		return AuxFunctions.formatDateFromValues(myCalendar.getYear(), month+1, Integer.parseInt(day), separator);
 	}
 	
-	private void goToDate(String newDate){
+	public void goToDate(String newDate){
         if (!newDate.equals("")){
      	   myCalendar.setMonth(AuxFunctions.getFieldFromDate(newDate, 1)-1);
      	   myCalendar.setYear(AuxFunctions.getFieldFromDate(newDate, 0));

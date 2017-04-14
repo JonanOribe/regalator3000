@@ -4,7 +4,9 @@
 package regalator3000.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
@@ -31,9 +33,10 @@ public class EventsPanel extends JPanel implements ActionListener{
 	private ArrayList<EventData> userEvents;
 	private DatabaseHandler DbConnector;
 	private JLabel dateLabel, descLabel;
-	private JButton seeButton,modButton,delButton;
-	private int actualMonth;
-	private int actualYear;
+	private JButton seeButton,modButton,delButton,addButton;
+	public int actualMonth;
+	public int actualYear;
+	private String selectedDate = LocalDate.now().toString(); 
 	private EventData actualEvent;
 
 	
@@ -65,8 +68,8 @@ public class EventsPanel extends JPanel implements ActionListener{
 		modButton = createInvisButton("Modificar");
 		delButton = createInvisButton("Eliminar");
 		JButton allButton = new JButton("Listado eventos");
-		JButton goToButton = new JButton("Ir a");
-		JButton addButton = new JButton("Agregar evento");
+		JButton goToButton = new JButton("Ir a fecha");
+		addButton = new JButton("Agregar evento");
 		allButton.addActionListener(this);
 		addButton.addActionListener(this);
 		goToButton.addActionListener(this);
@@ -105,12 +108,25 @@ public class EventsPanel extends JPanel implements ActionListener{
 	    CalendarButton eventButton = new CalendarButton("",-1);
 		if (command != null){
 			if (command.equals("Listado eventos")){
-				DialogGenerator.createElegirVerEventoDialog(new JFrame("Eventos"), EventoControl.getEvents(DbConnector));
+				int goTo = DialogGenerator.createElegirVerEventoDialog(new JFrame("Eventos"), EventoControl.getEvents(DbConnector));
 				//Nota se podria llamar a getEvents y comprobar si == eventoActual y entonces reiniciar pero que prefieres, llamada a DDBB obligada o restart GUI obligado...?
+				if (goTo > -1){
+					actualMonth = AuxFunctions.getFieldFromDate(userEvents.get(goTo).fecha,1)-1;
+					actualYear = AuxFunctions.getFieldFromDate(userEvents.get(goTo).fecha,0);
+					restartWindow();
+					actualEvent = userEvents.get(goTo);
+					setButtonsInvis(false);
+					descLabel.setText("Descripcion: " + actualEvent.descripcion);
+					selectedDate = actualEvent.fecha;
+					dateLabel.setText("Fecha: " + selectedDate);
+				}
+				else {
 				restartWindow();
+				}
 			}
 			else if (command.equals("Agregar evento")){
 				Proposal_GUI ventana = new Proposal_GUI(DbConnector); //Crea una nueva Proposal_GUI (es una JFrame, con esta instancia veo los cambios que ocurren despues de llamar a la ventanita
+				ventana.goToDate(selectedDate);
 				JPanel ProposalGUIPanel = (JPanel)ventana.getContentPane(); //Como Proposal_GUI es una JFrame obtengo lo de dentro asi para ponerlo en el dialogo
 	            UIManager.put("OptionPane.yesButtonText", "Agregar evento");
 	            UIManager.put("OptionPane.noButtonText", "Cancelar");
@@ -140,6 +156,7 @@ public class EventsPanel extends JPanel implements ActionListener{
 			}
 			else if (command.equals("Modificar")){
 				Proposal_GUI ProposalGUIPanel = new Proposal_GUI(DbConnector);
+				ProposalGUIPanel.goToDate(selectedDate);
 				ProposalGUIPanel.displayEventData(actualEvent);
 				JPanel contenidos = (JPanel)ProposalGUIPanel.getContentPane();
 		        UIManager.put("OptionPane.yesButtonText", "Modificar evento");
@@ -147,13 +164,18 @@ public class EventsPanel extends JPanel implements ActionListener{
 				int dialogResult = JOptionPane.showConfirmDialog (new JFrame("test"), contenidos,"Modificar evento",JOptionPane.YES_NO_OPTION);
 				if (dialogResult == JOptionPane.YES_OPTION){
 					EventData eventoCambiado =  ProposalGUIPanel.getNewEventData();
-					eventoCambiado.eventID = actualEvent.eventID;
-					eventoCambiado.userID = actualEvent.userID;
-					EventoControl.modifyEvent(DbConnector, eventoCambiado);
-					actualMonth = AuxFunctions.getFieldFromDate(actualEvent.fecha,1)-1; //Nos quedamos en la fecha que estabamos no vamos a la del nuevo evento
-					actualYear = AuxFunctions.getFieldFromDate(actualEvent.fecha,0); 
-					actualEvent = eventoCambiado;
-					restartWindow();
+					if (ProposalGUIPanel.canCreateEvent(eventoCambiado) || eventoCambiado.fecha.equals(actualEvent.fecha)){ //Si sobreescribimos los datos de un evento existente que no sea el original...
+						eventoCambiado.eventID = actualEvent.eventID;
+						eventoCambiado.userID = actualEvent.userID;
+						EventoControl.modifyEvent(DbConnector, eventoCambiado);
+						actualMonth = AuxFunctions.getFieldFromDate(actualEvent.fecha,1)-1; //Nos quedamos en la fecha que estabamos no vamos a la del nuevo evento
+						actualYear = AuxFunctions.getFieldFromDate(actualEvent.fecha,0); 
+						actualEvent = eventoCambiado;
+						restartWindow();
+					}
+					else {
+				        JOptionPane.showOptionDialog(new JFrame("test"), "    Ya hay otro evento en esa fecha","Error", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atrás"}, null);
+					}
 				}
 		        UIManager.put("OptionPane.yesButtonText", "Sí");
 		        UIManager.put("OptionPane.noButtonText", "No");
@@ -166,7 +188,7 @@ public class EventsPanel extends JPanel implements ActionListener{
 					restartWindow();
 				}
 			}
-			else if (command.equals("Ir a")){ //go to a specific date, check for the separator after the year then... etc (gotta make the GUI ugh
+			else if (command.equals("Ir a fecha")){ //go to a specific date, check for the separator after the year then... etc (gotta make the GUI ugh
 				String newDate = DialogGenerator.createGoToDialog();
 	            if (!newDate.equals("")){
 	            	actualMonth = (AuxFunctions.getFieldFromDate(newDate, 1)-1);
@@ -181,9 +203,13 @@ public class EventsPanel extends JPanel implements ActionListener{
 				actualEvent = EventoControl.getEventData(DbConnector,selectedEventID);
 				setButtonsInvis(false);
 				descLabel.setText("Descripcion: " + actualEvent.descripcion);
-				dateLabel.setText("Fecha: " + actualEvent.fecha);
+				selectedDate = actualEvent.fecha;
+				dateLabel.setText("Fecha: " + selectedDate);
 			}
 			else { //Tiene que ser la ultima frase esta...
+				JButton botonPresionado = (JButton)src;
+				selectedDate = AuxFunctions.formatDateFromValues(actualYear,(actualMonth+1), Integer.parseInt(botonPresionado.getText()),"-");
+				dateLabel.setText("Fecha: " + selectedDate);
 				actualEvent = null;
 				setButtonsInvis(true);
 			}
@@ -204,18 +230,19 @@ public class EventsPanel extends JPanel implements ActionListener{
 			seeButton.setVisible(false);
 			modButton.setVisible(false);
 			delButton.setVisible(false);
+			addButton.setVisible(true);
 			descLabel.setText(" ");
-			dateLabel.setText(" ");
 		}
 		else {
 			seeButton.setVisible(true);
 			modButton.setVisible(true);
 			delButton.setVisible(true);
+			addButton.setVisible(false);
 		}
 	}
 
 	public static void main(String[] args){
-		/*DatabaseHandler DbConnector = new DatabaseHandler(); //En teoria estara creado fuera de tests...
+		DatabaseHandler DbConnector = new DatabaseHandler(); //En teoria estara creado fuera de tests...
 		DbConnector.setUserID(1);
         JFrame window = new JFrame("events test");
         EventsPanel content = new EventsPanel(DbConnector);
@@ -225,7 +252,7 @@ public class EventsPanel extends JPanel implements ActionListener{
         window.setLocation(200, 200);
         window.setVisible(true);
         window.pack();
-        window.setSize(520,420);*/
+        window.setSize(520,420);
 
 	}
 }
