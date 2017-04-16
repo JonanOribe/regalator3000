@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `regalator`.`usuarios`(
 	`id`INT NOT NULL AUTO_INCREMENT,
     `nombre`VARCHAR(45),
     `password`VARCHAR(30),
+    `mail`VARCHAR(60),
     PRIMARY KEY(`id`)
     )ENGINE=InnoDB;
 
@@ -35,6 +36,9 @@ CREATE TABLE IF NOT EXISTS `regalator`.`regalos`(
     `precio`float,
     `id_categoria` int,
     `id_marca` int,
+    `imagen`VARCHAR(40),
+    `url1`VARCHAR(60),
+    `url2`VARCHAR(60),
     PRIMARY KEY (`id`),
     CONSTRAINT `FK_regalos_categorias` FOREIGN KEY(`id_categoria`) REFERENCES `regalator`.`categorias`(`id`) 
     ON UPDATE CASCADE 
@@ -52,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `regalator`.`regalos`(
 		`id` INT NOT NULL AUTO_INCREMENT,
         `id_usuario` INT NOT NULL,
         `fecha` DATE,
-        `descripcion` VARCHAR(45),
+        `descripcion` VARCHAR(60),
 		`diasAviso` INT NOT NULL,  -- de 0 a X dias antes de la fecha
         `regaloConcreto` INT, -- si es null el regalo es aleatorio
         PRIMARY KEY(`id`),  

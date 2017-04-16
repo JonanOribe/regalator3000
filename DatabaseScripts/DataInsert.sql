@@ -11,12 +11,12 @@ DELETE FROM eventos;
 
 
 -- DATOS USUARIOS --
-INSERT INTO usuarios values(1,"Juan","A2445D");
-INSERT INTO usuarios values(2,"Felipe","VV3RGF"); 
-INSERT INTO usuarios values(3,"Luis","HH31223HHT");
-INSERT INTO usuarios values(4,"Ramon","P12-dF"); 
-INSERT INTO usuarios values(5,"Josu","55/985HT");
-INSERT INTO usuarios values(6,"Oscar","L`12-22"); 
+INSERT INTO usuarios values(1,"Juan","A2445D","juan@mail.com");
+INSERT INTO usuarios values(2,"Felipe","VV3RGF","felipe@yahoo.com"); 
+INSERT INTO usuarios values(3,"Luis","HH31223HHT","luis_S_A@gmail.com");
+INSERT INTO usuarios values(4,"Ramon","P12-dF","rmorenauer@hotmail.com"); 
+INSERT INTO usuarios values(5,"Josu","55/985HT","aloha@mail.com");
+INSERT INTO usuarios values(6,"Oscar","L`12-22","OCDC@gmail.com"); 
 -- ----------------------------
 
 -- DATOS CATEGORIAS --
@@ -43,15 +43,15 @@ INSERT INTO marcas values(7,"World Peace");
 -- ----------------------------
 
 -- DATOS REGALOS --
-INSERT INTO regalos values(1,"Vale Spa",35,1,1);
-INSERT INTO regalos values(2,"Libro de misterio",12,2,1);
-INSERT INTO regalos values(3,"Viaje a Londres",345,4,1);
-INSERT INTO regalos values(4,"Libro de cocina",13,2,1);
-INSERT INTO regalos values(5,"Collar de brillantes",102,5,4);
-INSERT INTO regalos values(6,"Jersey",23,6,3);
-INSERT INTO regalos values(7,"Cafetera",52.40,3,1);
-INSERT INTO regalos values(8,"Cena para dos",62.35,7,5);
-INSERT INTO regalos values(9,"Kit de pintura",36.7,8,1);
+INSERT INTO regalos values(1,"Vale Spa",35,1,1,"img01.jpg","https://www.google.com","");
+INSERT INTO regalos values(2,"Libro de misterio",12,2,1,"img02.jpg","https://www.google.com","");
+INSERT INTO regalos values(3,"Viaje a Londres",345,4,1,"img03.jpg","https://www.google.com","");
+INSERT INTO regalos values(4,"Libro de cocina",13,2,1,"img04.jpg","https://www.google.com","");
+INSERT INTO regalos values(5,"Collar de brillantes",102,5,4,"img05.jpg","https://www.google.com","");
+INSERT INTO regalos values(6,"Jersey",23,6,3,"img06.jpg","https://www.google.com","");
+INSERT INTO regalos values(7,"Cafetera",52.40,3,1,"img07.jpg","https://www.google.com","");
+INSERT INTO regalos values(8,"Cena para dos",62.35,7,5,"img08.jpg","https://www.google.com","");
+INSERT INTO regalos values(9,"Kit de pintura",36.7,8,1,"img09.jpg","https://www.google.com","");
 -- ----------------------------
 
 -- DATOS eventos --

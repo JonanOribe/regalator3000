@@ -24,7 +24,7 @@ DROP function IF EXISTS `addUser`;
 
 DELIMITER $$
 USE `regalator`$$
-CREATE FUNCTION addUser (nom VARCHAR(20), pwd VARCHAR(20))
+CREATE FUNCTION addUser (nom VARCHAR(20), pwd VARCHAR(20), email VARCHAR(60))
 RETURNS INTEGER
 BEGIN
 	DECLARE newUserID INT DEFAULT -1;
@@ -32,7 +32,7 @@ BEGIN
     SELECT id INTO existantID FROM usuarios WHERE nom = nombre; 
     IF existantID IS NOT NULL THEN RETURN -2; -- Si el usuario existe ya (igual nombre), devuelve este numero
     END IF; -- si no existe, agregalo
-    INSERT INTO usuarios VALUES(null,nom,pwd);
+    INSERT INTO usuarios VALUES(null,nom,pwd,email);
 	SELECT id INTO newUserID FROM usuarios WHERE nom = nombre AND pwd = password;
 	RETURN newUserID;
 END$$
@@ -46,12 +46,12 @@ DROP FUNCTION IF EXISTS `removeUser`;
 
 DELIMITER $$
 USE `regalator`$$
-CREATE FUNCTION removeUser (nom VARCHAR(20), pwd VARCHAR(20))
+CREATE FUNCTION removeUser (nom VARCHAR(20), pwd VARCHAR(20), email VARCHAR(60))
 RETURNS INTEGER
 BEGIN
     DECLARE existantID INT;
-    SELECT id INTO existantID FROM usuarios WHERE nom = nombre AND pwd = password; 
-    DELETE FROM usuarios WHERE nombre = nom AND pwd = password; 
+    SELECT id INTO existantID FROM usuarios WHERE nom = nombre AND pwd = password AND email = mail; 
+    DELETE FROM usuarios WHERE nombre = nom AND pwd = password AND email = mail; 
     IF existantID IS NOT NULL THEN RETURN 1; -- Si el usuario existia, devuelve 1
     END IF;
     RETURN 0; -- Devuelve 0 si el usuario no existia
