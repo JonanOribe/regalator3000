@@ -1,6 +1,4 @@
-/* FECHA 11/04: FUTURO Agregar boton de agregar al lado del listado, que te abra proposal_GUI como harias desde agregar eventos a pelo UNA VEZ CAMBIADA PROPOSAL GUI. 
- * Cargarte agregar eventos en main_GUI i dejar solo tus eventos?
- * AGREGAR A LOS TRES BOTONES DE LISTADO UNO (IR) QUE TE LLEVA A LA FECHA? (Penyazo de hacer, hay que añadir referencias a dialogGenerator...*/
+/*15/04: Creo que la clase se comporta como deberia, testear mas*/
 package regalator3000.gui;
 
 import java.awt.BorderLayout;
@@ -167,7 +165,9 @@ public class EventsPanel extends JPanel implements ActionListener{
 					if (ProposalGUIPanel.canCreateEvent(eventoCambiado) || eventoCambiado.fecha.equals(actualEvent.fecha)){ //Si sobreescribimos los datos de un evento existente que no sea el original...
 						eventoCambiado.eventID = actualEvent.eventID;
 						eventoCambiado.userID = actualEvent.userID;
+				        UIManager.put("OptionPane.yesButtonText", "Aceptar");
 						EventoControl.modifyEvent(DbConnector, eventoCambiado);
+						RegalosControl.checkForPresents(DbConnector, EventoControl.getEvents(DbConnector)); //Comprueba si toca avisar de algun evento por si el que ha agregado toca...
 						actualMonth = AuxFunctions.getFieldFromDate(actualEvent.fecha,1)-1; //Nos quedamos en la fecha que estabamos no vamos a la del nuevo evento
 						actualYear = AuxFunctions.getFieldFromDate(actualEvent.fecha,0); 
 						actualEvent = eventoCambiado;
