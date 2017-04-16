@@ -23,6 +23,7 @@ import javax.swing.UIManager;
 
 import regalator3000.db.DatabaseHandler;
 import regalator3000.db.EventoControl;
+import regalator3000.db.RegalosControl;
 import regalator3000.misc.EventData;
 
 public class DialogGenerator {
@@ -49,22 +50,28 @@ public class DialogGenerator {
 	  de String de 2 elementos, cogido y modificado de stack overflow	 */
 	public static String[] createUserPwdDialog(JFrame frame, int tipo) {
 		//tipo = 0; login user; tipo = 1; agregar user; tipo = 2 borrar user;
-	    String[] logininformation = new String[2];
+	    String[] logininformation = new String[3];
 
 	    JPanel panel = new JPanel(new BorderLayout(5, 5));
 
 	    JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
-	    label.add(new JLabel("Usuario", SwingConstants.RIGHT));
-	    label.add(new JLabel("Password", SwingConstants.RIGHT));
-	    panel.add(label, BorderLayout.WEST);
 	    JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
+	    label.add(new JLabel("Usuario", SwingConstants.RIGHT));
 	    JTextField username = new JTextField();
 	    controls.add(username);
+	    JTextField mail = null;
+	    if (tipo != 0) {
+	    	label.add(new JLabel("Mail", SwingConstants.RIGHT));
+	    	mail = new JTextField();
+	    	controls.add(mail);
+	    }
+	    label.add(new JLabel("Password", SwingConstants.RIGHT));
+	    panel.add(label, BorderLayout.WEST);
 	    JPasswordField password = new JPasswordField();
 	    controls.add(password);
 	    panel.add(controls, BorderLayout.CENTER);
 	    String message;
-	    if(tipo == 0){
+	    if(tipo < 2){
 	    	message = "Introduce tus datos";
 	    }
 	    else{
@@ -77,8 +84,12 @@ public class DialogGenerator {
 	    try {
 	    logininformation[0] = username.getText();
 	    logininformation[1] = new String(password.getPassword());
+		    if (tipo != 0){
+		    	logininformation[2] = mail.getText();
+		    }
 	    }
 	    catch(Exception e){
+	    	System.out.println("Error en la introduccion de datos. " + e.getMessage());
 	    }
 	    return logininformation;
 	}
@@ -193,6 +204,8 @@ public class DialogGenerator {
 			eventoCambiado.eventID = eventoID;
 			//eventoCambiado.toConsole();
 			EventoControl.modifyEvent(DbConnector, eventoCambiado);
+	        UIManager.put("OptionPane.yesButtonText", "Aceptar");
+			RegalosControl.checkForPresents(DbConnector, EventoControl.getEvents(DbConnector)); //Comprueba si toca avisar de algun evento por si el que ha agregado toca...
 					//Modifca evento con los nuevos datos
 			JDialog programWindow = (JDialog)src.getTopLevelAncestor();
 			NumberedJButton.eventos = EventoControl.getEvents(DbConnector);

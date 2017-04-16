@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 @SuppressWarnings("serial")
-public class DialogV2 extends JPanel implements ActionListener{
+public class CreditsPanel extends JPanel implements ActionListener{
 	
 	private static int estado; //En que estado de la "broma" estamos
 	private JFrame broma2Frame;
@@ -29,7 +29,7 @@ public class DialogV2 extends JPanel implements ActionListener{
 	private JFrame dummyFrame1,dummyFrame2;
 	
 	/*Constructor*/
-	public DialogV2(){
+	public CreditsPanel(){
 		super();
 		estado = 0;
 		broma2 = new Timer(100,this);
@@ -222,7 +222,7 @@ public class DialogV2 extends JPanel implements ActionListener{
     	
 	public static void main(String[] args){
 		JFrame window = new JFrame("testing");
-		DialogV2 panelCreditos = new DialogV2();
+		CreditsPanel panelCreditos = new CreditsPanel();
 		window.setContentPane(panelCreditos);
 		window.setResizable(false);
 		window.setVisible(true);

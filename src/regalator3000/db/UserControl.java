@@ -14,11 +14,11 @@ public class UserControl {
 	/*Inserta un usuario en la base de datos con nombre y password determinado,
 	Devuelve su id por si quieres logearlo o ver si se ha insertado en la BBDD1
 	DEVUELVE -1 ERROR, DEVUELVE -2 SI USUARIO EXISTE YA CON ESE NOMBRE*/
-	public static int insertUser(DatabaseHandler DbConnector, String name, String pwd){
+	public static int insertUser(DatabaseHandler DbConnector, String name, String pwd, String mail){
 		int newUserID = -1;
 		try{
 			Statement instruccionSQL = DbConnector.openNewConnection().createStatement();
-	        ResultSet rs = instruccionSQL.executeQuery("SELECT addUser('"+name+"','"+pwd+"') as newUserID;");
+	        ResultSet rs = instruccionSQL.executeQuery("SELECT addUser('"+name+"','"+pwd+"','"+mail+"') as newUserID;");
 	        while(rs.next()) {
 	        	newUserID = rs.getInt("newUserID");
 	        }
@@ -79,10 +79,10 @@ public class UserControl {
 	
 	/*Elimina un usuario SOLO si se conocen su nombre i password,
 	 * LA BASE DE DATOS NO PUEDE ESTAR EN SAFE MODE!(sino añadir LIMIT 1 creo?	 */
-	public static int removeUser(DatabaseHandler DbConnector, String name, String pwd){
+	public static int removeUser(DatabaseHandler DbConnector, String name, String pwd, String mail){
 		try{
 			Statement instruccionSQL = DbConnector.openNewConnection().createStatement();
-	        ResultSet rs = instruccionSQL.executeQuery("select removeUser('"+name+"','"+pwd+"') as borrado;");
+	        ResultSet rs = instruccionSQL.executeQuery("select removeUser('"+name+"','"+pwd+"','"+mail+"') as borrado;");
 	        rs.next();
 	        int resultado = rs.getInt("borrado");
 	        instruccionSQL.close();

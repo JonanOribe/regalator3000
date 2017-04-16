@@ -1,7 +1,6 @@
 package regalator3000;
-/* A FECHA DE 11/04 FALTA: Añadir mas datos en la BBDD, añadir extra campos para: imagenes que renderear de los productos, mail de los usuarios, paginas web para los productos que el usuario pueda clickar etc*/
-/* Crear calendario grafico para que el usuario pueda clickar en un dia y que tenga colores diferentes dependiendo de si tiene evento ahi o no, con posibilidad de verlos?(HECHO A MEDIAS, FALTA ENGANCHAR A PROPOSAL_GUI
- * Añadir cambio de idioma a la GUI en opciones -> más...*/
+/* A FECHA DE 15/04 FALTA: Añadir mas datos en la BBDD, añadir extra campos para: imagenes que renderear de los productos, mail de los usuarios, paginas web para los productos que el usuario pueda clickar etc
+ * Mejorar GUI del aviso del regalo, Añadir cambio de idioma a la GUI en opciones -> más...*/
 			
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -14,6 +13,8 @@ import java.awt.event.ActionListener;
 import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -34,8 +35,8 @@ import regalator3000.db.EventoControl;
 import regalator3000.db.RegalosControl;
 import regalator3000.db.UserControl;
 import regalator3000.gui.CalendarPanel;
+import regalator3000.gui.CreditsPanel;
 import regalator3000.gui.DialogGenerator;
-import regalator3000.gui.DialogV2;
 import regalator3000.gui.EventsPanel;
 
 
@@ -200,9 +201,15 @@ public class MainGUI extends JPanel implements ActionListener{
 		}
 		else if (command.equals("Nuevo usuario")){
 			if (UserControl.isUserLogged(DbConnector) == false){
-				String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),0);
-				if (userYPwd[0] == null || userYPwd[0].equals("") || userYPwd[1].equals("")){ return;} 
-				int agregado = UserControl.insertUser(DbConnector, userYPwd[0], userYPwd[1]);
+				String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),1);
+				if (userYPwd[0] == null || userYPwd[0].equals("") || userYPwd[1].equals("") || userYPwd[2].equals("")){ return;} 
+				Pattern mailTag = Pattern.compile("^[a-zA-Z\\d_]+@[a-zA-Z\\d]+\\.[a-z]{1,3}\\.?[a-z]{2,4}?$",Pattern.CASE_INSENSITIVE); //mi intento de patron regex para pillar mails
+				Matcher matcher = mailTag.matcher(userYPwd[2]);
+				if (!matcher.matches()){
+					LabelLogged.setText("Error en el campo e-mail");
+					return;
+				}
+				int agregado = UserControl.insertUser(DbConnector, userYPwd[0], userYPwd[1], userYPwd[2]);
 				switch (agregado){
 				case -1:
 					LabelLogged.setText("Error en la base de datos");
@@ -222,9 +229,9 @@ public class MainGUI extends JPanel implements ActionListener{
 			}
 		}
 		else if (command.equals("Borrar usuario")){ 
-			String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),1);
-			if (userYPwd[0] == null || userYPwd[0].equals("") || userYPwd[1].equals("")){ return;} 
-			int borrado = UserControl.removeUser(DbConnector, userYPwd[0], userYPwd[1]); 
+			String[] userYPwd = DialogGenerator.createUserPwdDialog(new JFrame(""),2);
+			if (userYPwd[0] == null || userYPwd[0].equals("") || userYPwd[1].equals("") || userYPwd[2].equals("")){ return;} 
+			int borrado = UserControl.removeUser(DbConnector, userYPwd[0], userYPwd[1], userYPwd[2]); 
 			if(borrado == 1){
 				LabelLogged.setText("Usuario borrado, desconectando...");
 				UserControl.logOutUser(DbConnector); //Desconecta a quien esté conectado...
@@ -242,7 +249,7 @@ public class MainGUI extends JPanel implements ActionListener{
 		}
 		else if (command.equals("Creditos")){
 			JFrame window = new JFrame("Copyright ChichiNabo Productions 2017");
-			DialogV2 panelCreditos = new DialogV2();
+			CreditsPanel panelCreditos = new CreditsPanel();
 			window.setContentPane(panelCreditos);
 			window.setLocation(600,400); //Hace falta comprobar tamaño ventana usuario etc (otro dia)
 			window.setResizable(false);
@@ -302,4 +309,3 @@ public class MainGUI extends JPanel implements ActionListener{
 	}
 
 }
-

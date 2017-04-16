@@ -1,6 +1,3 @@
-/*FUTURO: enganchar calendarPanel aqui, cambiar todo de sitio
- * Se puede llamar con el DbConnector del usuario para crear el calendario, y de paso reestructurar cosas casi seguro.
- * HACER QUE AL APRETAR ENTER EN LA DATA EL CALENDARIO VAYA A LA DATA ESCRITA(11/04)*/
 package regalator3000.gui;
 
 import java.awt.event.ActionEvent;
@@ -351,8 +348,8 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
     	if (newEvent.descripcion == null){
     		newEvent.descripcion = "";
     	}
-    	if (newEvent.descripcion.length() > 150) { //Maxima cantidad de caracteres en la descripcion(hacerla un campo de texto de mas filas?
-    		newEvent.descripcion = newEvent.descripcion.substring(0, 150);
+    	if (newEvent.descripcion.length() > 60) { //Maxima cantidad de caracteres en la descripcion(hacerla un campo de texto de mas filas?
+    		newEvent.descripcion = newEvent.descripcion.substring(0, 59);
     	}
     	int[] marcas = marcasList.getSelectedIndices();
     	newEvent.marcas = marcas;
