@@ -141,7 +141,7 @@ public class EventsPanel extends JPanel implements ActionListener{
 						restartWindow();
 					}
 					else {
-				        JOptionPane.showOptionDialog(new JFrame("test"), "    Ya hay un evento en esa fecha","Error", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atrás"}, null);
+				        JOptionPane.showOptionDialog(new JFrame("test"), "    Ya hay un evento en esa fecha","Error", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atras"}, null);
 					}
 	            }
 			}
@@ -150,7 +150,7 @@ public class EventsPanel extends JPanel implements ActionListener{
 				ProposalGUIPanel.displayEventData(actualEvent);
 				ProposalGUIPanel.freezeAllInput();
 				JPanel contenidos = (JPanel)ProposalGUIPanel.getContentPane();
-		        JOptionPane.showOptionDialog(new JFrame("test"), contenidos,"Ver detalles evento", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atrás"}, null);	
+		        JOptionPane.showOptionDialog(new JFrame("test"), contenidos,"Ver detalles evento", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atras"}, null);	
 			}
 			else if (command.equals("Modificar")){
 				Proposal_GUI ProposalGUIPanel = new Proposal_GUI(DbConnector);

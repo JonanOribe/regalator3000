@@ -28,4 +28,19 @@ public class AuxFunctions {
 		}
 		return (Integer.toString(year) + separator + monthStr + separator + dayStr);
 	}
+
+	public static int getMonthLengthDays(int month, int anyo){
+		switch (month){
+		case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+			return 31;
+		case 2:
+			//Sacado de wikipedia: un año es bisiesto si es divisible entre cuatro y (no es divisible entre 100 ó es divisible entre 400).
+			if (anyo % 4 == 0 && ( !(anyo % 100 == 0) || anyo % 400 == 0) ){
+				return 29;
+			}
+			return 28;
+		default:
+			return 30;
+		}
+	}
 }

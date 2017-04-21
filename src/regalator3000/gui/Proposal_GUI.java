@@ -348,8 +348,8 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
     	if (newEvent.descripcion == null){
     		newEvent.descripcion = "";
     	}
-    	if (newEvent.descripcion.length() > 60) { //Maxima cantidad de caracteres en la descripcion(hacerla un campo de texto de mas filas?
-    		newEvent.descripcion = newEvent.descripcion.substring(0, 59);
+    	if (newEvent.descripcion.length() > 45) { //Maxima cantidad de caracteres en la descripcion(hacerla un campo de texto de mas filas?
+    		newEvent.descripcion = newEvent.descripcion.substring(0, 44);
     	}
     	int[] marcas = marcasList.getSelectedIndices();
     	newEvent.marcas = marcas;

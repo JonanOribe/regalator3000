@@ -17,7 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import regalator3000.db.RegalosControl;
 import regalator3000.misc.AuxFunctions;
 import regalator3000.misc.EventData;
 
@@ -77,8 +76,8 @@ public class CalendarPanel extends JPanel{
             lastMonth = (currentMonth - 1);
         }
 
-        int lastMonthDays = RegalosControl.getMonthLengthDays(lastMonth+1, currentYear); //Defined here for clarity, could put it inside the function call
-        int daysThisMonth = RegalosControl.getMonthLengthDays((currentMonth+1), currentYear);
+        int lastMonthDays = AuxFunctions.getMonthLengthDays(lastMonth+1, currentYear); //Defined here for clarity, could put it inside the function call
+        int daysThisMonth = AuxFunctions.getMonthLengthDays((currentMonth+1), currentYear);
         initComponents(panelsToDrawToTheLeft,lastMonthDays,daysThisMonth, currentMonth,currentYear); //Pq calendar da 0 para enero y nuestra funcion usa 1 para enero 
         }catch(Exception e){
         	System.out.println("Problema al generar el calendario: " + e.toString());

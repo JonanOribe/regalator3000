@@ -1,4 +1,4 @@
-package regalator3000;
+	package regalator3000;
 /* A FECHA DE 15/04 FALTA: Añadir mas datos en la BBDD, añadir extra campos para: imagenes que renderear de los productos, mail de los usuarios, paginas web para los productos que el usuario pueda clickar etc
  * Mejorar GUI del aviso del regalo, Añadir cambio de idioma a la GUI en opciones -> más...*/
 			

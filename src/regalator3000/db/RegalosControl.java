@@ -7,8 +7,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import regalator3000.gui.RegaloPanel;
+import regalator3000.misc.AuxFunctions;
 import regalator3000.misc.EventData;
 
 /*Clase con metodos estaticos para gestionar criterios de obtencion de IDs de los regalos basados en los criterios del usuario, de aleatoriedad y de marcas/categorias elegidas
@@ -62,14 +65,45 @@ public class RegalosControl {
 		}
 	}
 	
-	/*Devuelve una id aleatoria de la lista de regalosID*/
-	public static String eligeRegaloAleatorio(ArrayList<String> regalos){
+	/*Devuelve una id aleatoria de la lista de regalosID,
+	 * NOTA: Para no liar mucho el codigo hara otra llamada a la BBDD y obtendra las imagenes y URL del regalo...
+	 * Precondicion: No hay mas de un regalo con el mismo nombre, tendria que ser el caso...*/
+	public static String[] eligeRegaloAleatorio(DatabaseHandler DbConnector, ArrayList<String> regalos){
 		Random randomGen = new Random();
+		try{
 		if (regalos != null){
 			int seleccion = randomGen.nextInt(regalos.size());
-			return regalos.get(seleccion);
+			String[] valoresFinales = new String[4];
+			valoresFinales[0] = regalos.get(seleccion);
+			//Encuentra el nombre del regalo elegido
+			String codigoSQL = "SELECT imagen,url1,url2 FROM regalos WHERE nombre ='"+valoresFinales[0]+"';"; //Hacer una funcion en el futuro que haga esto
+			Statement stmt = DbConnector.openNewConnection().createStatement(); 
+			ResultSet rs = stmt.executeQuery(codigoSQL);
+			while(rs.next()){
+				valoresFinales[1] = rs.getString("imagen");
+				if (valoresFinales[0] == null) {
+					valoresFinales[1] = ""; 
+				}
+				valoresFinales[2] = rs.getString("url1");
+				valoresFinales[3] = rs.getString("url2");
+				if (valoresFinales[3] == null) {
+					valoresFinales[3] = "";
+				}
+			}
+			rs.close();
+			return valoresFinales;
 		}
-		return "Ninguno"; //Lista vacia
+		String valoresFinales[] = {"Ninguno","","",""};
+		return valoresFinales;
+		}
+		catch(Exception e){
+			System.out.println("Error accediendo a la imagen y url del regalo. " + e.getMessage());
+			String valoresFinales[] = {"Ninguno","","",""};
+			return valoresFinales;
+		}
+		finally{
+			DbConnector.closeConnection();
+		}
 	}
 	
 	//Mira la lista de eventos del usuario por si hay alguno del que toque avisar hoy, mejorar graficos, opciones, etc.*/
@@ -78,7 +112,7 @@ public class RegalosControl {
 		EventData evento;
 		String valoresData = LocalDate.now().toString();
 		String[] valores = valoresData.split("-"); 
-		int MonthLengthDays = getMonthLengthDays(Integer.parseInt(valores[1]),Integer.parseInt(valores[0]));
+		int MonthLengthDays = AuxFunctions.getMonthLengthDays(Integer.parseInt(valores[1]),Integer.parseInt(valores[0]));
 		long tiempoEnHorasHoy = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * MonthLengthDays * 24) + (Long.parseLong(valores[2]) * 24); //anyos + meses + dias en segundos (puede estar mal, sobretodo meses, buscar una funcion mas completa o hacerla
 		long tiempoEnHorasEvento = 0;
 		long diasAntesEnHoras = 0;
@@ -99,9 +133,11 @@ public class RegalosControl {
 				if (diferencia <= diasAntesEnHoras){
 					//AVISO AQUI: (CUTRE POR AHORA, hacer un JPanel especial con decoracion y tal para el aviso)
 					evento = EventoControl.getEventData(DbConnector, Integer.parseInt(evento.eventID));
-					String regalo = RegalosControl.eligeRegaloAleatorio(RegalosControl.getRegalosElegidos(DbConnector, evento));
-					JOptionPane.showConfirmDialog (null,evento.fecha + ": " + evento.descripcion + "\nTe recomendamos comprar: " + regalo,"REGALOOOOO",JOptionPane.YES_NO_OPTION);
-				}
+					String[] regalo = RegalosControl.eligeRegaloAleatorio(DbConnector, RegalosControl.getRegalosElegidos(DbConnector, evento));
+					String diff = Long.toString(diferencia/24);
+					//System.out.println("diff: " + diff + " , " + Arrays.toString(regalo));
+					RegaloPanel content = new RegaloPanel(evento, Integer.parseInt(diff) , regalo);
+			        JOptionPane.showOptionDialog(new JFrame("test"), content,"Su regalo, grasias", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atras"}, null);				}
 			}
 			catch(Exception e){
 				System.out.println("Datos de evento mal formateados " + e.toString());
@@ -109,20 +145,7 @@ public class RegalosControl {
 		}
 	}
 	
-	public static int getMonthLengthDays(int month, int anyo){
-		switch (month){
-		case 1: case 3: case 5: case 7: case 8: case 10: case 12:
-			return 31;
-		case 2:
-			//Sacado de wikipedia: un año es bisiesto si es divisible entre cuatro y (no es divisible entre 100 ó es divisible entre 400).
-			if (anyo % 4 == 0 && ( !(anyo % 100 == 0) || anyo % 400 == 0) ){
-				return 29;
-			}
-			return 28;
-		default:
-			return 30;
-		}
-	}
+
 	
 	/*Funcion para retornar el codigo SQL combinado con la seleccion de marcas/categorias incluidas/excluidas
 	 * Los booleanos te dejan hacer inclusion IN(numeros) o exclusion NOT IN(numeros) porque en realidad no se

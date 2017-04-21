@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `regalator`.`regalos`(
 		`id` INT NOT NULL AUTO_INCREMENT,
         `id_usuario` INT NOT NULL,
         `fecha` DATE,
-        `descripcion` VARCHAR(60),
+        `descripcion` VARCHAR(45),
 		`diasAviso` INT NOT NULL,  -- de 0 a X dias antes de la fecha
         `regaloConcreto` INT, -- si es null el regalo es aleatorio
         PRIMARY KEY(`id`),  
