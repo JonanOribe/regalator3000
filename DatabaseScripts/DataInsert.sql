@@ -43,15 +43,15 @@ INSERT INTO marcas values(7,"World Peace");
 -- ----------------------------
 
 -- DATOS REGALOS --
-INSERT INTO regalos values(1,"Vale Spa",35,1,1,"img01.jpg","https://www.google.com","");
-INSERT INTO regalos values(2,"Libro de misterio",12,2,1,"img02.jpg","https://www.google.com","");
-INSERT INTO regalos values(3,"Viaje a Londres",345,4,1,"img03.jpg","https://www.google.com","");
-INSERT INTO regalos values(4,"Libro de cocina",13,2,1,"img04.jpg","https://www.google.com","");
-INSERT INTO regalos values(5,"Collar de brillantes",102,5,4,"img05.jpg","https://www.google.com","");
-INSERT INTO regalos values(6,"Jersey",23,6,3,"img06.jpg","https://www.google.com","");
-INSERT INTO regalos values(7,"Cafetera",52.40,3,1,"img07.jpg","https://www.google.com","");
-INSERT INTO regalos values(8,"Cena para dos",62.35,7,5,"img08.jpg","https://www.google.com","");
-INSERT INTO regalos values(9,"Kit de pintura",36.7,8,1,"img09.jpg","https://www.google.com","");
+INSERT INTO regalos values(1,"Vale Spa",35,1,1,"bicicleta.jpg","https://www.google.com/valespa","https://www.amazon.com/");
+INSERT INTO regalos values(2,"Libro de misterio",12,2,1,"libro.jpg","https://www.google.com/libromisterio","https://www.amazon.com/");
+INSERT INTO regalos values(3,"Viaje a Londres",345,4,1,"viaje.jpg","https://www.google.com/viajelondres","https://www.amazon.com/");
+INSERT INTO regalos values(4,"Libro de cocina",13,2,1,"flores.jpg","https://www.google.com/librococina","https://www.amazon.com/");
+INSERT INTO regalos values(5,"Collar de brillantes",102,5,4,"brazalete.jpg","https://www.google.com/collarbrillantes","https://www.amazon.com/");
+INSERT INTO regalos values(6,"Jersey",23,6,3,"chaqueta.jpg","https://www.google.com/jersey","https://www.amazon.com/");
+INSERT INTO regalos values(7,"Cafetera",52.40,3,1,"reloj.jpg","https://www.google.com/cafetera","https://www.amazon.com/");
+INSERT INTO regalos values(8,"Cena para dos",62.35,7,5,"cena.jpg","https://www.google.com/cenados","https://www.amazon.com/");
+INSERT INTO regalos values(9,"Kit de pintura",36.7,8,1,"perfume.jpg","https://www.google.com/kitpintura","https://www.amazon.com/");
 -- ----------------------------
 
 -- DATOS eventos --

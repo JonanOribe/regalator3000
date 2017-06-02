@@ -1,11 +1,11 @@
 /*02/06 -> Fade in y fade out de imagenes implementado, parece que funciona bien pero habria que probar con imagenes pequeñas si el resultado es el esperado o poner todas las imagenes que usemos
  * de un intervalo de tamaño (o de uno fijo) concreto.
  * 
+ *  - * Cambios para proposal_GUI -> eliminar objetos de las combobox al seleccionarlos, que regalo concreto tenga en cuenta la eleccion ya hecha para la lista (demasiadas llamadas a la BBDD? pensar) 
  * 
- * Falta: Poner que no haya fade in/out de imagenes si solo hay una definida en el regalo
+ * Falta: 
  * cambiar la GUI para que quede más ordenada y bonita usando probablemente un groupLayout, mejorarla con mejores fuentes, otros botones nose?
- * En la base de datos asignar a cada regalo la imagen/URLS que tocan...
- * Que el boton de borrar evento ejecute el borrado (facil)(o moverlo de ahi el boton, o poner otros nose)
+ * En la base de datos asignar a cada regalo la imagen/URLS que tocan... (maomeno)
  * Algo que me dejo seguro
  */
 package regalator3000.gui;
@@ -32,12 +32,16 @@ import java.net.URI;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
+import regalator3000.db.DatabaseHandler;
+import regalator3000.db.EventoControl;
 import regalator3000.misc.EventData;
 
 
@@ -47,33 +51,37 @@ public class RegaloPanel extends JPanel implements ActionListener{
 	private static final int maxWidth = 800; //Maximo tamaño de la imagen
 	private static final int maxHeight = 600;
 	private static final int timerTick = 40; //Time in milliseconds the animation will step once
-	private static final float alphaDelta = 0.03f; //How much the transparency will change per tick
+	private static final float alphaDelta = 0.07f; //How much the transparency will change per tick
+	private static final int mainImageStandInTick = 30; //Ticks the main image will stay before changing for the secondary one, for each cicle ( number / timerTick to know the number in millis)
+	private static final String regalatorPage = "http://www.regalator3000maxchupiway.com"; //poner aqui la pagina del regalator cuando este
 	private static final BasicStroke strokeType = new BasicStroke(5.0f);
 
 	public static final String currentDir = System.getProperty("user.dir") + File.separator + "imgs" + File.separator;
-	private BufferedImage imgFadeOut, imgFadeIn; //regaloImg2;NOTE: change them to only have a couple of them in memory, even if you're showing more
+	private BufferedImage imgFadeOut, imgFadeIn;
 	ImgPanel imgPanel;
 	JLabel text1,text2,text3,text4;
-	String firstURL, secondURL, testSecondImage; //pasar secondImage dentro de regaloData[]
+	String firstURL, secondURL, imagenRegalo; 
 	EventData eventoRelacionado;  //Para saber que evento relacionar con el regalo, por si hay que borrarlo o hacer otras cosas
 	private Timer alphaTimer;
-	private float currentAlpha = 0f; //transparencia inicial (totalmente opaco)
+	private float currentAlpha = 1f; //transparencia inicial (totalmente opaco)
+	private int standInTicks = mainImageStandInTick;
+	private boolean mainImage = true;
 	
 	public RegaloPanel(EventData evento, int dias, String[] regaloData){
 		super();
 		eventoRelacionado = evento;
 		try{
 			if (regaloData[1].equals("")) {
-				regaloData[1] = "img-error.jpg"; //PONER AQUI IMAGEN DE NINGUN REGALO VALIDO EN EL FUTURO!
+				regaloData[1] = "regalo_NE.jpg"; //IMAGEN DE REGALO NO ENCONTRADO...
 			}
-			testSecondImage = "regalo.jpg";
+			imagenRegalo = "regalo.jpg";
 			Image imgLoader = ImageIO.read(new File(currentDir + regaloData[1])); //O potser carregar les dues veure quina es mes gran i a partir daqui canviar tamanys...
 			//System.out.println("Actual size: " + imgLoader.getWidth(this) + " , " + imgLoader.getHeight(this));
 			int finalWidth = (imgLoader.getWidth(this) >= (maxWidth-20)) ? (maxWidth-20) : imgLoader.getWidth(this); //Comprobar tambe que no sigui massa petita?
 			int finalHeight = (imgLoader.getHeight(this) >= (maxHeight-185)) ? (maxHeight-185) : imgLoader.getHeight(this);
 			//System.out.println("Used size: " + finalWidth + " , " + finalHeight);
 			imgFadeOut = getImgOfSize(imgLoader, finalWidth, finalHeight); //aixo o forçar totes un tamany pero cutre...
-			imgLoader = ImageIO.read(new File(currentDir + testSecondImage));
+			imgLoader = ImageIO.read(new File(currentDir + imagenRegalo));
 			finalWidth = (imgLoader.getWidth(this) >= (maxWidth-20)) ? (maxWidth-20) : imgLoader.getWidth(this); //Comprobar tambe que no sigui massa petita?
 			finalHeight = (imgLoader.getHeight(this) >= (maxHeight-185)) ? (maxHeight-185) : imgLoader.getHeight(this);
 			imgFadeIn = getImgOfSize(imgLoader, finalWidth, finalHeight);
@@ -131,14 +139,38 @@ public class RegaloPanel extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent evt){
 		String command = evt.getActionCommand();
 		if (command == null){
-			currentAlpha -= alphaDelta;
+			String[] things = this.toString().split(",");
+			if (things[4].equals("invalid")){ alphaTimer.stop();} //Cutre cutre, pero al usar nested frames i tal el timer seguia en scope cuando cerrabas el dialogo, esto lo para
+			//Me preocupa que el dialogo en si se mantenga tambien en scope pero la comprobacion es larga...
+			if (standInTicks <= 0) {
+				currentAlpha -= alphaDelta;
+			}
+			else {
+				standInTicks--;
+			}
 			repaint();
 			if (currentAlpha <= 0f){ 
+				mainImage = !mainImage;
+				if (mainImage) standInTicks = mainImageStandInTick;
 				currentAlpha = 1f;
 				BufferedImage tmp = imgFadeIn;
 				imgFadeIn = imgFadeOut;
 				imgFadeOut = tmp;
 			}
+		}
+		else if (command.equals("Borra el evento")) {
+			int seguro = JOptionPane.showConfirmDialog(new JFrame(""), "Estas seguro de querer borrar el evento " + eventoRelacionado.descripcion + "?", "Borrar el evento", JOptionPane.YES_NO_OPTION);
+			if (seguro == 0) { //Opciones van de 0->... por tanto 0 es la primera opcion que es si a borrar7
+				DatabaseHandler DbConnector = new DatabaseHandler();
+				DbConnector.setUserID(Integer.parseInt(eventoRelacionado.userID));
+				EventoControl.removeEvent(DbConnector, Integer.parseInt(eventoRelacionado.eventID)); 
+				JDialog topFrame = (JDialog) this.getTopLevelAncestor(); //NOTA: Esto petara si estas testeando solo, es porque el testeo se hace en una JFrame y main_GUI llama a esto como un JDialog...
+				alphaTimer.stop();
+				topFrame.dispose();
+			}
+		}
+		else if (command.equals("Visita nuestra página para mas!")){
+			goToUrl(regalatorPage);
 		}
 	}
 	
@@ -176,6 +208,7 @@ public class RegaloPanel extends JPanel implements ActionListener{
 				goToUrl(firstURL);
 			}
 		});
+		text4.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		text4.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent e){
 				goToUrl(secondURL);
@@ -198,12 +231,16 @@ public class RegaloPanel extends JPanel implements ActionListener{
 		iconsPanel.add(new JLabel(" "),BorderLayout.NORTH);
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BorderLayout(10,10));
-		buttonPanel.add(new JButton("Borra el evento"),BorderLayout.CENTER); //Falta implementar la accion de borrar el evento (facil, esta el metodo hecho)
+		JButton borraButton = new JButton("Borra el evento");
+		borraButton.addActionListener(this);
+		buttonPanel.add(borraButton ,BorderLayout.CENTER); //Falta implementar la accion de borrar el evento (facil, esta el metodo hecho)
 		buttonPanel.add(new JLabel("                               "), BorderLayout.EAST); //Manera cutre de poner la posicion relativa
 		buttonPanel.add(new JLabel("                               "), BorderLayout.WEST); //Mejor recrear y usar GroupLayout en el futuro...
 		buttonPanel.add(new JLabel("   "), BorderLayout.NORTH);
 		iconsPanel.add(buttonPanel, BorderLayout.CENTER);
-		iconsPanel.add(new JButton("Visita nuestra página para mas!"),BorderLayout.SOUTH);
+		JButton visitButton = new JButton("Visita nuestra página para mas!");
+		visitButton.addActionListener(this);
+		iconsPanel.add(visitButton,BorderLayout.SOUTH);
 		textAndIconsPanel.add(textPanel);
 		textAndIconsPanel.add(iconsPanel);
 		mainPanel.add(titlePanel,BorderLayout.NORTH);
@@ -227,8 +264,9 @@ public class RegaloPanel extends JPanel implements ActionListener{
 	public static void main(String[] args) {
 		JFrame window = new JFrame("");
 		EventData evento = new EventData("1");
+		evento.eventID = "5";
 		evento.descripcion = "BODA JUANAAAA";
-		String[] regalo = {"Ninguno", "reloj.jpg","https://www.google.es/#q=Lol+Internet",""};
+		String[] regalo = {"Ninguno", "brazalete.jpg","https://www.google.es/#q=Lol+Internet",""};
 		RegaloPanel content = new RegaloPanel(evento, 3, regalo);
 		//BODA JUANaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 45 char (max)
 		window.setContentPane(content);

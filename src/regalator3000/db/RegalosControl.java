@@ -138,7 +138,7 @@ public class RegalosControl {
 					String diff = Long.toString(diferencia/24);
 					//System.out.println("diff: " + diff + " , " + Arrays.toString(regalo));
 					RegaloPanel content = new RegaloPanel(evento, Integer.parseInt(diff) , regalo);
-			        JOptionPane.showOptionDialog(new JFrame("test"), content,"Su regalo, grasias", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"De acuerdo"}, null);				}
+			        JOptionPane.showOptionDialog(new JFrame("test"), content,"Se aproxima una fecha importante!", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"De acuerdo"}, null);				}
 			}
 			catch(Exception e){
 				System.out.println("Datos de evento mal formateados " + e.toString());
