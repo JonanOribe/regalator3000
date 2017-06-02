@@ -115,17 +115,15 @@ public class RegalosControl {
 		String[] valores = valoresData.split("-"); 
 		int MonthLengthDays = AuxFunctions.getMonthLengthDays(Integer.parseInt(valores[1]),Integer.parseInt(valores[0]));
 		long tiempoEnHorasHoy = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * MonthLengthDays * 24) + (Long.parseLong(valores[2]) * 24); //anyos + meses + dias en segundos (puede estar mal, sobretodo meses, buscar una funcion mas completa o hacerla
-		long tiempoEnHorasEvento = 0;
 		long diasAntesEnHoras = 0;
 		long diferencia = 0;
+		long[] tiempoHorasEventos = ordenaPorFecha(eventos);
 		for (int i = 0; i < eventos.size(); i++){
+		
 			evento = eventos.get(i);
 			try {
-				valoresData = evento.fecha;
-				valores = valoresData.split("-"); 
-				tiempoEnHorasEvento = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * MonthLengthDays * 24) + (Long.parseLong(valores[2]) * 24); 
 				diasAntesEnHoras = evento.diasAviso * 24;
-				diferencia = tiempoEnHorasEvento - tiempoEnHorasHoy;
+				diferencia = tiempoHorasEventos[i] - tiempoEnHorasHoy;
 				//System.out.println("Horas hoy: " + tiempoEnHorasHoy + " , horas dia regalo: " + tiempoEnHorasEvento + " , dias en horas: " + diasAntesEnHoras + " , diferencia " + diferencia);
 				if (diferencia < 0) {
 					//el dia del evento esta en el pasado ya, borrar o avisar??? Pensar en ello...
@@ -146,6 +144,43 @@ public class RegalosControl {
 		}
 	}
 	
+	/*Funcion que retorna una array con el tiempo total de cada evento en horas, ordenada de menor a mayor. A la vez tambien
+	 * ordena la lista de eventos del usuario para que sigan el mismo orden que el de las fechas para que le aparezcan
+	 * al usuario en ese orden	 */
+	private static long[] ordenaPorFecha(ArrayList<EventData> eventos){
+		long[] horas = new long[eventos.size()];
+		String[] valores = new String[3];
+		String valoresData;
+		EventData eventoTmp,eventoTmp2;
+		long tmp;
+		for(int i = 0; i < eventos.size(); i++){ //Creamos una array de longs con el tiempo total en horas de cada fecha de evento, (cuanto mas tarde mas grande sera) se distribuyen en igual orden que en la lista de eventos
+			valoresData = eventos.get(i).fecha;
+			valores = valoresData.split("-"); 
+			int MonthLengthDays = AuxFunctions.getMonthLengthDays(Integer.parseInt(valores[1]),Integer.parseInt(valores[0]));
+			horas[i] = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * MonthLengthDays * 24) + (Long.parseLong(valores[2]) * 24); 
+		}
+		
+		for (int i = 0; i < eventos.size()-1; i++){ //Ahora ordenamos los eventos dependiendo de su tiempo total (menor mas a la izquierda) y ordenamos asi tanto la array de numeros como la arraylist de eventos por su fecha
+			if (horas[i] > horas[i+1]){
+				tmp = horas[i];
+				horas[i] = horas[i+1];
+				horas[i+1] = tmp;
+				eventoTmp = eventos.get(i);  //Puede que haya manera sin usar doble variable temporal
+				eventoTmp2 = eventos.get(i+1);
+				eventos.remove(i);
+				eventos.add(i, eventoTmp2);
+				eventos.remove(i+1);
+				eventos.add(i+1, eventoTmp);
+				i = -1;
+			}
+		}
+		/*for(int i = 0; i < eventos.size(); i++){
+			System.out.println(horas[i]);
+			System.out.println(eventos.get(i).userID);
+		}*/
+		
+		return horas;
+	}
 
 	
 	/*Funcion para retornar el codigo SQL combinado con la seleccion de marcas/categorias incluidas/excluidas
@@ -200,9 +235,23 @@ public class RegalosControl {
 		/*//prueba funcionamiento con un evento aleatorio (borrar metodo de testeo en eventocontrol cuando acabemos
 		EventoControl tester = new EventoControl();
 		DatabaseHandler DbConnector = new DatabaseHandler();
+		ArrayList<EventData> eventos = new ArrayList<EventData>();
 		EventData eventoRandom = tester.generateRandomEvent("1");
+		eventoRandom.fecha = "2017-09-25";
+		eventos.add(eventoRandom);
+		eventoRandom = tester.generateRandomEvent("2");
+		eventoRandom.fecha = "2017-06-26";
+		eventos.add(eventoRandom);
+		eventoRandom = tester.generateRandomEvent("3");
+		eventoRandom.fecha = "2017-02-25";
+		eventos.add(eventoRandom);
+		eventoRandom = tester.generateRandomEvent("4");
+		eventoRandom.fecha = "2017-01-27";
+		eventos.add(eventoRandom);
+		checkForPresents(DbConnector,eventos);
 		String user="Juan",pwd="A2445D"; //CAMBIA EL USER PARA TESTEAR, UN USER QUE EXISTA
 		UserControl.logInUser(DbConnector,user, pwd);
+		
 		System.out.println("DETALLES EVENTO ELEGIDO: ");
 		eventoRandom.toConsole();
 		ArrayList<String> regaloIDs = getRegalosElegidos(DbConnector, eventoRandom);

@@ -54,9 +54,10 @@ public class RegaloPanel extends JPanel implements ActionListener{
 	private static final float alphaDelta = 0.07f; //How much the transparency will change per tick
 	private static final int mainImageStandInTick = 30; //Ticks the main image will stay before changing for the secondary one, for each cicle ( number / timerTick to know the number in millis)
 	private static final String regalatorPage = "http://www.regalator3000maxchupiway.com"; //poner aqui la pagina del regalator cuando este
+	private static final String regaloNoEncontradoSrc = "regalo_NE.jpg";  //Ruta a la imagen de regalo no encontrado
 	private static final BasicStroke strokeType = new BasicStroke(5.0f);
-
 	public static final String currentDir = System.getProperty("user.dir") + File.separator + "imgs" + File.separator;
+	
 	private BufferedImage imgFadeOut, imgFadeIn;
 	ImgPanel imgPanel;
 	JLabel text1,text2,text3,text4;
@@ -72,7 +73,7 @@ public class RegaloPanel extends JPanel implements ActionListener{
 		eventoRelacionado = evento;
 		try{
 			if (regaloData[1].equals("")) {
-				regaloData[1] = "regalo_NE.jpg"; //IMAGEN DE REGALO NO ENCONTRADO...
+				regaloData[1] = regaloNoEncontradoSrc; //IMAGEN DE REGALO NO ENCONTRADO...
 			}
 			imagenRegalo = "regalo.jpg";
 			Image imgLoader = ImageIO.read(new File(currentDir + regaloData[1])); //O potser carregar les dues veure quina es mes gran i a partir daqui canviar tamanys...
@@ -194,26 +195,28 @@ public class RegaloPanel extends JPanel implements ActionListener{
 		eventoTexto.setFont(new Font("Century Schoolbook L",Font.BOLD,22));
 		if (regalo.equals("Ninguno")){
 			text2 = new JLabel("No hemos podido encontrar un regalo adecuado!", SwingConstants.LEFT);
+			text3 = new JLabel("");
+			text4 = new JLabel("");
 		} else {
 			text2 = new JLabel("Te recomendamos que regales: " + regalo, SwingConstants.LEFT); //Mejorar presentacion cuando rule
+			text3 = new JLabel("<html><a href=#>En esta pagina encontraras las mejores ofertas</a></html>", SwingConstants.LEFT); //link vacio porque no usa el link, usa el evento mouseclick
+			text4 = new JLabel("<html><a href=#>Y en esta pagina tambien</a></html>", SwingConstants.LEFT); //link vacio porque no usa el link, usa el evento mouseclick
+			text3.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			text3.addMouseListener(new MouseAdapter(){
+				public void mouseClicked(MouseEvent e){
+					goToUrl(firstURL);
+				}
+			});
+			text4.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			text4.addMouseListener(new MouseAdapter(){
+				public void mouseClicked(MouseEvent e){
+					goToUrl(secondURL);
+				}
+			});
 		}
+		
 		text2.setFont(new Font("Century Schoolbook L",Font.ITALIC|Font.BOLD,21));
 		text2.setForeground(Color.RED);
-		//Hacer lo mismo con las URLS, si es "" poner texto de no encontrado
-		text3 = new JLabel("<html><a href=#>En esta pagina encontraras las mejores ofertas</a></html>", SwingConstants.LEFT); //link vacio porque no usa el link, usa el evento mouseclick
-		text4 = new JLabel("<html><a href=#>Y en esta pagina tambien</a></html>", SwingConstants.LEFT); //link vacio porque no usa el link, usa el evento mouseclick
-		text3.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		text3.addMouseListener(new MouseAdapter(){
-			public void mouseClicked(MouseEvent e){
-				goToUrl(firstURL);
-			}
-		});
-		text4.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		text4.addMouseListener(new MouseAdapter(){
-			public void mouseClicked(MouseEvent e){
-				goToUrl(secondURL);
-			}
-		});
 		
 		JPanel titlePanel = new JPanel();
 		titlePanel.setLayout(new GridLayout(2,0,10,10));
