@@ -1,3 +1,4 @@
+//21/04: Hacer una opcion: tienes eventos que tal, verlos? si/no para cada uno y ademas uno de no volver a avisar hoy (con posible cambio en GUI en mas o algo)
 package regalator3000.db;
 
 
@@ -137,7 +138,7 @@ public class RegalosControl {
 					String diff = Long.toString(diferencia/24);
 					//System.out.println("diff: " + diff + " , " + Arrays.toString(regalo));
 					RegaloPanel content = new RegaloPanel(evento, Integer.parseInt(diff) , regalo);
-			        JOptionPane.showOptionDialog(new JFrame("test"), content,"Su regalo, grasias", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atras"}, null);				}
+			        JOptionPane.showOptionDialog(new JFrame("test"), content,"Su regalo, grasias", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"De acuerdo"}, null);				}
 			}
 			catch(Exception e){
 				System.out.println("Datos de evento mal formateados " + e.toString());
