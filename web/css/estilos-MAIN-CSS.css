@@ -139,24 +139,51 @@ table {
 
 /*FIN DEL RESET*/
 
-* {
-    margin: 0;
-    padding: 0;
-    background: grey;
-}
-
-body{
-    margin: 10 auto;
+body {
+    margin: auto;
     width: 1200px;
-    background: red;
+    background: #e6ecf7;
     text-align: center;
     /*border: 3px solid black;*/
 }
 
-main{
-    margin: 10 auto;
-    width: 600px;
-    background: blue;
+main {
+    margin: 20px auto;
+    width: 1200px;
+    padding: 5px;
+    background: #dee2c3;
     text-align: center;
     border: 3px solid black;
+}
+
+h1 {
+    padding: 5px;
+}
+
+.login {
+    margin: 30px auto;
+    width: 800px;
+    background: #b1c6b1;
+}
+
+label {
+    width: 8px;
+    font-weight: bold;
+    background: grey;
+    margin-right: 10px;
+    margin-bottom:5px;
+}
+
+input{ margin-bottom: 5px; }
+
+form {
+    background-color: #f1f1f1;
+    padding: 10px 30px 10px 30px;
+}
+
+.bEnvio {
+    margin: 10px;
+    padding: 5px;
+    color: white;
+    background-color: #4a8bf5;
 }
