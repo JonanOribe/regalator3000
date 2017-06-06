@@ -1,0 +1,189 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+
+/* HTML5 display-role reset for older browsers */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+}
+
+body {
+    line-height: 1;
+}
+
+ol,
+ul {
+    list-style: none;
+}
+
+blockquote,
+q {
+    quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: '';
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+
+/*FIN DEL RESET*/
+
+body {
+    margin: auto;
+    width: 1200px;
+    background: #e6ecf7;
+    text-align: center;
+    /*border: 3px solid black;*/
+}
+
+main {
+    margin: 20px auto;
+    width: 1200px;
+    padding: 5px;
+    background: #dee2c3;
+    text-align: center;
+    border: 3px solid black;
+}
+
+h1 {
+    padding: 5px;
+}
+
+.login {
+    margin: 30px auto;
+    width: 800px;
+    background: #b1c6b1;
+}
+
+label {
+    width: 8px;
+    font-weight: bold;
+    background: grey;
+    margin-right: 10px;
+    margin-bottom:5px;
+}
+
+input{ margin-bottom: 5px; }
+
+form {
+    background-color: #f1f1f1;
+    padding: 10px 30px 10px 30px;
+}
+
+.bEnvio {
+    margin: 10px;
+    padding: 5px;
+    color: white;
+    background-color: #4a8bf5;
+}
