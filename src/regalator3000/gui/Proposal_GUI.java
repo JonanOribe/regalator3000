@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -17,10 +18,21 @@ import regalator3000.db.EventoControl;
 import regalator3000.db.GUIDataRetriever;
 import regalator3000.misc.AuxFunctions;
 import regalator3000.misc.EventData;
+import regalator3000.misc.LinkedCBox;
+
+/*Prueba mejora comboboxes -> a ver, la combobox tiene que guardar el indice de la categoria elegida o se debe crear una variable de clase con las categorias elegidas (con la posicion dependiendo combobox?) 
+ * jComboBoxExample.addActionListener (new ActionListener () {
+   public void actionPerformed (ActionEvent e) {
+     JComboBox src = (JComboBox) e.getSource();
+     String command = e.getActionCommand;
+     (o if command.equals(...)...)
+     if ( src.getSelectedItem...)
+   */
 
 public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
 	private DatabaseHandler DbConnector;
 	private static boolean eventIsSelected = false; //for the GUI lookandfeel (if an event is selected and the user clicks another day it'll remove the data in the GUI, if he wasnt selecting an event and just wants to change the date it wont
+	private boolean userGeneratedEvent = true; //for combobox events, check wether its harvesting data from/for db or not
 	/**
 	 * 
 	 */
@@ -49,7 +61,7 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
         descLabel = new javax.swing.JLabel();
         descField = new javax.swing.JTextField();
         marcasList = new javax.swing.JList<String>();
-        catComboBoxList = new JComboBox[10];
+        catComboBoxList = new LinkedCBox[10];
         avisoLabelInicio = new javax.swing.JLabel();
         diasAvisoField = new javax.swing.JTextField();
         avisoLabelFinal = new javax.swing.JLabel();
@@ -96,12 +108,17 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
         scrollPane.setViewportView(marcasList);
         
         String[] categoriasTotal = GUIDataRetriever.getAllElements(DbConnector,"tipo","categorias",true); 
-        String[] categoriasUsadas = new String[categoriasTotal.length];
-        for(int i = 0; i < categoriasTotal.length; i++){
-        	categoriasUsadas[i] = categoriasTotal[i]; //Copia de categoriasTotal que va reduciendo sus elementos a medida que se eligen
-        }
+        LinkedCBox.initArray(categoriasTotal);
         for(int i = 0; i < catComboBoxList.length; i++){
-        	catComboBoxList[i] = new javax.swing.JComboBox<String>(categoriasUsadas);
+        	catComboBoxList[i] = LinkedCBox.createStrCBox();
+       	    catComboBoxList[i].addActionListener (new ActionListener () {
+       	    	public void actionPerformed (ActionEvent e) {
+       	    		if (userGeneratedEvent){
+	       	    		LinkedCBox src = (LinkedCBox) e.getSource();
+	       	    		LinkedCBox.choseItemInBoxes(catComboBoxList, src);
+       	    		}
+       	    	}
+       	    });
         }
         
         avisoLabelInicio.setText("Avisame");
@@ -196,19 +213,19 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
                         .addGap(60, 60, 60)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(catComboBoxList[2], javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(catComboBoxList[2], 150,150,150)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(catComboBoxList[3], javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(catComboBoxList[3], 150,150,150)
                                 .addGap(40, 40, 40)
                                 .addComponent(regConcretoRadioButton))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(catComboBoxList[6], javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(catComboBoxList[6], 150,150,150)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(catComboBoxList[7], javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(catComboBoxList[7], 150,150,150))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(catComboBoxList[8], javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(catComboBoxList[8], 150,150,150)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(catComboBoxList[9], javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(catComboBoxList[9], 150,150,150)
                                 .addGap(60,60,60)
                                 .addComponent(limpiarButton))
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -216,16 +233,16 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
                                 .addComponent(catLabel)
                                 )
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(catComboBoxList[0], javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(catComboBoxList[0], 150,150,150)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(catComboBoxList[1], javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(catComboBoxList[1], 150,150,150)
                                 .addGap(40, 40, 40)
                                 .addComponent(regAleatorioRadioButton)
                                 )
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(catComboBoxList[4], javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(catComboBoxList[4], 150,150,150)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(catComboBoxList[5], javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(catComboBoxList[5], 150,150,150)
                                 .addGap(40, 40, 40)
                                 .addComponent(regConcretoComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(16, 16, 16)
@@ -325,8 +342,17 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
     	}
     	if (evento.categorias != null){
 	        for(int i = 0; i < evento.categorias.length; i++){
-	        	catComboBoxList[i].setSelectedIndex(evento.categorias[i]);
+	        	userGeneratedEvent = false;
+	        	//System.out.println("Displaying index: " + evento.categorias[i]);
+	        	catComboBoxList[i].fillCBoxFromMain(evento.categorias[i]);
+	    		DefaultComboBoxModel<String> dcbm = new DefaultComboBoxModel<String>(catComboBoxList[i].getSelectedItemArray());
+	    		catComboBoxList[i].setModel(dcbm);	
+	    		catComboBoxList[i].setSelectedIndex(1);
+	        	LinkedCBox.removeFromModel(evento.categorias[i]);
+	        	userGeneratedEvent = true;
 	        }
+	        LinkedCBox.updateMainArray();
+	        LinkedCBox.updateModel(catComboBoxList);
     	}
     	diasAvisoField.setText(Integer.toString(evento.diasAviso));
     	if(evento.regaloConcreto == 0) {
@@ -354,11 +380,14 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
     	int[] marcas = marcasList.getSelectedIndices();
     	newEvent.marcas = marcas;
     	ArrayList<Integer> categorias = new ArrayList<Integer>();
+    	userGeneratedEvent = false;
     	for (int i = 0; i < catComboBoxList.length; i++) {
-    		if (catComboBoxList[i].getSelectedIndex() != 0 && !categorias.contains(catComboBoxList[i].getSelectedIndex())){
-    			categorias.add(catComboBoxList[i].getSelectedIndex());
+    		if (catComboBoxList[i].getChosenIndex() != 0 && !categorias.contains(catComboBoxList[i].getChosenIndex())){
+        		//System.out.println("Adding from box: " + i + ", index: " + catComboBoxList[i].getChosenIndex());
+    			categorias.add(catComboBoxList[i].getChosenIndex());
     		}
     	}
+    	userGeneratedEvent = true;
     	int[] catArray = new int[categorias.size()];
     	for (int i = 0; i < categorias.size(); i++) {
     		catArray[i] = categorias.get(i);
@@ -404,7 +433,7 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
         // Limpia el formulario al pulsar.Faltan campos por indicar que limpie; de momento limpia Descripcion y las Checkbox
         descField.setText("");
         diasAvisoField.setText("0");
-        fechaFormattedField.setText("2017-01-01");
+        //fechaFormattedField.setText("2017-01-01"); Creo que mejor no hacer esto 
         marcasList.setSelectedIndices(new int[0]);
         for(int i = 0; i < catComboBoxList.length; i++) {
         	catComboBoxList[i].setSelectedIndex(0);
@@ -507,7 +536,7 @@ public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
     // Variables declaration - do not modify                     
     private javax.swing.JButton limpiarButton;
     private javax.swing.JButton goToButton;
-    private JComboBox<String>[] catComboBoxList;
+    private static LinkedCBox<String>[] catComboBoxList;
     private JComboBox<String> regConcretoComboBox;
     private javax.swing.JFormattedTextField fechaFormattedField;
     private javax.swing.JLabel fechaLabel;

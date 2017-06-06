@@ -1,5 +1,7 @@
 package regalator3000.misc;
 
+import java.util.ArrayList;
+
 public class AuxFunctions {
 	
 	/*0 -> year; 1 -> month; 2 -> day*/
@@ -43,4 +45,13 @@ public class AuxFunctions {
 			return 30;
 		}
 	}
+	
+	public static String[] arrayListToArray(ArrayList<String> a){
+		String[] array = new String[a.size()];
+		for (int i = 0; i < a.size(); i++){
+			array[i] = a.get(i);
+		}
+		return array;
+	}
+	
 }
