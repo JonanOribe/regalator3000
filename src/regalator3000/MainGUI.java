@@ -152,25 +152,31 @@ public class MainGUI extends JPanel implements ActionListener{
 		
                 //Pestaña "Más"
 		JMenu LoginMenu = new JMenu("Mas");
-		JMenuItem ResetDNDSButton= new JMenuItem("Reactivar Avisos Sesion");
-		JMenuItem ResetDNDPButton= new JMenuItem("Reactivar Avisos Perfil");
-		JMenuItem LogOnButton = new JMenuItem("Creditos");
-		JMenuItem LogOutButton = new JMenuItem("Logout");
-
-		LogOnButton.addActionListener(listener);			
-		LogOutButton.addActionListener(listener);
-		ResetDNDPButton.addActionListener(listener);
-		ResetDNDSButton.addActionListener(listener);
-		LoginMenu.add(ResetDNDPButton);
-		LoginMenu.addSeparator();
-		LoginMenu.add(ResetDNDSButton);
-		LoginMenu.addSeparator();
-		LoginMenu.add(LogOnButton);
+			JMenuItem LogOnButton = new JMenuItem("Creditos");
+			JMenuItem LogOutButton = new JMenuItem("Logout");
+	
+			JMenu EventMenu = new JMenu("Eventos");
+			JMenuItem ResetDNDSButton= new JMenuItem("Reactivar Avisos Sesion");
+			JMenuItem ResetDNDPButton= new JMenuItem("Reactivar Avisos Perfil");
+			
+	
+			
+			LogOnButton.addActionListener(listener);			
+			LogOutButton.addActionListener(listener);
+			ResetDNDPButton.addActionListener(listener);
+			ResetDNDSButton.addActionListener(listener);
+			
+			EventMenu.add(ResetDNDSButton);
+			EventMenu.addSeparator();
+			EventMenu.add(ResetDNDPButton);
+			
+			LoginMenu.add(LogOnButton);
 		LoginMenu.addSeparator();
 		LoginMenu.add(LogOutButton);
 			
 			
 		Menu.add(AboutMenu);
+		Menu.add(EventMenu);
 		//Menu.add(PrefMenu);
 		Menu.add(LoginMenu);
 		return Menu;
@@ -261,7 +267,7 @@ public class MainGUI extends JPanel implements ActionListener{
 		else if (command.equals("Tus eventos")){
 			if(UserControl.isUserLogged(DbConnector)) {
 		        EventsPanel content = new EventsPanel(DbConnector);
-		        JOptionPane.showOptionDialog(new JFrame("test"), content,"Eventos de " + DbConnector.getUserName(), JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atrás"}, null);
+		        JOptionPane.showOptionDialog(new JFrame(""), content,"Eventos de " + DbConnector.getUserName(), JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atrás"}, null);
 			}
 		}
 		else if (command.equals("Reactivar Avisos Perfil")){
@@ -288,6 +294,7 @@ public class MainGUI extends JPanel implements ActionListener{
 		else if (command.equals("Logout")) {
 			UserControl.logOutUser(DbConnector);
 			LabelLogged.setText("Usuario no conectado");
+			RegalosControl.removeAllEventosDND();
 			Button3.setText("Login");
 		}
 		//etc para la resta de botones, hacer que llamen a la resta de clases para interacciones

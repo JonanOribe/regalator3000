@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -24,6 +27,7 @@ import regalator3000.db.RegalosControl;
 import regalator3000.misc.AuxFunctions;
 import regalator3000.misc.EventData;
 
+/*Futuro -> Agregar Menu top Avisos que se active cuando aprietes en un evento y te permita modificar su estado de aviso*/
 
 @SuppressWarnings("serial")
 public class EventsPanel extends JPanel implements ActionListener{
@@ -36,13 +40,25 @@ public class EventsPanel extends JPanel implements ActionListener{
 	public int actualYear;
 	private String selectedDate = LocalDate.now().toString(); 
 	private EventData actualEvent;
-
+	private static boolean addOrOpen = false;
 	
 	public EventsPanel(DatabaseHandler DbConnector){
 		this.DbConnector = DbConnector;
 		actualMonth = AuxFunctions.getFieldFromDate(LocalDate.now().toString(),1)-1;
 		actualYear = AuxFunctions.getFieldFromDate(LocalDate.now().toString(),0);
 		initcomponents();
+	}
+	
+	public static JMenuBar createEventosTopMenu(ActionListener listener){
+		JMenuBar MenuTop = new JMenuBar();
+		
+		JMenu AvisoMenu = new JMenu("Avisos");
+		JMenuItem AvisoA = new JMenuItem("Abrir avisos evento");
+		AvisoA.addActionListener(listener);
+		AvisoMenu.add(AvisoA);
+		MenuTop.add(AvisoMenu);
+		
+		return MenuTop;
 	}
 	
 	/*Posibles cambios, cambiar estructura para usar getMonth/getYear de calendarGUI para dejar puesto el mes que toque o resetear*/
@@ -67,7 +83,11 @@ public class EventsPanel extends JPanel implements ActionListener{
 		delButton = createInvisButton("Eliminar");
 		JButton allButton = new JButton("Listado eventos");
 		JButton goToButton = new JButton("Ir a fecha");
-		addButton = new JButton("Agregar evento");
+		if (!addOrOpen){
+			addButton = new JButton("Agregar evento");
+		} else {
+			addButton = new JButton("Abrir aviso");
+		}
 		allButton.addActionListener(this);
 		addButton.addActionListener(this);
 		goToButton.addActionListener(this);
@@ -83,12 +103,10 @@ public class EventsPanel extends JPanel implements ActionListener{
 		southPanel.add(southTopGrid,BorderLayout.NORTH);
 		southPanel.add(southCenterGrid,BorderLayout.CENTER);
 		southPanel.add(southBottomGrid,BorderLayout.SOUTH);
-
-
 		
 		this.add(calendarGUI,BorderLayout.CENTER);
 		this.add(southPanel,BorderLayout.SOUTH);
-		
+				
 	}
 	
 	private JButton createInvisButton(String name){
@@ -104,8 +122,12 @@ public class EventsPanel extends JPanel implements ActionListener{
 		String command = evt.getActionCommand();
 	    Object src = evt.getSource();
 	    CalendarButton eventButton = new CalendarButton("",-1);
+	    addOrOpen = false;
 		if (command != null){
-			if (command.equals("Listado eventos")){
+		    if (command.equals("Abrir aviso")) {
+		    	RegalosControl.abreEventoConcreto(DbConnector, actualEvent);
+		    }
+		    else if (command.equals("Listado eventos")){
 				int goTo = DialogGenerator.createElegirVerEventoDialog(new JFrame("Eventos"), EventoControl.getEvents(DbConnector));
 				//Nota se podria llamar a getEvents y comprobar si == eventoActual y entonces reiniciar pero que prefieres, llamada a DDBB obligada o restart GUI obligado...?
 				if (goTo > -1){
@@ -201,6 +223,8 @@ public class EventsPanel extends JPanel implements ActionListener{
 				eventButton = (CalendarButton)src;
 				int selectedEventID = eventButton.getEventID();
 				actualEvent = EventoControl.getEventData(DbConnector,selectedEventID);
+				addOrOpen = true;
+				restartWindow();
 				setButtonsInvis(false);
 				descLabel.setText("Descripcion: " + actualEvent.descripcion);
 				selectedDate = actualEvent.fecha;
@@ -212,9 +236,9 @@ public class EventsPanel extends JPanel implements ActionListener{
 				dateLabel.setText("Fecha: " + selectedDate);
 				actualEvent = null;
 				setButtonsInvis(true);
+				restartWindow();
 			}
 			//System.out.println(buttonsrc.getEventID());
-
 		}
 	}
 	
@@ -230,14 +254,12 @@ public class EventsPanel extends JPanel implements ActionListener{
 			seeButton.setVisible(false);
 			modButton.setVisible(false);
 			delButton.setVisible(false);
-			addButton.setVisible(true);
 			descLabel.setText(" ");
 		}
 		else {
 			seeButton.setVisible(true);
 			modButton.setVisible(true);
 			delButton.setVisible(true);
-			addButton.setVisible(false);
 		}
 	}
 

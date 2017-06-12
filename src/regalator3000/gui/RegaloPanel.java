@@ -51,7 +51,7 @@ import regalator3000.misc.UserProfileW;
 @SuppressWarnings("serial")
 public class RegaloPanel extends JPanel implements ActionListener{
 	
-	private static final int maxWidth = 800; //Maximo tamaño de la imagen
+	private static final int maxWidth = 800; //Maximo tamaño de la imagen, modificar para tener en cuenta dimensiones pantalla user
 	private static final int maxHeight = 600;
 	private static final int timerTick = 40; //Time in milliseconds the animation will step once
 	private static final float alphaDelta = 0.07f; //How much the transparency will change per tick
@@ -70,8 +70,9 @@ public class RegaloPanel extends JPanel implements ActionListener{
 	private float currentAlpha = 1f; //transparencia inicial (totalmente opaco)
 	private int standInTicks = mainImageStandInTick;
 	private boolean mainImage = true;
+	private int DND;
 	
-	public RegaloPanel(EventData evento, int dias, String[] regaloData){
+	public RegaloPanel(EventData evento, int dias, String[] regaloData, int DND){
 		super();
 		eventoRelacionado = evento;
 		try{
@@ -93,6 +94,7 @@ public class RegaloPanel extends JPanel implements ActionListener{
 		catch(Exception e){
 			System.out.println("Error al cargar la imagen. " + e.getMessage());
 		}
+		this.DND = DND;
 		firstURL = regaloData[2];
 		secondURL = regaloData[3]; //O pasar esto a initComponents i ponerlo como parametro local ya veremos si hay que cambiarlo por eventos o no
 		initcomponents(dias, regaloData[0]);
@@ -100,6 +102,10 @@ public class RegaloPanel extends JPanel implements ActionListener{
 		alphaTimer.start();
 	}
 	
+	public RegaloPanel(EventData evento, int dias, String[] regaloData){		
+		this(evento, dias, regaloData, 0);	
+	}
+
 	private BufferedImage getImgOfSize(Image originalImg, int finalWidth, int finalHeight){
 		try {
 			BufferedImage finalImg = new BufferedImage(finalWidth, finalHeight, BufferedImage.TYPE_INT_ARGB); //Creamos una nueva bufferedimage con el tamaño correcto
@@ -217,17 +223,18 @@ public class RegaloPanel extends JPanel implements ActionListener{
 				}
 			});
 		}
-		
 		text2.setFont(new Font("Century Schoolbook L",Font.ITALIC|Font.BOLD,21));
 		text2.setForeground(Color.RED);
 		JCheckBox DNDBoxSesion = new JCheckBox("No me avises mas esta sesion");
+		if (DND == 1 || DND == 3) { DNDBoxSesion.setSelected(true);}
 		DNDBoxSesion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				JCheckBox src = (JCheckBox)evt.getSource();
 				DNDEvents(eventoRelacionado.eventID, eventoRelacionado.userID, src.isSelected(), false);
 			}
 		});
-		JCheckBox DNDBoxNunca = new JCheckBox("No me avises nunca de este evento");
+		JCheckBox DNDBoxNunca = new JCheckBox("No me avises nunca mas de este evento");
+		if (DND == 2 || DND == 3) { DNDBoxNunca.setSelected(true);}
 		DNDBoxNunca.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				JCheckBox src = (JCheckBox)evt.getSource();
@@ -269,6 +276,7 @@ public class RegaloPanel extends JPanel implements ActionListener{
 		mainPanel.add(titlePanel,BorderLayout.NORTH);
 		mainPanel.add(textAndIconsPanel, BorderLayout.SOUTH);
 		mainPanel.add(imgPanel, BorderLayout.CENTER);
+
 		add(mainPanel);
 	}
 	

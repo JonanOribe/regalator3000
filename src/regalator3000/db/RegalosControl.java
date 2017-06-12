@@ -118,10 +118,7 @@ public class RegalosControl {
 	public static void checkForPresents(DatabaseHandler DbConnector, ArrayList<EventData> eventos){
 		//Should show a JDialogMessage warning you for every present in your date interval
 		EventData evento;
-		String valoresData = LocalDate.now().toString();
-		String[] valores = valoresData.split("-"); 
-		int MonthLengthDays = AuxFunctions.getMonthLengthDays(Integer.parseInt(valores[1]),Integer.parseInt(valores[0]));
-		long tiempoEnHorasHoy = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * MonthLengthDays * 24) + (Long.parseLong(valores[2]) * 24); //anyos + meses + dias en segundos (puede estar mal, sobretodo meses, buscar una funcion mas completa o hacerla
+		long tiempoEnHorasHoy = tiempoEnHoras(LocalDate.now().toString());
 		long diasAntesEnHoras = 0;
 		long diferencia = 0;
 		long[] tiempoHorasEventos = ordenaPorFecha(eventos);
@@ -156,6 +153,40 @@ public class RegalosControl {
 			}
 		}
 	}
+	
+	public static void abreEventoConcreto(DatabaseHandler DbConnector, EventData evento){ //Seguramente puedes mergear esta y un cacho de la de arriba
+		try {
+			long diasAntesEnHoras = evento.diasAviso * 24;
+			long eventoFechaEnHoras = tiempoEnHoras(evento.fecha);
+			long diferencia = eventoFechaEnHoras - tiempoEnHoras(LocalDate.now().toString());
+			if (diferencia < 0) {
+				return;
+			}
+			if (diferencia <= diasAntesEnHoras){
+				evento = EventoControl.getEventData(DbConnector, Integer.parseInt(evento.eventID));
+				boolean DNDSesion = checkEventoDND(evento.eventID);
+				boolean DNDProfile = UserProfileR.valueExistsForUser(evento.userID, UserProfileW.NOMOLESTARTAG, evento.eventID);
+				String[] regalo = RegalosControl.eligeRegaloAleatorio(DbConnector, RegalosControl.getRegalosElegidos(DbConnector, evento));
+				String diff = Long.toString(diferencia/24);
+				int DND = 0;
+				if (DNDSesion) DND += 1;
+				if (DNDProfile) DND += 2;
+				RegaloPanel content = new RegaloPanel(evento, Integer.parseInt(diff) , regalo, DND);
+		        JOptionPane.showOptionDialog(new JFrame("test"), content,"Se aproxima una fecha importante!", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"De acuerdo"}, null);				}
+		}
+		catch(Exception e){
+			System.out.println("Datos de evento mal formateados " + e.toString());
+		}
+	}
+	
+	private static long tiempoEnHoras(String fecha){
+		String[] valores = fecha.split("-"); 
+		int MonthLengthDays = AuxFunctions.getMonthLengthDays(Integer.parseInt(valores[1]),Integer.parseInt(valores[0]));
+		long tiempoEnHorasEvento = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * MonthLengthDays * 24) + (Long.parseLong(valores[2]) * 24); //anyos + meses + dias en segundos (puede estar mal, sobretodo meses, buscar una funcion mas completa o hacerla
+		return tiempoEnHorasEvento;
+	}
+
+	
 	
 	/*Funcion que retorna una array con el tiempo total de cada evento en horas, ordenada de menor a mayor. A la vez tambien
 	 * ordena la lista de eventos del usuario para que sigan el mismo orden que el de las fechas para que le aparezcan
