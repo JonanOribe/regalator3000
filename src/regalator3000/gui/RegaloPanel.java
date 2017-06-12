@@ -32,6 +32,7 @@ import java.net.URI;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -42,7 +43,9 @@ import javax.swing.Timer;
 
 import regalator3000.db.DatabaseHandler;
 import regalator3000.db.EventoControl;
+import regalator3000.db.RegalosControl;
 import regalator3000.misc.EventData;
+import regalator3000.misc.UserProfileW;
 
 
 @SuppressWarnings("serial")
@@ -217,7 +220,20 @@ public class RegaloPanel extends JPanel implements ActionListener{
 		
 		text2.setFont(new Font("Century Schoolbook L",Font.ITALIC|Font.BOLD,21));
 		text2.setForeground(Color.RED);
-		
+		JCheckBox DNDBoxSesion = new JCheckBox("No me avises mas esta sesion");
+		DNDBoxSesion.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				JCheckBox src = (JCheckBox)evt.getSource();
+				DNDEvents(eventoRelacionado.eventID, eventoRelacionado.userID, src.isSelected(), false);
+			}
+		});
+		JCheckBox DNDBoxNunca = new JCheckBox("No me avises nunca de este evento");
+		DNDBoxNunca.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				JCheckBox src = (JCheckBox)evt.getSource();
+				DNDEvents(eventoRelacionado.eventID, eventoRelacionado.userID, src.isSelected(), true);
+			}
+		}); 
 		JPanel titlePanel = new JPanel();
 		titlePanel.setLayout(new GridLayout(2,0,10,10));
 		titlePanel.add(text1);
@@ -239,7 +255,11 @@ public class RegaloPanel extends JPanel implements ActionListener{
 		buttonPanel.add(borraButton ,BorderLayout.CENTER); //Falta implementar la accion de borrar el evento (facil, esta el metodo hecho)
 		buttonPanel.add(new JLabel("                               "), BorderLayout.EAST); //Manera cutre de poner la posicion relativa
 		buttonPanel.add(new JLabel("                               "), BorderLayout.WEST); //Mejor recrear y usar GroupLayout en el futuro...
-		buttonPanel.add(new JLabel("   "), BorderLayout.NORTH);
+		JPanel northPanel = new JPanel();
+		northPanel.setLayout(new GridLayout(0,2,5,5));
+		northPanel.add(DNDBoxSesion);
+		northPanel.add(DNDBoxNunca);
+		buttonPanel.add(northPanel, BorderLayout.NORTH);
 		iconsPanel.add(buttonPanel, BorderLayout.CENTER);
 		JButton visitButton = new JButton("Visita nuestra página para mas!");
 		visitButton.addActionListener(this);
@@ -262,7 +282,24 @@ public class RegaloPanel extends JPanel implements ActionListener{
 			System.out.println("Problemas al cargar la pagina: " + error.getMessage());
 		}
 	}
-
+	
+	private void DNDEvents(String eventID, String userID, boolean Selected, boolean nuncaMas){
+		if (Selected) {
+			if (nuncaMas){
+				UserProfileW.addToUserTag(userID, "DND", eventID, true);
+			} else {
+				RegalosControl.addEventoDND(eventID);
+			}
+		}
+		else {
+			if (nuncaMas){
+				UserProfileW.removeFromUserTag(userID,  "DND", eventID);
+			}
+			else {
+				RegalosControl.removeEventoDND(eventID);
+			}
+		}
+	}
 	
 	public static void main(String[] args) {
 		JFrame window = new JFrame("");

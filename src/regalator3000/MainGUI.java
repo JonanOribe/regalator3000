@@ -38,6 +38,8 @@ import regalator3000.gui.CalendarPanel;
 import regalator3000.gui.CreditsPanel;
 import regalator3000.gui.DialogGenerator;
 import regalator3000.gui.EventsPanel;
+import regalator3000.misc.UserProfileR;
+import regalator3000.misc.UserProfileW;
 
 
 
@@ -150,11 +152,19 @@ public class MainGUI extends JPanel implements ActionListener{
 		
                 //Pestaña "Más"
 		JMenu LoginMenu = new JMenu("Mas");
+		JMenuItem ResetDNDSButton= new JMenuItem("Reactivar Avisos Sesion");
+		JMenuItem ResetDNDPButton= new JMenuItem("Reactivar Avisos Perfil");
 		JMenuItem LogOnButton = new JMenuItem("Creditos");
 		JMenuItem LogOutButton = new JMenuItem("Logout");
 
 		LogOnButton.addActionListener(listener);			
 		LogOutButton.addActionListener(listener);
+		ResetDNDPButton.addActionListener(listener);
+		ResetDNDSButton.addActionListener(listener);
+		LoginMenu.add(ResetDNDPButton);
+		LoginMenu.addSeparator();
+		LoginMenu.add(ResetDNDSButton);
+		LoginMenu.addSeparator();
 		LoginMenu.add(LogOnButton);
 		LoginMenu.addSeparator();
 		LoginMenu.add(LogOutButton);
@@ -193,6 +203,10 @@ public class MainGUI extends JPanel implements ActionListener{
 			if (loginConseguido){
 				LabelLogged.setText("Conectado como: " + userYPwd[0]);
 				Button3.setText("Logout");
+				if (!UserProfileR.userExistsInFile(Integer.toString(DbConnector.getUserID()))){
+					UserProfileW.addUser(Integer.toString(DbConnector.getUserID()));
+				}
+				RegalosControl.removeAllEventosDND();
 				RegalosControl.checkForPresents(DbConnector, EventoControl.getEvents(DbConnector)); //Comprueba si toca avisar de algun evento para regalar cuando el usuario se loguea
 			}
 			else {
@@ -220,6 +234,9 @@ public class MainGUI extends JPanel implements ActionListener{
 				default:
 					LabelLogged.setText("Usuario agregado, bienvenido: " + userYPwd[0]);
 					UserControl.logInUser(DbConnector, userYPwd[0], userYPwd[1]);
+					if (!UserProfileR.userExistsInFile(Integer.toString(DbConnector.getUserID()))){
+						UserProfileW.addUser(Integer.toString(DbConnector.getUserID()));
+					}
 					Button3.setText("Logout");
 					//No comprovamos eventos porque sera nuevo user
 				}
@@ -245,6 +262,16 @@ public class MainGUI extends JPanel implements ActionListener{
 			if(UserControl.isUserLogged(DbConnector)) {
 		        EventsPanel content = new EventsPanel(DbConnector);
 		        JOptionPane.showOptionDialog(new JFrame("test"), content,"Eventos de " + DbConnector.getUserName(), JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"Atrás"}, null);
+			}
+		}
+		else if (command.equals("Reactivar Avisos Perfil")){
+			if(UserControl.isUserLogged(DbConnector)) {
+				UserProfileW.removeAllFromUserTag(Integer.toString(DbConnector.getUserID()), UserProfileW.NOMOLESTARTAG);
+			}
+		}
+		else if (command.equals("Reactivar Avisos Sesion")){
+			if(UserControl.isUserLogged(DbConnector)) {
+				RegalosControl.removeAllEventosDND();
 			}
 		}
 		else if (command.equals("Creditos")){
@@ -305,6 +332,7 @@ public class MainGUI extends JPanel implements ActionListener{
             UIManager.put("OptionPane.cancelButtonTetxt", "Cancelar");
             UIManager.put("OptionPane.yesButtonText", "Aceptar");
             UIManager.put("OptionPane.okButtonText", "Introducir");
+            UserProfileW.initProfile();
 			//TESTING, no tengo ganas de reintroducir usuario cada vez
 	}
 

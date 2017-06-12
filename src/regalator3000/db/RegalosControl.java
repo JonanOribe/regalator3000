@@ -14,6 +14,8 @@ import javax.swing.JOptionPane;
 import regalator3000.gui.RegaloPanel;
 import regalator3000.misc.AuxFunctions;
 import regalator3000.misc.EventData;
+import regalator3000.misc.UserProfileR;
+import regalator3000.misc.UserProfileW;
 
 /*Clase con metodos estaticos para gestionar criterios de obtencion de IDs de los regalos basados en los criterios del usuario, de aleatoriedad y de marcas/categorias elegidas
  * 
@@ -29,6 +31,8 @@ import regalator3000.misc.EventData;
 * 
  */
 public class RegalosControl {
+	
+	public static ArrayList<String> idEvtDNDSesion = new ArrayList<String>();
 	
 	/*Devuelve un array de Strings con los IDs de los eventos elegidos con los criterios del usuario. Devuelve null si no hay regalos
 	 * que cumplan los criterios. ESTO ES IMPORTANTE YA QUE HABRA QUE COMPROBAR CUANDO EL USUARIO ELIGE CRITERIOS QUE HAYA ALGUN REGALO
@@ -107,7 +111,10 @@ public class RegalosControl {
 		}
 	}
 	
-	//Mira la lista de eventos del usuario por si hay alguno del que toque avisar hoy, mejorar graficos, opciones, etc.*/
+	/*Mira la lista de eventos del usuario por si hay alguno del que toque avisar hoy, mejorar graficos, opciones, etc.
+	DECISION: HACER QUE DE ENTRADA ENTRA QUE EVENTOS NO SE LLAMAN PORQUE TIENEN TOGGLE (Se guarda eso en main_GUI, si creo)
+	implementar funcion dentro y otro parametro entrada.
+	Aparte comprobacion inicial si esta el toggle de dnd (eso en main_GUI creo)*/
 	public static void checkForPresents(DatabaseHandler DbConnector, ArrayList<EventData> eventos){
 		//Should show a JDialogMessage warning you for every present in your date interval
 		EventData evento;
@@ -121,25 +128,31 @@ public class RegalosControl {
 		for (int i = 0; i < eventos.size(); i++){
 		
 			evento = eventos.get(i);
-			try {
-				diasAntesEnHoras = evento.diasAviso * 24;
-				diferencia = tiempoHorasEventos[i] - tiempoEnHorasHoy;
-				//System.out.println("Horas hoy: " + tiempoEnHorasHoy + " , horas dia regalo: " + tiempoEnHorasEvento + " , dias en horas: " + diasAntesEnHoras + " , diferencia " + diferencia);
-				if (diferencia < 0) {
-					//el dia del evento esta en el pasado ya, borrar o avisar??? Pensar en ello...
-					continue;
-				}
-				if (diferencia <= diasAntesEnHoras){
-					//AVISO AQUI: (CUTRE POR AHORA, hacer un JPanel especial con decoracion y tal para el aviso)
-					evento = EventoControl.getEventData(DbConnector, Integer.parseInt(evento.eventID));
-					String[] regalo = RegalosControl.eligeRegaloAleatorio(DbConnector, RegalosControl.getRegalosElegidos(DbConnector, evento));
-					String diff = Long.toString(diferencia/24);
-					//System.out.println("diff: " + diff + " , " + Arrays.toString(regalo));
-					RegaloPanel content = new RegaloPanel(evento, Integer.parseInt(diff) , regalo);
-			        JOptionPane.showOptionDialog(new JFrame("test"), content,"Se aproxima una fecha importante!", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"De acuerdo"}, null);				}
+			String[] eventosDNDSiempre = UserProfileR.getTagValuesForUser(evento.userID, UserProfileW.NOMOLESTARTAG);
+			boolean eventoIsIn = false;
+			for (int j = 0; j < eventosDNDSiempre.length; j++) {
+				if (eventosDNDSiempre[j].equals(evento.eventID)){ eventoIsIn = true; break; }
 			}
-			catch(Exception e){
-				System.out.println("Datos de evento mal formateados " + e.toString());
+			if (!checkEventoDND(evento.eventID) && !eventoIsIn){
+				try {
+					diasAntesEnHoras = evento.diasAviso * 24;
+					diferencia = tiempoHorasEventos[i] - tiempoEnHorasHoy;
+					//System.out.println("Horas hoy: " + tiempoEnHorasHoy + " , horas dia regalo: " + tiempoEnHorasEvento + " , dias en horas: " + diasAntesEnHoras + " , diferencia " + diferencia);
+					if (diferencia < 0) {
+						//el dia del evento esta en el pasado ya, borrar o avisar??? Pensar en ello...
+						continue;
+					}
+					if (diferencia <= diasAntesEnHoras){
+						evento = EventoControl.getEventData(DbConnector, Integer.parseInt(evento.eventID));
+						String[] regalo = RegalosControl.eligeRegaloAleatorio(DbConnector, RegalosControl.getRegalosElegidos(DbConnector, evento));
+						String diff = Long.toString(diferencia/24);
+						//System.out.println("diff: " + diff + " , " + Arrays.toString(regalo));
+						RegaloPanel content = new RegaloPanel(evento, Integer.parseInt(diff) , regalo);
+				        JOptionPane.showOptionDialog(new JFrame("test"), content,"Se aproxima una fecha importante!", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"De acuerdo"}, null);				}
+				}
+				catch(Exception e){
+					System.out.println("Datos de evento mal formateados " + e.toString());
+				}
 			}
 		}
 	}
@@ -182,6 +195,25 @@ public class RegalosControl {
 		return horas;
 	}
 
+	public static void addEventoDND(String eventID){
+		if (!idEvtDNDSesion.contains(eventID)){
+			idEvtDNDSesion.add(eventID);
+		}
+	}
+
+	public static void removeEventoDND(String eventID){
+		if (idEvtDNDSesion.contains(eventID)){
+			idEvtDNDSesion.remove(eventID);
+		}
+	}
+	
+	public static void removeAllEventosDND(){
+		idEvtDNDSesion.clear();
+	}
+	
+	public static boolean checkEventoDND(String eventID){
+		return idEvtDNDSesion.contains(eventID);
+	}
 	
 	/*Funcion para retornar el codigo SQL combinado con la seleccion de marcas/categorias incluidas/excluidas
 	 * Los booleanos te dejan hacer inclusion IN(numeros) o exclusion NOT IN(numeros) porque en realidad no se

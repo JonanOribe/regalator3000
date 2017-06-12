@@ -20,15 +20,6 @@ import regalator3000.misc.AuxFunctions;
 import regalator3000.misc.EventData;
 import regalator3000.misc.LinkedCBox;
 
-/*Prueba mejora comboboxes -> a ver, la combobox tiene que guardar el indice de la categoria elegida o se debe crear una variable de clase con las categorias elegidas (con la posicion dependiendo combobox?) 
- * jComboBoxExample.addActionListener (new ActionListener () {
-   public void actionPerformed (ActionEvent e) {
-     JComboBox src = (JComboBox) e.getSource();
-     String command = e.getActionCommand;
-     (o if command.equals(...)...)
-     if ( src.getSelectedItem...)
-   */
-
 public class Proposal_GUI extends javax.swing.JFrame implements ActionListener{
 	private DatabaseHandler DbConnector;
 	private static boolean eventIsSelected = false; //for the GUI lookandfeel (if an event is selected and the user clicks another day it'll remove the data in the GUI, if he wasnt selecting an event and just wants to change the date it wont
