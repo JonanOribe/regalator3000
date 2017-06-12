@@ -141,10 +141,7 @@ public class RegalosControl {
 					}
 					if (diferencia <= diasAntesEnHoras){
 						evento = EventoControl.getEventData(DbConnector, Integer.parseInt(evento.eventID));
-						String[] regalo = RegalosControl.eligeRegaloAleatorio(DbConnector, RegalosControl.getRegalosElegidos(DbConnector, evento));
-						String diff = Long.toString(diferencia/24);
-						//System.out.println("diff: " + diff + " , " + Arrays.toString(regalo));
-						RegaloPanel content = new RegaloPanel(evento, Integer.parseInt(diff) , regalo);
+						RegaloPanel content = generateRegaloPanel(DbConnector, evento, diferencia, false);
 				        JOptionPane.showOptionDialog(new JFrame("test"), content,"Se aproxima una fecha importante!", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"De acuerdo"}, null);				}
 				}
 				catch(Exception e){
@@ -154,7 +151,7 @@ public class RegalosControl {
 		}
 	}
 	
-	public static void abreEventoConcreto(DatabaseHandler DbConnector, EventData evento){ //Seguramente puedes mergear esta y un cacho de la de arriba
+	public static void abreEventoConcreto(DatabaseHandler DbConnector, EventData evento){ 
 		try {
 			long diasAntesEnHoras = evento.diasAviso * 24;
 			long eventoFechaEnHoras = tiempoEnHoras(evento.fecha);
@@ -164,19 +161,25 @@ public class RegalosControl {
 			}
 			if (diferencia <= diasAntesEnHoras){
 				evento = EventoControl.getEventData(DbConnector, Integer.parseInt(evento.eventID));
-				boolean DNDSesion = checkEventoDND(evento.eventID);
-				boolean DNDProfile = UserProfileR.valueExistsForUser(evento.userID, UserProfileW.NOMOLESTARTAG, evento.eventID);
-				String[] regalo = RegalosControl.eligeRegaloAleatorio(DbConnector, RegalosControl.getRegalosElegidos(DbConnector, evento));
-				String diff = Long.toString(diferencia/24);
-				int DND = 0;
-				if (DNDSesion) DND += 1;
-				if (DNDProfile) DND += 2;
-				RegaloPanel content = new RegaloPanel(evento, Integer.parseInt(diff) , regalo, DND);
+				RegaloPanel content = generateRegaloPanel(DbConnector, evento, diferencia,true);
 		        JOptionPane.showOptionDialog(new JFrame("test"), content,"Se aproxima una fecha importante!", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.CLOSED_OPTION, null, new Object[]{"De acuerdo"}, null);				}
 		}
 		catch(Exception e){
 			System.out.println("Datos de evento mal formateados " + e.toString());
 		}
+	}
+	
+	private static RegaloPanel generateRegaloPanel(DatabaseHandler DbConnector, EventData evento, long diferenciaHoras, boolean DNDActive){
+		String[] regalo = RegalosControl.eligeRegaloAleatorio(DbConnector, RegalosControl.getRegalosElegidos(DbConnector, evento));
+		boolean DNDSesion = checkEventoDND(evento.eventID);   //Dejo los booleanos para que se entienda mejor el sentido
+		boolean DNDProfile = UserProfileR.valueExistsForUser(evento.userID, UserProfileW.NOMOLESTARTAG, evento.eventID);
+		String diff = Long.toString(diferenciaHoras/24);
+		int DND = 0;
+		if (DNDActive) {
+			if (DNDSesion) DND += 1;
+			if (DNDProfile) DND += 2;
+		}
+		return new RegaloPanel(evento, Integer.parseInt(diff) , regalo, DND);
 	}
 	
 	private static long tiempoEnHoras(String fecha){
@@ -185,7 +188,6 @@ public class RegalosControl {
 		long tiempoEnHorasEvento = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * MonthLengthDays * 24) + (Long.parseLong(valores[2]) * 24); //anyos + meses + dias en segundos (puede estar mal, sobretodo meses, buscar una funcion mas completa o hacerla
 		return tiempoEnHorasEvento;
 	}
-
 	
 	
 	/*Funcion que retorna una array con el tiempo total de cada evento en horas, ordenada de menor a mayor. A la vez tambien
@@ -193,15 +195,10 @@ public class RegalosControl {
 	 * al usuario en ese orden	 */
 	private static long[] ordenaPorFecha(ArrayList<EventData> eventos){
 		long[] horas = new long[eventos.size()];
-		String[] valores = new String[3];
-		String valoresData;
 		EventData eventoTmp,eventoTmp2;
 		long tmp;
 		for(int i = 0; i < eventos.size(); i++){ //Creamos una array de longs con el tiempo total en horas de cada fecha de evento, (cuanto mas tarde mas grande sera) se distribuyen en igual orden que en la lista de eventos
-			valoresData = eventos.get(i).fecha;
-			valores = valoresData.split("-"); 
-			int MonthLengthDays = AuxFunctions.getMonthLengthDays(Integer.parseInt(valores[1]),Integer.parseInt(valores[0]));
-			horas[i] = (Long.parseLong(valores[0]) * 365 * 24) + (Long.parseLong(valores[1]) * MonthLengthDays * 24) + (Long.parseLong(valores[2]) * 24); 
+			horas[i] = tiempoEnHoras(eventos.get(i).fecha);
 		}
 		
 		for (int i = 0; i < eventos.size()-1; i++){ //Ahora ordenamos los eventos dependiendo de su tiempo total (menor mas a la izquierda) y ordenamos asi tanto la array de numeros como la arraylist de eventos por su fecha
@@ -218,11 +215,6 @@ public class RegalosControl {
 				i = -1;
 			}
 		}
-		/*for(int i = 0; i < eventos.size(); i++){
-			System.out.println(horas[i]);
-			System.out.println(eventos.get(i).userID);
-		}*/
-		
 		return horas;
 	}
 

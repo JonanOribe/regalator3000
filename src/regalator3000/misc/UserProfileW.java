@@ -64,13 +64,6 @@ public class UserProfileW {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-		finally {
-			try {
-				raf.close();
-			} catch(Exception e){
-				raf = null;
-			}
-		}
 	}
 	
 	private static void createProfile()

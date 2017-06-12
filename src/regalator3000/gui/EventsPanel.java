@@ -1,4 +1,3 @@
-/*15/04: Creo que la clase se comporta como deberia, testear mas*/
 package regalator3000.gui;
 
 import java.awt.BorderLayout;
@@ -13,9 +12,6 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -26,8 +22,6 @@ import regalator3000.db.EventoControl;
 import regalator3000.db.RegalosControl;
 import regalator3000.misc.AuxFunctions;
 import regalator3000.misc.EventData;
-
-/*Futuro -> Agregar Menu top Avisos que se active cuando aprietes en un evento y te permita modificar su estado de aviso*/
 
 @SuppressWarnings("serial")
 public class EventsPanel extends JPanel implements ActionListener{
@@ -47,18 +41,6 @@ public class EventsPanel extends JPanel implements ActionListener{
 		actualMonth = AuxFunctions.getFieldFromDate(LocalDate.now().toString(),1)-1;
 		actualYear = AuxFunctions.getFieldFromDate(LocalDate.now().toString(),0);
 		initcomponents();
-	}
-	
-	public static JMenuBar createEventosTopMenu(ActionListener listener){
-		JMenuBar MenuTop = new JMenuBar();
-		
-		JMenu AvisoMenu = new JMenu("Avisos");
-		JMenuItem AvisoA = new JMenuItem("Abrir avisos evento");
-		AvisoA.addActionListener(listener);
-		AvisoMenu.add(AvisoA);
-		MenuTop.add(AvisoMenu);
-		
-		return MenuTop;
 	}
 	
 	/*Posibles cambios, cambiar estructura para usar getMonth/getYear de calendarGUI para dejar puesto el mes que toque o resetear*/
@@ -116,8 +98,6 @@ public class EventsPanel extends JPanel implements ActionListener{
 		return button;
 	}
 	
-	
-	//Falta darle el userID al construir el panel...
 	public void actionPerformed(ActionEvent evt){
 		String command = evt.getActionCommand();
 	    Object src = evt.getSource();
